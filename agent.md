@@ -1,4 +1,4 @@
-# AGENTS.md - Florent Codex 작업 규약
+# AGENT.md - Florent Codex 작업 규약
 
 > 이 파일을 가장 먼저 읽어라.
 > 작업 시작 전 반드시 관련 `docs` 문서를 참조하라.
