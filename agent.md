@@ -135,6 +135,8 @@ adapter/out (JPA Entity, FcmAdapter, S3Adapter, ...)
 1. `.codex/ai-context/domain-knowledge.md`
 2. `.codex/ai-context/api-decisions.md` (API 설계 결정이 있었을 때)
 3. `.codex/ai-context/known-issues.md` (발견된 문제/제약이 있을 때)
+4. `.codex/ai-context/devlog.md` 
+5. `.codex/ai-context/prompt.md` 
 
 ---
 
