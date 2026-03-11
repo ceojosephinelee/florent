@@ -66,6 +66,16 @@ backend/
 **MVP 제외**
 - Redis, PostGIS, 실 PG 연동
 
+**Auth 플로우 (구현 시 필수 숙지)**
+```
+카카오 OAuth 코드
+  → 서버에서 카카오 Access Token 교환
+  → 카카오 사용자 정보 조회 (kakao_id, email)
+  → 자체 JWT(Access Token + Refresh Token) 발급
+  → 클라이언트에 자체 JWT만 전달
+```
+> ⚠️ 카카오 Access Token은 서버에서만 사용. 클라이언트에 절대 내려주지 않는다.
+
 ---
 
 ## 3. 아키텍처 — 순수 헥사고날 (타협 없음)
@@ -104,7 +114,7 @@ com.florent/
 // ✅ 생성자 주입만
 @RequiredArgsConstructor
 public class BuyerRequestController {
-    private final CreateRequestUseCase createRequestUseCase;
+    private final CreateRequestUseCase createRequestUseCase;  // 인터페이스
 }
 
 // ✅ Domain — 순수 Java, 상태 전이 메서드
@@ -116,6 +126,15 @@ public class CurationRequest {
     }
 }
 
+// ✅ Service — 조회 전용은 readOnly
+@Transactional(readOnly = true)
+public RequestDetailResult getDetail(Long requestId) { ... }
+
+// ✅ JpaEntity ↔ Domain 변환 메서드 네이밍
+entity.toDomain()                        // JpaEntity → Domain
+CurationRequestJpaEntity.from(domain)    // Domain → JpaEntity
+CurationRequest.reconstitute(id, ...)    // DB 재구성용 팩토리
+
 // ✅ 예외
 throw new BusinessException(ErrorCode.REQUEST_NOT_FOUND);
 
@@ -123,11 +142,27 @@ throw new BusinessException(ErrorCode.REQUEST_NOT_FOUND);
 return ResponseEntity.ok(ApiResponse.success(response));
 ```
 
+### 네이밍 규칙 (핵심만)
+
+| 종류 | 규칙 | 예시 |
+|---|---|---|
+| Inbound Port | `~UseCase` | `CreateRequestUseCase` |
+| Outbound Port (DB) | `~Repository` | `CurationRequestRepository` |
+| Outbound Port (외부) | `~Port` | `PaymentPort`, `PushNotificationPort` |
+| UseCase 입력 | `~Command` | `CreateRequestCommand` |
+| UseCase 출력 | `~Result` | `CreateRequestResult` |
+| 요청 DTO | `~Request` | `CreateRequestRequest` |
+| 응답 DTO | `~Response` | `RequestDetailResponse` |
+| Fake 테스트 구현체 | `Fake~` | `FakePaymentPort` |
+| 상태 전이 메서드 | 동사 | `confirm()`, `expire()`, `select()` |
+| Domain 재구성 | `reconstitute()` | DB 조회 후 Domain 재조립 |
+
 ### 절대 금지
 
 ```java
 // ❌ @Autowired 필드 주입
-// ❌ Domain에 @Entity
+// ❌ Domain에 @Entity, @Column 등 JPA 어노테이션
+// ❌ Controller에 if/for/비즈니스 판단 로직
 // ❌ RuntimeException 직접 사용
 // ❌ Optional.get() 직접 호출
 // ❌ Entity를 Controller에서 직접 반환
@@ -135,6 +170,7 @@ return ResponseEntity.ok(ApiResponse.success(response));
 // ❌ @Transactional 없는 쓰기
 // ❌ 20줄 초과 단일 메서드
 // ❌ 매직 넘버/문자열 (상수/enum으로)
+// ❌ Domain 클래스에 Setter (상태 전이는 메서드로)
 ```
 
 ---
@@ -147,6 +183,11 @@ return ResponseEntity.ok(ApiResponse.success(response));
 - 구매자: `/api/v1/buyer/**`
 - 판매자: `/api/v1/seller/**`
 - 공통: `/api/v1/auth/**`, `/api/v1/notifications/**`, `/api/v1/devices/**`, `/api/v1/images/**`
+
+**API 계약 변경 프로세스 (반드시 이 순서)**
+1. `backend/docs/api-spec.md` 먼저 수정
+2. PR 머지 후 `frontend/docs/api-spec.md`에 동기화
+3. 프론트엔드 레포에서 먼저 수정 금지 — 백엔드가 단일 진실 공급원
 
 ---
 
