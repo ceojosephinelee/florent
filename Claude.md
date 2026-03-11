@@ -131,6 +131,18 @@ Shift+Tab 한 번 → Normal Mode 복귀 → 실제 구현
 | Code Reviewer | PR 리뷰 (새 컨텍스트에서) | `skills/code-reviewer.md` |
 | Tech Writer | 문서화 · DevLog | `skills/tech-writer.md` |
 
+**에이전트 호출 방법**
+
+에이전트는 자동으로 동작하지 않는다. 아래 시점에 직접 호출한다.
+
+| 에이전트 | 호출 시점 | 호출 방법 |
+|---|---|---|
+| Backend Dev | 백엔드 기능 구현 시작 시 | `skills/backend-dev.md 를 읽고 그 역할로 동작해라` |
+| Frontend Dev | 프론트엔드 화면 구현 시작 시 | `skills/frontend-dev.md 를 읽고 그 역할로 동작해라` |
+| QA Engineer | 기능 구현 완료 후 테스트 작성 시 | `skills/qa-engineer.md 를 읽고 그 역할로 동작해라` |
+| Code Reviewer | PR 머지 전 리뷰 시 (**새 컨텍스트**) | `skills/code-reviewer.md 를 읽고 그 역할로 동작해라` |
+| Tech Writer | Task 6/7 문서화 시 | `skills/tech-writer.md 를 읽고 그 역할로 동작해라` |
+
 **협업 원칙**
 - 각 에이전트는 자신의 skill 파일을 반드시 먼저 읽는다
 - Code Reviewer는 **반드시 새 대화창(새 컨텍스트)**에서 실행한다
@@ -138,19 +150,57 @@ Shift+Tab 한 번 → Normal Mode 복귀 → 실제 구현
 
 ---
 
-## 4. 브랜치 전략
+## 4. 브랜치 전략 & Git 컨벤션
 
+### 브랜치
 ```
 main           ← 배포 가능 상태만
 develop        ← 통합 브랜치
 feature/backend/{기능명}   ← 백엔드 기능
 feature/frontend/{기능명}  ← 프론트엔드 기능
+fix/{버그명}               ← 버그 수정
 ```
 
-Git Worktree 병렬 작업 (선택):
+### 커밋 메시지
+```
+<type>(<scope>): <subject>
+
+type:
+  feat     - 새 기능
+  fix      - 버그 수정
+  docs     - 문서
+  test     - 테스트 추가/수정
+  refactor - 리팩토링 (기능 변경 없음)
+  chore    - 빌드/설정/의존성
+
+scope: request | proposal | reservation | buyer | seller | auth | common
+
+예시:
+  feat(request): 구매자 요청 생성 도메인 구현
+  fix(proposal): 제안 만료 시간 계산 오류 수정
+  test(reservation): 예약 확정 인수 테스트 추가
+```
+
+**커밋 원칙**
+- 작동하는 단위로만 커밋 (빌드 깨진 상태로 커밋 금지)
+- 하나의 커밋 = 하나의 책임
+- WIP 커밋 금지
+
+### Git Worktree
+백엔드와 프론트엔드를 동시에 작업할 때만 worktree를 사용한다.
+**단일 기능 작업 시에는 사용하지 않는다.**
+
+worktree가 필요한 시점:
+- 백엔드 API 구현과 프론트엔드 화면 구현을 병렬로 진행할 때
+- 긴급 버그 수정과 기능 개발을 동시에 할 때
+
 ```bash
+# 필요할 때만 — 사용자가 명시적으로 요청한 경우에만 생성
 git worktree add ../florent-backend  feature/backend/request-api
 git worktree add ../florent-frontend feature/frontend/buyer-app
+
+# 작업 완료 후 반드시 정리
+git worktree remove ../florent-backend
 ```
 
 ---

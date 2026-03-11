@@ -1,0 +1,48 @@
+import '../../models/buyer_request.dart';
+
+final mockActiveRequests = [
+  BuyerRequestSummary(
+    requestId: 1,
+    status: 'OPEN',
+    budgetTier: 'TIER2',
+    fulfillmentType: 'PICKUP',
+    fulfillmentDate: '2026-03-13',
+    expiresAt: DateTime.now().add(const Duration(hours: 23, minutes: 14)).toIso8601String(),
+    draftProposalCount: 3,
+    submittedProposalCount: 2,
+    purposeTags: ['생일'],
+  ),
+  BuyerRequestSummary(
+    requestId: 2,
+    status: 'OPEN',
+    budgetTier: 'TIER3',
+    fulfillmentType: 'DELIVERY',
+    fulfillmentDate: '2026-03-14',
+    expiresAt: DateTime.now().add(const Duration(hours: 5, minutes: 42)).toIso8601String(),
+    draftProposalCount: 1,
+    submittedProposalCount: 0,
+    purposeTags: ['감사'],
+  ),
+  BuyerRequestSummary(
+    requestId: 3,
+    status: 'CONFIRMED',
+    budgetTier: 'TIER2',
+    fulfillmentType: 'PICKUP',
+    fulfillmentDate: '2026-03-10',
+    expiresAt: DateTime.now().subtract(const Duration(hours: 10)).toIso8601String(),
+    draftProposalCount: 0,
+    submittedProposalCount: 1,
+    purposeTags: ['프로포즈'],
+  ),
+  BuyerRequestSummary(
+    requestId: 4,
+    status: 'EXPIRED',
+    budgetTier: 'TIER1',
+    fulfillmentType: 'DELIVERY',
+    fulfillmentDate: '2026-03-08',
+    expiresAt: DateTime.now().subtract(const Duration(hours: 50)).toIso8601String(),
+    draftProposalCount: 0,
+    submittedProposalCount: 0,
+    purposeTags: ['졸업'],
+  ),
+];

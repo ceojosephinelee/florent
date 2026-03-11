@@ -1,0 +1,2 @@
+-- V1__init_schema.sql
+-- Placeholder: full schema will be added when domain entities are implemented.

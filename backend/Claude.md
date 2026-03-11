@@ -76,6 +76,36 @@ backend/
 ```
 > ⚠️ 카카오 Access Token은 서버에서만 사용. 클라이언트에 절대 내려주지 않는다.
 
+**Spring Security 설정 규칙**
+```java
+// ✅ permitAll 경로 (인증 불필요)
+"/api/v1/auth/kakao"
+"/api/v1/auth/reissue"
+
+// ✅ 나머지 모든 경로: JWT 인증 필수
+// ✅ JWT 필터: OncePerRequestFilter 구현, SecurityContext에 Authentication 등록
+// ✅ ROLE 분리: BUYER 전용 /buyer/**, SELLER 전용 /seller/**
+// ✅ CSRF: disable (JWT Stateless)
+// ✅ Session: STATELESS
+```
+
+**JWT 토큰 규칙**
+- Access Token 유효시간: 1시간
+- Refresh Token 유효시간: 30일, DB(USER.refresh_token) 저장
+- Access Token 만료: `TOKEN_EXPIRED` 401 반환
+- Refresh Token 만료: `REFRESH_TOKEN_EXPIRED` 401 반환 → 재로그인
+
+**판매자 추가 가입 플로우**
+```
+POST /auth/role { role: "SELLER" }
+  → USER.role = SELLER 저장
+  → isNewSeller=true 반환
+
+POST /auth/seller-info { shopName, shopAddress, shopLat, shopLng }
+  → FLOWER_SHOP 엔티티 생성
+  → USER.flower_shop_id 연결
+```
+
 ---
 
 ## 3. 아키텍처 — 순수 헥사고날 (타협 없음)
