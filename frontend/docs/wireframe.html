@@ -1,0 +1,2239 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Florent — MVP 와이어프레임</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@300;400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --rose:      #C8614E;
+  --rose-lt:   #F2E8E5;
+  --rose-mid:  #E8C4BB;
+  --sage:      #5A7A68;
+  --sage-lt:   #E8F0EC;
+  --sage-mid:  #B8CFC4;
+  --cream:     #FAF7F4;
+  --warm-w:    #FFFFFF;
+  --ink:       #1C1917;
+  --ink-60:    #6B6560;
+  --ink-30:    #B8B4AF;
+  --ink-10:    #F0EDE9;
+  --border:    #E4E0DA;
+  --page:      #F5F1EC;
+  --shadow-sm: 0 1px 4px rgba(28,25,23,.07);
+  --shadow-md: 0 4px 20px rgba(28,25,23,.10);
+  --shadow-lg: 0 12px 48px rgba(28,25,23,.16);
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+  --phone-w: 375px;
+}
+
+body {
+  background: var(--page);
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--ink);
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* ══ TOP CHROME ══ */
+.chrome {
+  height: 52px;
+  background: var(--warm-w);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 16px;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+}
+.chrome-logo {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  margin-right: 8px;
+}
+.chrome-logo-main {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--rose);
+}
+.chrome-logo-sub {
+  font-size: 8px;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  color: var(--ink-60);
+  margin-top: 1px;
+}
+.app-switcher {
+  display: flex;
+  background: var(--ink-10);
+  border-radius: 20px;
+  padding: 3px;
+  gap: 2px;
+}
+.sw-btn {
+  padding: 5px 16px;
+  border-radius: 17px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--ink-60);
+  transition: all .2s;
+  font-family: 'Noto Sans KR', sans-serif;
+  white-space: nowrap;
+}
+.sw-btn.on-buyer  { background: var(--rose); color: #fff; }
+.sw-btn.on-seller { background: var(--sage); color: #fff; }
+.chrome-note {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--ink-30);
+  font-family: 'DM Mono', monospace;
+  white-space: nowrap;
+}
+
+/* ══ LAYOUT ══ */
+.layout {
+  display: flex;
+  height: calc(100vh - 52px);
+  margin-top: 52px;
+}
+
+/* ══ SIDE NAV ══ */
+.sidenav {
+  width: 200px;
+  background: var(--warm-w);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  flex-shrink: 0;
+  padding: 12px 0 24px;
+}
+.nav-group { margin-bottom: 4px; }
+.nav-group-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .14em;
+  color: var(--ink-30);
+  padding: 12px 16px 6px;
+  text-transform: uppercase;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 16px;
+  font-size: 12px;
+  color: var(--ink-60);
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all .15s;
+}
+.nav-item:hover { background: var(--ink-10); color: var(--ink); }
+.nav-item.sel-b { border-left-color: var(--rose); background: var(--rose-lt); color: var(--rose); font-weight: 500; }
+.nav-item.sel-s { border-left-color: var(--sage); background: var(--sage-lt); color: var(--sage); font-weight: 500; }
+.nav-icon { font-size: 13px; width: 18px; text-align: center; flex-shrink: 0; }
+
+/* ══ CANVAS ══ */
+.canvas {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 40px 80px;
+  gap: 20px;
+}
+
+/* ══ PHONE ══ */
+.phone-outer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+.screen-title-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--ink-30);
+  letter-spacing: .08em;
+}
+.phone {
+  width: var(--phone-w);
+  min-height: 780px;
+  background: var(--warm-w);
+  border-radius: 44px;
+  box-shadow: var(--shadow-lg), 0 0 0 1px var(--border);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.phone-bar {
+  height: 48px;
+  background: var(--ink);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 10px;
+  flex-shrink: 0;
+}
+.phone-pill { width: 110px; height: 5px; background: #333; border-radius: 3px; }
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 22px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink);
+  flex-shrink: 0;
+}
+.phone-body {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  scrollbar-width: none;
+}
+.phone-body::-webkit-scrollbar { display: none; }
+
+/* ══ LOGO MARK ══ */
+.logo-mark {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.logo-mark-icon {
+  width: 28px; height: 28px;
+  background: var(--rose);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+.logo-mark-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+.logo-mark-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  color: var(--ink);
+}
+.logo-mark-tagline {
+  font-size: 8px;
+  font-weight: 300;
+  letter-spacing: .18em;
+  color: var(--ink-60);
+}
+
+/* ══ IN-APP COMPONENTS ══ */
+.app-nav {
+  display: flex;
+  align-items: center;
+  padding: 10px 18px 8px;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.nav-back {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--ink-10);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.nav-title { font-size: 15px; font-weight: 700; flex: 1; }
+.nav-action { font-size: 12px; font-weight: 500; color: var(--rose); }
+
+/* step progress */
+.step-bar {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px 10px;
+  gap: 4px;
+}
+.step-dot {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.sd-done-b { background: var(--rose); color: #fff; }
+.sd-done-s { background: var(--sage); color: #fff; }
+.sd-active  { background: var(--ink); color: #fff; }
+.sd-todo    { background: var(--border); color: var(--ink-60); }
+.step-line { flex: 1; height: 2px; background: var(--border); }
+.step-line-done-b { background: var(--rose); }
+.step-line-done-s { background: var(--sage); }
+
+/* section */
+.sec { padding: 16px 18px 8px; }
+.sec-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ink-60);
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.sec-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.sec-sub {
+  font-size: 12px;
+  color: var(--ink-60);
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+/* field */
+.field { margin-bottom: 16px; }
+.field-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-60);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.req-dot { color: var(--rose); font-size: 14px; line-height: 1; }
+.input-box {
+  background: var(--cream);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 11px 14px;
+  font-size: 13px;
+  color: var(--ink-30);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+.input-box.filled { color: var(--ink); border-color: var(--ink-30); }
+.textarea-box {
+  background: var(--cream);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 12px 14px;
+  font-size: 12px;
+  color: var(--ink-30);
+  min-height: 88px;
+  line-height: 1.65;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+.textarea-box.filled { color: var(--ink-60); border-color: var(--ink-30); }
+
+/* tags */
+.tags { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 8px; }
+.tag {
+  padding: 6px 13px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--cream);
+  border: 1.5px solid var(--border);
+  color: var(--ink-60);
+  cursor: pointer;
+  transition: all .15s;
+}
+.tag.on-b { background: var(--rose-lt); border-color: var(--rose); color: var(--rose); }
+.tag.on-s { background: var(--sage-lt); border-color: var(--sage); color: var(--sage); }
+
+/* toggle */
+.toggle-row {
+  display: flex;
+  background: var(--ink-10);
+  border-radius: var(--r-sm);
+  padding: 3px;
+  margin-bottom: 16px;
+}
+.toggle-btn {
+  flex: 1;
+  padding: 9px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  color: var(--ink-60);
+  transition: all .15s;
+}
+.toggle-btn.on-b { background: var(--warm-w); color: var(--rose); font-weight: 700; box-shadow: var(--shadow-sm); }
+.toggle-btn.on-s { background: var(--warm-w); color: var(--sage); font-weight: 700; box-shadow: var(--shadow-sm); }
+
+/* budget grid */
+.budget-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  margin-bottom: 12px;
+}
+.budget-card {
+  background: var(--cream);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 14px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .15s;
+}
+.budget-card.on {
+  background: var(--rose-lt);
+  border-color: var(--rose);
+}
+.budget-emoji { font-size: 24px; margin-bottom: 6px; }
+.budget-name { font-size: 12px; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
+.budget-price { font-size: 11px; color: var(--rose); font-weight: 600; margin-bottom: 3px; }
+.budget-desc { font-size: 10px; color: var(--ink-60); line-height: 1.4; }
+
+/* timeslot */
+.slot-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.slot {
+  padding: 8px 3px;
+  border: 1.5px solid var(--border);
+  border-radius: 7px;
+  font-size: 11px;
+  text-align: center;
+  cursor: pointer;
+  color: var(--ink-60);
+  background: var(--cream);
+  transition: all .15s;
+}
+.slot.on { border-color: var(--rose); background: var(--rose-lt); color: var(--rose); font-weight: 600; }
+.slot.on-s { border-color: var(--sage); background: var(--sage-lt); color: var(--sage); font-weight: 600; }
+
+/* timeband */
+.band-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.band {
+  padding: 13px 4px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  font-size: 11px;
+  text-align: center;
+  cursor: pointer;
+  background: var(--cream);
+  color: var(--ink-60);
+}
+.band-time { font-size: 10px; color: var(--ink-30); margin-top: 3px; }
+.band.on { border-color: var(--rose); background: var(--rose-lt); color: var(--rose); font-weight: 600; }
+.band.on .band-time { color: var(--rose); }
+
+/* notice */
+.notice {
+  background: #FFF8EC;
+  border: 1px solid #F0DDA0;
+  border-radius: var(--r-sm);
+  padding: 10px 13px;
+  font-size: 11px;
+  color: #7A6010;
+  line-height: 1.55;
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.notice-warn {
+  background: #FEF0EE;
+  border-color: #F0B8B0;
+  color: #8A3020;
+}
+.notice-green {
+  background: var(--sage-lt);
+  border-color: var(--sage-mid);
+  color: var(--sage);
+}
+
+/* divider */
+.divider { height: 8px; background: var(--ink-10); flex-shrink: 0; }
+
+/* bottom cta */
+.bottom-cta {
+  padding: 14px 18px 10px;
+  background: var(--warm-w);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.btn {
+  width: 100%;
+  padding: 15px;
+  border-radius: var(--r-sm);
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  font-family: 'Noto Sans KR', sans-serif;
+  letter-spacing: -.01em;
+}
+.btn-buyer  { background: var(--rose); color: #fff; }
+.btn-seller { background: var(--sage); color: #fff; }
+.btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--ink-60); }
+.btn-ghost  { background: var(--ink-10); color: var(--ink-60); }
+
+/* bottom nav */
+.bnav {
+  display: flex;
+  border-top: 1px solid var(--border);
+  padding: 8px 0 12px;
+  background: var(--warm-w);
+  flex-shrink: 0;
+}
+.bnav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 4px 0;
+}
+.bnav-icon { font-size: 21px; }
+.bnav-label { font-size: 9px; color: var(--ink-30); font-weight: 500; }
+.bnav-item.act-b .bnav-label { color: var(--rose); font-weight: 700; }
+.bnav-item.act-s .bnav-label { color: var(--sage); font-weight: 700; }
+.bnav-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  margin-top: -2px;
+}
+.bnav-dot-b { background: var(--rose); }
+.bnav-dot-s { background: var(--sage); }
+
+/* info row */
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  gap: 8px;
+}
+.info-row:last-child { border-bottom: none; }
+.info-k { color: var(--ink-60); flex-shrink: 0; }
+.info-v { font-weight: 600; text-align: right; }
+
+/* badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 600;
+  font-family: 'DM Mono', monospace;
+  white-space: nowrap;
+}
+.bd-new     { background: #FEF3C7; color: #92400E; }
+.bd-arrived { background: var(--rose-lt); color: var(--rose); }
+.bd-writing { background: #EDE9FE; color: #5B21B6; }
+.bd-done    { background: var(--sage-lt); color: var(--sage); }
+.bd-expire  { background: var(--rose-lt); color: var(--rose); }
+
+/* proposal card */
+.prop-card {
+  margin: 0 18px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: var(--warm-w);
+  box-shadow: var(--shadow-sm);
+}
+.prop-img {
+  width: 100%;
+  height: 130px;
+  background: linear-gradient(135deg, #F2E8E5 0%, #E8D4CC 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  position: relative;
+}
+.prop-img-tag {
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  font-size: 9px;
+  background: rgba(255,255,255,.85);
+  border-radius: 4px;
+  padding: 2px 7px;
+  color: var(--ink-60);
+  backdrop-filter: blur(4px);
+}
+.prop-body { padding: 13px 14px; }
+.prop-shop { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.prop-shop-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--rose-lt);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.prop-shop-name { font-size: 13px; font-weight: 700; }
+.prop-shop-dist { font-size: 10px; color: var(--ink-60); }
+.prop-curate {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+.prop-desc {
+  font-size: 11px;
+  color: var(--ink-60);
+  line-height: 1.65;
+  margin-bottom: 10px;
+}
+.prop-meta { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.prop-chip {
+  font-size: 10px;
+  padding: 4px 9px;
+  border-radius: 5px;
+  background: var(--ink-10);
+  color: var(--ink-60);
+}
+.prop-expire {
+  font-size: 10px;
+  color: var(--rose);
+  font-family: 'DM Mono', monospace;
+  margin-bottom: 10px;
+}
+.prop-footer {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+}
+
+/* map placeholder */
+.map-ph {
+  background: linear-gradient(135deg, #E8F0EC 0%, #D4E4DC 100%);
+  border-radius: var(--r-sm);
+  height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--sage);
+  gap: 6px;
+  margin-bottom: 12px;
+  border: 1px solid var(--sage-mid);
+}
+
+/* writing pulse */
+.writing-bar {
+  margin: 0 18px 12px;
+  background: #EDE9FE;
+  border: 1px solid #C4B5FD;
+  border-radius: var(--r-sm);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pulse-dots { display: flex; gap: 4px; }
+.pd {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #7C3AED;
+  animation: pdBounce 1.1s infinite;
+}
+.pd:nth-child(2) { animation-delay: .18s; }
+.pd:nth-child(3) { animation-delay: .36s; }
+@keyframes pdBounce {
+  0%,100% { transform: translateY(0); opacity: .5; }
+  50% { transform: translateY(-4px); opacity: 1; }
+}
+.writing-txt { font-size: 12px; color: #5B21B6; font-weight: 500; }
+
+/* list item */
+.list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background .12s;
+}
+.list-item:hover { background: var(--cream); }
+.list-thumb {
+  width: 54px; height: 54px;
+  border-radius: var(--r-sm);
+  background: linear-gradient(135deg, #F2E8E5, #E8D4CC);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.list-thumb-s {
+  background: linear-gradient(135deg, #E8F0EC, #D4E4DC);
+}
+.list-body { flex: 1; min-width: 0; }
+.list-title { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+.list-sub { font-size: 11px; color: var(--ink-60); line-height: 1.5; }
+.list-right { flex-shrink: 0; text-align: right; }
+.list-time { font-size: 10px; color: var(--ink-30); margin-top: 4px; }
+
+/* stat card */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.stat-card {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 14px 10px;
+  text-align: center;
+}
+.stat-num { font-size: 22px; font-weight: 700; margin-bottom: 3px; }
+.stat-label { font-size: 10px; color: var(--ink-60); }
+
+/* confirm hero */
+.confirm-hero {
+  padding: 36px 20px 20px;
+  text-align: center;
+  background: linear-gradient(180deg, var(--rose-lt) 0%, var(--warm-w) 100%);
+}
+.confirm-icon { font-size: 60px; margin-bottom: 12px; }
+.confirm-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; margin-bottom: 6px; }
+.confirm-sub { font-size: 12px; color: var(--ink-60); line-height: 1.6; }
+
+/* photo upload */
+.photo-row { display: flex; gap: 8px; margin-bottom: 12px; }
+.photo-add {
+  width: 72px; height: 72px;
+  border: 2px dashed var(--border);
+  border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  color: var(--ink-30);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.photo-hint { font-size: 11px; color: var(--ink-60); line-height: 1.6; align-self: center; }
+
+/* request summary card */
+.req-card {
+  margin: 0 18px 10px;
+  background: var(--cream);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 16px;
+}
+.req-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.req-emoji {
+  width: 44px; height: 44px;
+  border-radius: var(--r-sm);
+  background: var(--rose-lt);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.req-emoji-s {
+  background: var(--sage-lt);
+}
+.req-name { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+.req-meta { font-size: 11px; color: var(--ink-60); }
+.req-timer { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--rose); }
+
+/* template section */
+.tmpl-block {
+  background: var(--cream);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.tmpl-q { font-size: 11px; font-weight: 700; color: var(--ink-60); margin-bottom: 6px; }
+.tmpl-a { font-size: 12px; color: var(--ink); line-height: 1.6; }
+
+/* scrollable slot container */
+.slot-scroll { overflow-x: auto; padding-bottom: 4px; }
+
+/* annotation */
+.annot {
+  background: #FFFBEA;
+  border: 1px dashed #D4B860;
+  border-radius: 7px;
+  padding: 9px 13px;
+  font-size: 11px;
+  color: #7A5C10;
+  line-height: 1.55;
+  width: var(--phone-w);
+}
+.annot strong { color: #5A3C00; }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- CHROME -->
+<div class="chrome">
+  <div class="chrome-logo">
+    <div class="chrome-logo-main">Florent</div>
+    <div class="chrome-logo-sub">나만의 플로리스트</div>
+  </div>
+  <div class="app-switcher" id="switcher">
+    <button class="sw-btn on-buyer" onclick="switchApp('buyer',this)">구매자 앱</button>
+    <button class="sw-btn" onclick="switchApp('seller',this)">판매자 앱</button>
+  </div>
+  <div class="chrome-note">MVP WIREFRAME · 375px</div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+  <nav class="sidenav" id="sidenav"></nav>
+  <div class="canvas" id="canvas"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+// NAV CONFIG
+// ══════════════════════════════════════
+const NAV = {
+  buyer: [
+    { group:'메인', items:[
+      { id:'b-home', icon:'🏠', label:'홈' },
+    ]},
+    { group:'요청 생성 — 픽업 플로우', items:[
+      { id:'b-r1',  icon:'📝', label:'Step1 목적·관계·분위기' },
+      { id:'b-r2',  icon:'💰', label:'Step2 예산' },
+      { id:'b-r3a', icon:'🏪', label:'Step3A 픽업 — 장소·날짜' },
+      { id:'b-r4a', icon:'⏰', label:'Step4A 픽업 — 시간 선택' },
+      { id:'b-rdone', icon:'✅', label:'요청 완료' },
+    ]},
+    { group:'요청 생성 — 배송 플로우', items:[
+      { id:'b-r3b', icon:'🚚', label:'Step3B 배송 — 장소 입력' },
+      { id:'b-r4b', icon:'⏰', label:'Step4B 배송 — 날짜·시간대' },
+    ]},
+    { group:'제안 확인', items:[
+      { id:'b-detail',     icon:'👀', label:'요청 상세 (제안 대기)' },
+      { id:'b-proplist',   icon:'💐', label:'제안 목록' },
+      { id:'b-propdetail', icon:'🔍', label:'제안 상세' },
+    ]},
+    { group:'결제·확정', items:[
+      { id:'b-pay',  icon:'💳', label:'Mock 결제' },
+      { id:'b-done', icon:'🎉', label:'예약 확정' },
+    ]},
+    { group:'탭 화면', items:[
+      { id:'b-tab-reqs',  icon:'📋', label:'내 요청 탭' },
+      { id:'b-tab-notif', icon:'🔔', label:'알림 탭' },
+      { id:'b-tab-my',    icon:'👤', label:'마이 탭' },
+    ]},
+  ],
+  seller: [
+    { group:'메인', items:[
+      { id:'s-home', icon:'🏠', label:'홈 대시보드' },
+    ]},
+    { group:'요청 확인', items:[
+      { id:'s-reqlist',          icon:'📋', label:'요청 목록' },
+      { id:'s-reqdetail',        icon:'🔍', label:'요청 상세 — 픽업 요청' },
+      { id:'s-reqdetail-delivery', icon:'🚚', label:'요청 상세 — 배송 요청' },
+    ]},
+    { group:'제안 작성 — 픽업', items:[
+      { id:'s-p1',    icon:'✍️', label:'Step1 큐레이션·가격·사진' },
+      { id:'s-p2',    icon:'⏰', label:'Step2 픽업 시간 선택' },
+      { id:'s-pdone', icon:'📨', label:'제안 전송 완료' },
+    ]},
+    { group:'제안 작성 — 배송', items:[
+      { id:'s-p1-delivery', icon:'✍️', label:'Step1 큐레이션·가격·사진 (배송)' },
+      { id:'s-p2-delivery', icon:'🚚', label:'Step2 배송 시간대 선택' },
+    ]},
+    { group:'알림·확정', items:[
+      { id:'s-done', icon:'🎊', label:'예약 확정 알림' },
+    ]},
+    { group:'탭 화면', items:[
+      { id:'s-tab-req',  icon:'📋', label:'요청 탭' },
+      { id:'s-tab-hist', icon:'📊', label:'현황 탭' },
+      { id:'s-tab-my',   icon:'👤', label:'마이 탭' },
+    ]},
+  ],
+};
+
+// ══════════════════════════════════════
+// BUYER NAV BOTTOM
+// ══════════════════════════════════════
+function buyerNav(active) {
+  const items = [
+    { icon:'🏠', label:'홈', id:'b-home' },
+    { icon:'📋', label:'내 요청', id:'b-tab-reqs' },
+    { icon:'🔔', label:'알림', id:'b-tab-notif' },
+    { icon:'👤', label:'마이', id:'b-tab-my' },
+  ];
+  return `<div class="bnav">
+    ${items.map(it => `<div class="bnav-item ${it.id===active?'act-b':''}" onclick="selectScreen('${it.id}')">
+      <div class="bnav-icon">${it.icon}</div>
+      <div class="bnav-label">${it.label}</div>
+      ${it.id===active?'<div class="bnav-dot bnav-dot-b"></div>':''}
+    </div>`).join('')}
+  </div>`;
+}
+
+function sellerNav(active) {
+  const items = [
+    { icon:'🏠', label:'홈', id:'s-home' },
+    { icon:'📋', label:'요청', id:'s-tab-req' },
+    { icon:'📊', label:'현황', id:'s-tab-hist' },
+    { icon:'👤', label:'마이', id:'s-tab-my' },
+  ];
+  return `<div class="bnav">
+    ${items.map(it => `<div class="bnav-item ${it.id===active?'act-s':''}" onclick="selectScreen('${it.id}')">
+      <div class="bnav-icon">${it.icon}</div>
+      <div class="bnav-label">${it.label}</div>
+      ${it.id===active?'<div class="bnav-dot bnav-dot-s"></div>':''}
+    </div>`).join('')}
+  </div>`;
+}
+
+// ══════════════════════════════════════
+// SCREEN BUILDERS
+// ══════════════════════════════════════
+function ph(id, content, tag) {
+  return `<div class="phone-outer">
+    <div class="screen-title-tag">${tag}</div>
+    <div class="phone" id="ph-${id}">
+      <div class="phone-bar"><div class="phone-pill"></div></div>
+      <div class="status-bar"><span>9:41</span><span>●●● 🔋</span></div>
+      <div class="phone-body">${content}</div>
+    </div>
+  </div>`;
+}
+
+const logoSVG = `<div style="display:flex;align-items:center;gap:7px">
+  <div style="width:30px;height:30px;background:var(--rose);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;">🌷</div>
+  <div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;letter-spacing:.04em;color:var(--ink);line-height:1">Florent</div>
+    <div style="font-size:8px;font-weight:300;letter-spacing:.18em;color:var(--ink-60);line-height:1.2">나만의 플로리스트</div>
+  </div>
+</div>`;
+
+const SCREENS = {
+
+// ── 구매자 홈 ──
+'b-home': () => ph('b-home', `
+  <div style="padding:14px 18px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)">
+    ${logoSVG}
+    <div style="font-size:20px;position:relative;cursor:pointer">🔔<div style="position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:var(--rose);border-radius:50%;border:2px solid #fff"></div></div>
+  </div>
+  <div style="padding:16px 18px 10px">
+    <div style="font-size:11px;color:var(--ink-60);margin-bottom:4px">안녕하세요, 지수님 👋</div>
+    <div style="font-size:18px;font-weight:700;line-height:1.3;margin-bottom:14px">오늘은 어떤 꽃다발이<br>필요하신가요?</div>
+    <div class="btn btn-buyer" style="display:flex;align-items:center;justify-content:center;gap:6px">🌷 꽃다발 요청하기</div>
+  </div>
+  <div class="divider"></div>
+  <div style="padding:14px 18px 8px">
+    <div class="sec-label">진행 중인 요청</div>
+    <div class="req-card">
+      <div class="req-card-top">
+        <div class="req-emoji">🎂</div>
+        <div style="flex:1">
+          <div class="req-name">엄마 생신 꽃다발</div>
+          <div class="req-meta">M사이즈 · 픽업 · 3월 15일 14:00</div>
+        </div>
+        <span class="badge bd-arrived">제안 2</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="req-timer">⏱ 요청 만료 22:14:33</div>
+        <div style="font-size:11px;color:var(--ink-60)">상세 보기 →</div>
+      </div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div style="padding:14px 18px 6px">
+    <div class="sec-label">이용 안내</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      ${['📝 요청 작성','💐 제안 받기','✅ 확정'].map((t,i)=>`<div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 8px;text-align:center;font-size:11px;line-height:1.5">${t}</div>`).join('')}
+    </div>
+  </div>
+  ${buyerNav('b-home')}
+`, '구매자 홈'),
+
+// ── STEP 1 ──
+'b-r1': () => ph('b-r1', `
+  <div class="app-nav">
+    <div class="nav-back">←</div>
+    <div class="nav-title">꽃다발 요청하기</div>
+  </div>
+  <div class="step-bar">
+    <div class="step-dot sd-active">1</div>
+    <div class="step-line"></div>
+    <div class="step-dot sd-todo">2</div>
+    <div class="step-line"></div>
+    <div class="step-dot sd-todo">3</div>
+    <div class="step-line"></div>
+    <div class="step-dot sd-todo">4</div>
+  </div>
+  <div style="overflow-y:auto;flex:1;padding:0 18px 16px">
+    <div class="field">
+      <div class="field-label">🎯 목적 <span class="req-dot">*</span></div>
+      <div class="tags">
+        <div class="tag on-b">🎂 생일</div>
+        <div class="tag">💍 기념일</div>
+        <div class="tag">💝 프로포즈</div>
+        <div class="tag">🎓 졸업</div>
+        <div class="tag">🕊 장례</div>
+        <div class="tag">💼 비즈니스</div>
+      </div>
+      <div class="input-box" style="margin-top:4px;color:var(--ink-30);font-size:12px">✏️ 직접 입력하기</div>
+    </div>
+    <div class="field">
+      <div class="field-label">👥 관계 <span class="req-dot">*</span></div>
+      <div class="tags">
+        <div class="tag">💑 연인</div>
+        <div class="tag on-b">👨‍👩‍👧 부모님</div>
+        <div class="tag">👫 친구</div>
+        <div class="tag">🙋 본인</div>
+        <div class="tag">👔 비즈니스</div>
+      </div>
+      <div class="input-box" style="margin-top:4px;color:var(--ink-30);font-size:12px">✏️ 직접 입력하기</div>
+    </div>
+    <div class="field">
+      <div class="field-label">✨ 분위기 <span style="font-weight:400;color:var(--ink-30);font-size:10px">(복수 선택 가능)</span></div>
+      <div class="tags">
+        <div class="tag on-b">🌹 로맨틱</div>
+        <div class="tag on-b">🌿 자연스러운</div>
+        <div class="tag">✨ 고급스러운</div>
+        <div class="tag">🌸 청순한</div>
+        <div class="tag">🎀 귀여운</div>
+        <div class="tag">🖤 모던</div>
+      </div>
+      <div class="input-box" style="margin-top:4px;color:var(--ink-30);font-size:12px">✏️ 원하는 분위기 직접 입력</div>
+    </div>
+  </div>
+  <div class="bottom-cta">
+    <div class="btn btn-buyer">다음 — 예산 선택</div>
+  </div>
+  ${buyerNav('')}
+`, 'Step 1 — 목적·관계·분위기'),
+
+// ── STEP 2 예산 ──
+'b-r2': () => ph('b-r2', `
+  <div class="app-nav">
+    <div class="nav-back">←</div>
+    <div class="nav-title">꽃다발 요청하기</div>
+  </div>
+  <div class="step-bar">
+    <div class="step-dot sd-done-b">✓</div>
+    <div class="step-line step-line-done-b"></div>
+    <div class="step-dot sd-active">2</div>
+    <div class="step-line"></div>
+    <div class="step-dot sd-todo">3</div>
+    <div class="step-line"></div>
+    <div class="step-dot sd-todo">4</div>
+  </div>
+  <div style="overflow-y:auto;flex:1;padding:0 18px 16px">
+    <div class="field">
+      <div class="sec-title" style="margin-bottom:4px">예산을 선택해주세요</div>
+      <div class="sec-sub">꽃집마다 가격이 다를 수 있어요.<br>아래 금액은 참고용입니다.</div>
+      <div class="budget-grid">
+        <div class="budget-card">
+          <div class="budget-emoji">🌷</div>
+          <div class="budget-name">작은 꽃다발</div>
+          <div class="budget-price">3~5만원</div>
+          <div class="budget-desc">손에 가볍게 들리는 크기</div>
+        </div>
+        <div class="budget-card on">
+          <div class="budget-emoji">💐</div>
+          <div class="budget-name">기본형</div>
+          <div class="budget-price">6~8만원</div>
+          <div class="budget-desc">두 손으로 받쳐 드는 크기</div>
+        </div>
+        <div class="budget-card">
+          <div class="budget-emoji">🌸</div>
+          <div class="budget-name">풍성한 꽃다발</div>
+          <div class="budget-price">9~13만원</div>
+          <div class="budget-desc">가득 안기는 볼륨감</div>
+        </div>
+        <div class="budget-card">
+          <div class="budget-emoji">👑</div>
+          <div class="budget-name">프리미엄</div>
+          <div class="budget-price">15만원 이상</div>
+          <div class="budget-desc">시선을 사로잡는 특별한 크기</div>
+        </div>
+      </div>
+      <div class="notice">⚠️ 실제 가격은 꽃집마다 다를 수 있으며, 위 금액은 참고 범위예요.</div>
+    </div>
+  </div>
+  <div class="bottom-cta">
+    <div class="btn btn-buyer">다음 — 수령 방법 선택</div>
+  </div>
+  ${buyerNav('')}
+`, 'Step 2 — 예산'),
+
+// ── STEP 3A 픽업 ──
+'b-r3a': () => ph('b-r3a', `
+  <div class="app-nav">
+    <div class="nav-back">←</div>
+    <div class="nav-title">꽃다발 요청하기</div>
+  </div>
+  <div class="step-bar">
+    <div class="step-dot sd-done-b">✓</div>
+    <div class="step-line step-line-done-b"></div>
+    <div class="step-dot sd-done-b">✓</div>
+    <div class="step-line step-line-done-b"></div>
+    <div class="step-dot sd-active">3</div>
+    <div class="step-line"></div>
+    <div class="step-dot sd-todo">4</div>
+  </div>
+  <div style="overflow-y:auto;flex:1;padding:0 18px 16px">
+    <div class="toggle-row">
+      <div class="toggle-btn on-b">🏪 직접 픽업</div>
+      <div class="toggle-btn" onclick="selectScreen('b-r3b')">🚚 배송 받기</div>
+    </div>
+    <div class="field">
+      <div class="field-label">📍 픽업 장소</div>
+      <div class="input-box filled">
+        <span>서울 강남구 역삼동</span>
+        <span style="font-size:15px">🔍</span>
+      </div>
+    </div>
+    <div class="map-ph">📍 지도 미리보기</div>
+    <div class="field">
+      <div class="field-label">📅 픽업 날짜</div>
+      <div class="input-box filled">2025년 3월 15일 (토) <span>📅</span></div>
+    </div>
+    <div class="notice notice-green">✅ 입력한 위치 반경 2km 내 플로리스트에게 요청서가 전달돼요.</div>
+  </div>
+  <div class="bottom-cta">
+    <div class="btn btn-buyer">다음 — 시간 선택</div>
+  </div>
+  ${buyerNav('')}
+`, 'Step 3A — 픽업 장소'),
+
+// ── STEP 3B 배송 ──
+'b-r3b': () => ph('b-r3b', `
+  <div class="app-nav">
+    <div class="nav-back">←</div>
+    <div class="nav-title">꽃다발 요청하기</div>
+  </div>
+  <div class="step-bar">
+    <div class="step-dot sd-done-b">✓</div>
+    <div class="step-line step-line-done-b"></div>
+    <div class="step-dot sd-done-b">✓</div>
+    <div class="step-line step-line-done-b"></div>
+    <div class="step-dot sd-active">3</div>
+    <div class="step-line"></div>
+    <div class="step-dot sd-todo">4</div>
+  </div>
+  <div style="overflow-y:auto;flex:1;padding:0 18px 16px">
+    <div class="toggle-row">
+      <div class="toggle-btn" onclick="selectScreen('b-r3a')">🏪 직접 픽업</div>
+      <div class="toggle-btn on-b">🚚 배송 받기</div>
+    </div>
+    <div class="field">
+      <div class="field-label">🏠 배송지 주소</div>
+      <div class="input-box" style="color:var(--ink-30)">주소를 검색해주세요 🔍</div>
+      <div class="input-box" style="margin-top:6px;color:var(--ink-30)">상세 주소 (동·호수 등)</div>
+    </div>
+    <div class="field">
+      <div class="field-label">📅 배송 날짜</div>
+      <div class="input-box filled">2025년 3월 16일 (일) <span>📅</span></div>
+    </div>
+    <div class="field">
+      <div class="field-label">⏰ 배송 시간대</div>
+      <div class="band-grid">
+        <div class="band on">
+          <div>오전</div>
+          <div class="band-time">09:00~12:00</div>
+        </div>
+        <div class="band">
+          <div>오후</div>
+          <div class="band-time">12:00~18:00</div>
+        </div>
+        <div class="band">
+          <div>저녁</div>
+          <div class="band-time">18:00~21:00</div>
+        </div>
+      </div>
+    </div>
+    <div class="notice notice-green">✅ 배송지 반경 2km 내 플로리스트에게 요청서가 전달돼요.</div>
+  </div>
+  <div class="bottom-cta">
+    <div class="btn btn-buyer">요청서 제출하기 🌷</div>
+  </div>
+  ${buyerNav('')}
+`, 'Step 3B — 배송 장소·시간대'),
+
+// ── STEP 4 픽업 시간 ──
+'b-r3a': () => ph('b-r3a-time', `
+  <div class="app-nav">
+    <div class="nav-back">←</div>
+    <div class="nav-title">꽃다발 요청하기</div>
+  </div>
+  <div class="step-bar">
+    <div class="step-dot sd-done-b">✓</div>
+    <div class="step-line step-line-done-b"></div>
+    <div class="step-dot sd-done-b">✓</div>
+    <div class="step-line step-line-done-b"></div>
+    <div class="step-dot sd-done-b">✓</div>
+    <div class="step-line step-line-done-b"></div>
+    <div class="step-dot sd-active">4</div>
+  </div>
+  <div style="overflow-y:auto;flex:1;padding:0 18px 16px">
+    <div class="field">
+      <div class="sec-title" style="margin-bottom:6px">픽업 시간을 선택해주세요</div>
+      <div style="font-size:11px;color:var(--ink-60);margin-bottom:14px">여러 시간대를 선택할 수 있어요.<br>플로리스트가 가능한 시간에 맞춰 제안해드려요.</div>
+      <div class="slot-grid">
+        ${['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00'].map((t,i)=>`<div class="slot${[8,9].includes(i)?' on':''}">${t}</div>`).join('')}
+      </div>
+      <div style="font-size:10px;color:var(--ink-30);margin-top:2px">* 복수 선택 가능 — 선택한 시간대를 플로리스트가 확인해요</div>
+    </div>
+  </div>
+  <div class="bottom-cta">
+    <div class="btn btn-buyer">요청서 제출하기 🌷</div>
+  </div>
+  ${buyerNav('')}
+`, 'Step 4 — 픽업 시간 선택'),
+
+// ── 요청 완료 ──
+'b-rdone': () => ph('b-rdone', `
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;gap:14px;text-align:center">
+    <div style="width:72px;height:72px;background:var(--rose);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:32px">🌷</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600">요청이 전달됐어요</div>
+    <div style="font-size:12px;color:var(--ink-60);line-height:1.7">반경 2km 내 플로리스트에게<br>요청서가 전송됐습니다<br>제안서가 도착하면 바로 알려드릴게요 🔔</div>
+    <div style="background:var(--cream);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:16px;width:100%">
+      <div class="info-row"><span class="info-k">목적</span><span class="info-v">생일 · 부모님</span></div>
+      <div class="info-row"><span class="info-k">예산</span><span class="info-v">기본형 (6~8만원)</span></div>
+      <div class="info-row"><span class="info-k">수령</span><span class="info-v">픽업 · 3/15</span></div>
+      <div class="info-row"><span class="info-k">요청 만료</span><span class="info-v" style="color:var(--rose)">⏱ 47:59:55</span></div>
+    </div>
+  </div>
+  <div class="bottom-cta">
+    <div class="btn btn-buyer">요청 상세 보기 →</div>
+  </div>
+  ${buyerNav('b-home')}
+`, '요청 전송 완료'),
+
+// ── 요청 상세 ──
+'b-detail': () => ph('b-detail', `
+  <div class="app-nav">
+    <div class="nav-back">←</div>
+    <div class="nav-title">요청 상세</div>
+    <span class="badge bd-arrived">제안 2</span>
+  </div>
+  <div style="padding:14px 18px 10px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <div class="req-timer">⏱ 요청 만료까지 22시간 14분</div>
+    </div>
+    <div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--r-md);padding:14px">
+      <div class="info-row"><span class="info-k">목적</span><span class="info-v">🎂 생일 · 부모님</span></div>
+      <div class="info-row"><span class="info-k">분위기</span><span class="info-v">로맨틱 · 자연스러운</span></div>
+      <div class="info-row"><span class="info-k">예산</span><span class="info-v">기본형 (6~8만원)</span></div>
+      <div class="info-row"><span class="info-k">수령</span><span class="info-v">픽업 · 3/15 14:00</span></div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="writing-bar">
+    <div class="pulse-dots"><div class="pd"></div><div class="pd"></div><div class="pd"></div></div>
+    <div class="writing-txt">1명의 플로리스트가 제안서를 작성 중이에요</div>
+  </div>
+  <div style="padding:4px 18px 8px">
+    <div class="sec-label">도착한 제안 (2)</div>
+  </div>
+  <div class="list-item" onclick="selectScreen('b-propdetail')">
+    <div class="list-thumb">🌸</div>
+    <div class="list-body">
+      <div class="list-title">핑크 작약으로 물든 봄날의 꽃다발</div>
+      <div class="list-sub">플라워 그로브 · 📍 1.2km<br>픽업 가능 · 14:00</div>
+    </div>
+    <div class="list-right">
+      <div class="badge bd-expire">⏱ 18h</div>
+      <div class="list-time">32분 전 도착</div>
+    </div>
+  </div>
+  <div class="list-item" onclick="selectScreen('b-propdetail')">
+    <div class="list-thumb">🌿</div>
+    <div class="list-body">
+      <div class="list-title">유칼립투스 향 가득한 청초한 부케</div>
+      <div class="list-sub">초록 스튜디오 · 📍 2.1km<br>픽업 가능 · 14:30</div>
+    </div>
+    <div class="list-right">
+      <div class="badge bd-expire">⏱ 16h</div>
+      <div class="list-time">1시간 전 도착</div>
+    </div>
+  </div>
+  ${buyerNav('')}
+`, '요청 상세 — 제안 대기'),
+
+// ── 제안 목록 ──
+'b-proplist': () => ph('b-proplist', `
+  <div class="app-nav">
+    <div class="nav-back">←</div>
+    <div class="nav-title">받은 제안 (2)</div>
+  </div>
+  <div class="prop-card">
+    <div class="prop-img">🌸<span class="prop-img-tag">참고용 이미지</span></div>
+    <div class="prop-body">
+      <div class="prop-shop">
+        <div class="prop-shop-avatar">🌸</div>
+        <div>
+          <div class="prop-shop-name">플라워 그로브</div>
+          <div class="prop-shop-dist">📍 강남구 · 1.2km</div>
+        </div>
+      </div>
+      <div class="prop-curate">핑크 작약으로 물든 봄날의 꽃다발</div>
+      <div class="prop-desc">핑크 장미와 작약을 중심으로 따뜻하고 풍성하게 구성했어요. 어머니께 드리기 딱 좋은 온화한 봄 컬러 조합입니다.</div>
+      <div class="prop-meta">
+        <span class="prop-chip">⏰ 14:00 픽업</span>
+        <span class="prop-chip">🌹 장미·작약</span>
+      </div>
+      <div class="prop-expire">⏱ 제안 만료까지 18시간</div>
+    </div>
+    <div class="prop-footer">
+      <div class="btn btn-outline" style="flex:1;padding:9px;font-size:12px" onclick="selectScreen('b-propdetail')">자세히 보기</div>
+      <div class="btn btn-buyer" style="flex:1;padding:9px;font-size:12px">선택하기</div>
+    </div>
+  </div>
+  <div class="prop-card">
+    <div class="prop-img" style="background:linear-gradient(135deg,#E8F0EC,#D4E4DC)">🌿<span class="prop-img-tag">참고용 이미지</span></div>
+    <div class="prop-body">
+      <div class="prop-shop">
+        <div class="prop-shop-avatar" style="background:var(--sage-lt)">🌿</div>
+        <div>
+          <div class="prop-shop-name">초록 스튜디오</div>
+          <div class="prop-shop-dist">📍 서초구 · 2.1km</div>
+        </div>
+      </div>
+      <div class="prop-curate">유칼립투스 향 가득한 청초한 부케</div>
+      <div class="prop-desc">자연스럽고 청초한 느낌으로 유칼립투스와 흰 스카비오사를 활용해 구성했습니다. 편안하고 고요한 분위기를 원하는 분께 추천드려요.</div>
+      <div class="prop-meta">
+        <span class="prop-chip">⏰ 14:30 픽업</span>
+        <span class="prop-chip">🌿 유칼립투스</span>
+      </div>
+      <div class="prop-expire">⏱ 제안 만료까지 16시간</div>
+    </div>
+    <div class="prop-footer">
+      <div class="btn btn-outline" style="flex:1;padding:9px;font-size:12px">자세히 보기</div>
+      <div class="btn btn-buyer" style="flex:1;padding:9px;font-size:12px">선택하기</div>
+    </div>
+  </div>
+  ${buyerNav('')}
+`, '제안 목록'),
+
+// ── 제안 상세 ──
+'b-propdetail': () => ph('b-propdetail', `
+  <div class="app-nav">
+    <div class="nav-back">←</div>
+    <div class="nav-title">제안 상세</div>
+  </div>
+  <div style="width:100%;height:210px;background:linear-gradient(135deg,#F2E8E5,#E8D4CC);display:flex;align-items:center;justify-content:center;font-size:52px;position:relative">
+    🌸
+    <div style="position:absolute;bottom:10px;right:12px;font-size:9px;background:rgba(255,255,255,.85);border-radius:5px;padding:3px 9px;color:var(--ink-60);backdrop-filter:blur(4px)">참고용 이미지</div>
+  </div>
+  <div style="padding:16px 18px;flex:1;overflow-y:auto">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
+      <div>
+        <div style="font-size:15px;font-weight:700;margin-bottom:3px">핑크 작약으로 물든 봄날의 꽃다발</div>
+        <div style="font-size:11px;color:var(--ink-60)">🌸 플라워 그로브 · 강남구 1.2km</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--ink-60);line-height:1.75;margin-bottom:14px">
+      핑크 장미와 작약을 중심으로 따뜻하고 풍성하게 구성했어요.<br>어머니께 드리기 딱 좋은 온화한 봄 컬러 조합이에요.<br>크림색 새틴 리본으로 마무리해 선물 느낌을 살릴 예정입니다.
+    </div>
+    <div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--r-md);padding:13px;margin-bottom:12px">
+      <div class="info-row"><span class="info-k">픽업 시간</span><span class="info-v">3/15 (토) 14:00</span></div>
+      <div class="info-row"><span class="info-k">픽업 장소</span><span class="info-v">강남구 역삼동</span></div>
+      <div class="info-row" style="border-bottom:none"><span class="info-k">제안 가격</span><span class="info-v" style="color:var(--rose);font-size:16px">68,000원</span></div>
+    </div>
+    <div class="prop-expire" style="text-align:center;margin-bottom:4px">⏱ 이 제안은 18시간 후 만료돼요</div>
+  </div>
+  <div class="bottom-cta">
+    <div class="btn btn-buyer" onclick="selectScreen('b-pay')">이 제안 선택하기 →</div>
+  </div>
+  ${buyerNav('')}
+`, '제안 상세'),
+
+// ── 결제 ──
+'b-pay': () => ph('b-pay', `
+  <div class="app-nav">
+    <div class="nav-back">←</div>
+    <div class="nav-title">결제</div>
+  </div>
+  <div style="padding:16px 18px;flex:1;overflow-y:auto">
+    <div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div style="font-size:28px">🌸</div>
+        <div>
+          <div style="font-size:13px;font-weight:700">핑크 작약으로 물든 봄날의 꽃다발</div>
+          <div style="font-size:11px;color:var(--ink-60)">플라워 그로브 · 픽업 3/15 14:00</div>
+        </div>
+      </div>
+      <div class="info-row"><span class="info-k">꽃다발 가격</span><span class="info-v">68,000원</span></div>
+      <div class="info-row" style="border-bottom:none"><span class="info-k" style="font-weight:700;color:var(--ink)">최종 결제</span><span class="info-v" style="font-size:17px;color:var(--rose)">68,000원</span></div>
+    </div>
+    <div style="font-size:11px;font-weight:700;color:var(--ink-60);letter-spacing:.05em;text-transform:uppercase;margin-bottom:10px">결제 방법</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+      ${['💳 신용카드','📱 카카오페이','🍎 애플페이','🏦 계좌이체'].map((t,i)=>`<div style="background:${i===0?'var(--rose-lt)':'var(--cream)'};border:1.5px solid ${i===0?'var(--rose)':'var(--border)'};border-radius:var(--r-sm);padding:13px;text-align:center;font-size:12px;font-weight:${i===0?'600':'400'};color:${i===0?'var(--rose)':'var(--ink-60)'}">${t}</div>`).join('')}
+    </div>
+    <div style="background:#FEF0EE;border:1px solid #F0B8B0;border-radius:var(--r-sm);padding:10px 13px;font-size:11px;color:#8A3020;line-height:1.55">
+      🧪 테스트 모드 — 실제 결제가 이루어지지 않아요
+    </div>
+  </div>
+  <div class="bottom-cta">
+    <div class="btn btn-buyer" onclick="selectScreen('b-done')">68,000원 결제하기</div>
+  </div>
+  ${buyerNav('')}
+`, 'Mock 결제'),
+
+// ── 예약 확정 ──
+'b-done': () => ph('b-done', `
+  <div class="confirm-hero">
+    <div class="confirm-icon">🎉</div>
+    <div class="confirm-title">예약이 확정됐어요!</div>
+    <div style="font-size:12px;color:var(--ink-60);line-height:1.7;margin-top:6px">플로리스트가 소중한 꽃다발을<br>정성껏 준비할 거예요 🌷</div>
+  </div>
+  <div style="padding:0 18px 16px">
+    <div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px">
+      <div class="info-row"><span class="info-k">꽃집</span><span class="info-v">🌸 플라워 그로브</span></div>
+      <div class="info-row"><span class="info-k">주소</span><span class="info-v">강남구 역삼동 ○○○</span></div>
+      <div class="info-row"><span class="info-k">픽업 시간</span><span class="info-v" style="color:var(--rose)">3/15 (토) 14:00</span></div>
+      <div class="info-row"><span class="info-k">결제 금액</span><span class="info-v">68,000원</span></div>
+      <div class="info-row" style="border-bottom:none"><span class="info-k">상태</span><span class="badge bd-done">✅ 예약 확정</span></div>
+    </div>
+  </div>
+  <div class="bottom-cta">
+    <div class="btn btn-buyer">홈으로 돌아가기</div>
+  </div>
+  ${buyerNav('b-home')}
+`, '예약 확정'),
+
+// ── 내 요청 탭 ──
+'b-tab-reqs': () => ph('b-tab-reqs', `
+  <div style="padding:14px 18px 10px;border-bottom:1px solid var(--border)">
+    <div style="font-size:17px;font-weight:700">내 요청</div>
+  </div>
+  <div style="display:flex;gap:8px;padding:10px 18px;border-bottom:1px solid var(--border)">
+    <div class="tag on-b">전체</div>
+    <div class="tag">진행 중</div>
+    <div class="tag">완료</div>
+  </div>
+  <div class="list-item">
+    <div class="list-thumb">🎂</div>
+    <div class="list-body">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+        <div class="list-title" style="margin-bottom:0">엄마 생신 꽃다발</div>
+        <span class="badge bd-arrived" style="font-size:9px">제안 2</span>
+      </div>
+      <div class="list-sub">기본형 · 픽업 · 3/15 14:00</div>
+      <div class="req-timer" style="margin-top:3px;font-size:10px">⏱ 22시간 14분 남음</div>
+    </div>
+  </div>
+  <div class="list-item">
+    <div class="list-thumb">💍</div>
+    <div class="list-body">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+        <div class="list-title" style="margin-bottom:0">2주년 기념 꽃다발</div>
+        <span class="badge bd-done" style="font-size:9px">확정</span>
+      </div>
+      <div class="list-sub">풍성한 꽃다발 · 배송 · 2/28</div>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;color:var(--ink-30)">
+    <div style="font-size:32px;margin-bottom:8px">🌷</div>
+    <div style="font-size:12px">만료된 요청은 여기에 보관돼요</div>
+  </div>
+  ${buyerNav('b-tab-reqs')}
+`, '내 요청 탭'),
+
+// ── 알림 탭 ──
+'b-tab-notif': () => ph('b-tab-notif', `
+  <div style="padding:14px 18px 10px;border-bottom:1px solid var(--border)">
+    <div style="font-size:17px;font-weight:700">알림</div>
+  </div>
+  ${[
+    {icon:'💐',title:'새 제안서가 도착했어요',sub:'플라워 그로브에서 제안서를 보냈어요. 확인해보세요!',time:'방금',new:true},
+    {icon:'💐',title:'새 제안서가 도착했어요',sub:'초록 스튜디오에서 제안서를 보냈어요.',time:'1시간 전',new:true},
+    {icon:'✅',title:'예약이 확정됐어요',sub:'2주년 기념 꽃다발 예약이 확정됐어요.',time:'3일 전',new:false},
+  ].map(n=>`<div class="list-item" style="background:${n.new?'#FEF9F8':'var(--warm-w)'}">
+    <div class="list-thumb" style="background:${n.new?'var(--rose-lt)':'var(--ink-10)'};width:42px;height:42px;font-size:18px">${n.icon}</div>
+    <div class="list-body">
+      <div class="list-title" style="font-size:12px">${n.title}</div>
+      <div class="list-sub" style="font-size:11px">${n.sub}</div>
+    </div>
+    <div class="list-right"><div class="list-time">${n.time}</div>${n.new?'<div style="width:7px;height:7px;background:var(--rose);border-radius:50%;margin:4px 0 0 auto"></div>':''}</div>
+  </div>`).join('')}
+  ${buyerNav('b-tab-notif')}
+`, '알림 탭'),
+
+// ── 마이 탭 ──
+'b-tab-my': () => ph('b-tab-my', `
+  <div style="padding:20px 18px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
+    <div style="width:52px;height:52px;border-radius:50%;background:var(--rose-lt);display:flex;align-items:center;justify-content:center;font-size:22px">😊</div>
+    <div>
+      <div style="font-size:15px;font-weight:700">이지수</div>
+      <div style="font-size:11px;color:var(--ink-60)">ji.soo@email.com</div>
+    </div>
+  </div>
+  <div style="padding:10px 18px">
+    ${['📋 내 요청 내역','🔔 알림 설정','📍 주소 관리','❓ 고객센터','📄 이용약관'].map(t=>`<div class="list-item" style="padding:14px 0">${t}<span style="margin-left:auto;color:var(--ink-30)">›</span></div>`).join('')}
+  </div>
+  ${buyerNav('b-tab-my')}
+`, '마이 탭'),
+
+// ═══════════════════ SELLER ═══════════════════
+
+// ── 판매자 홈 ──
+'s-home': () => ph('s-home', `
+  <div style="padding:14px 18px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)">
+    <div style="display:flex;flex-direction:column">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--sage)">Florent</div>
+      <div style="font-size:8px;letter-spacing:.18em;color:var(--ink-60)">플로리스트</div>
+    </div>
+    <div style="font-size:20px;position:relative">🔔<div style="position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:var(--sage);border-radius:50%;border:2px solid #fff"></div></div>
+  </div>
+  <div style="padding:14px 18px 10px">
+    <div style="font-size:11px;color:var(--ink-60);margin-bottom:4px">안녕하세요, 플라워 그로브 👋</div>
+    <div class="stat-row">
+      <div class="stat-card"><div class="stat-num" style="color:var(--sage)">3</div><div class="stat-label">새 요청</div></div>
+      <div class="stat-card"><div class="stat-num">1</div><div class="stat-label">제안 대기</div></div>
+      <div class="stat-card"><div class="stat-num">5</div><div class="stat-label">이번달 확정</div></div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div style="padding:14px 18px 6px">
+    <div class="sec-label">새로 들어온 요청</div>
+    <div class="list-item" style="padding:12px 0">
+      <div class="list-thumb list-thumb-s">🎂</div>
+      <div class="list-body">
+        <div class="list-title">생일 · 기본형</div>
+        <div class="list-sub">로맨틱 · 자연스러운 · 픽업<br>3/15 14:00 · 1.2km</div>
+      </div>
+      <div class="list-right">
+        <span class="badge bd-new">NEW</span>
+        <div class="list-time">5분 전</div>
+      </div>
+    </div>
+    <div class="list-item" style="padding:12px 0">
+      <div class="list-thumb list-thumb-s">💍</div>
+      <div class="list-body">
+        <div class="list-title">기념일 · 풍성한 꽃다발</div>
+        <div class="list-sub">고급스러운 · 배송 오전<br>3/16 · 2.8km</div>
+      </div>
+      <div class="list-right">
+        <span class="badge bd-new">NEW</span>
+        <div class="list-time">42분 전</div>
+      </div>
+    </div>
+  </div>
+  ${sellerNav('s-home')}
+`, '판매자 홈'),
+
+// ── 요청 목록 ──
+'s-reqlist': () => ph('s-reqlist', `
+  <div class="app-nav">
+    <div class="nav-title">요청 목록</div>
+    <div style="font-size:10px;color:var(--ink-60);margin-left:auto">반경 2km</div>
+  </div>
+  <div style="display:flex;gap:6px;padding:10px 18px;border-bottom:1px solid var(--border);overflow-x:auto">
+    <div class="tag on-s">전체 (3)</div>
+    <div class="tag">픽업 (2)</div>
+    <div class="tag">배송 (1)</div>
+    <div class="tag">미제안</div>
+  </div>
+  <div class="list-item">
+    <div class="list-thumb list-thumb-s">🎂</div>
+    <div class="list-body">
+      <div class="list-title">생일 · 기본형</div>
+      <div class="list-sub">로맨틱 · 자연스러운<br>픽업 · 3/15 14:00 · 1.2km</div>
+    </div>
+    <div class="list-right">
+      <span class="badge bd-new">미제안</span>
+      <div class="list-time" style="color:var(--rose)">⏱ 21h 남음</div>
+    </div>
+  </div>
+  <div class="list-item">
+    <div class="list-thumb list-thumb-s">💍</div>
+    <div class="list-body">
+      <div class="list-title">기념일 · 풍성한 꽃다발</div>
+      <div class="list-sub">고급스러운 · 배송 오전 · 2.8km</div>
+    </div>
+    <div class="list-right">
+      <span class="badge bd-writing">작성중</span>
+      <div class="list-time" style="color:var(--rose)">⏱ 18h 남음</div>
+    </div>
+  </div>
+  <div class="list-item">
+    <div class="list-thumb list-thumb-s">🎓</div>
+    <div class="list-body">
+      <div class="list-title">졸업 · 작은 꽃다발</div>
+      <div class="list-sub">청순한 · 귀여운 · 픽업 · 0.8km</div>
+    </div>
+    <div class="list-right">
+      <span class="badge bd-new">미제안</span>
+      <div class="list-time" style="color:var(--rose)">⏱ 40h 남음</div>
+    </div>
+  </div>
+  ${sellerNav('s-tab-req')}
+`, '요청 목록'),
+
+// ── 요청 상세 ──
+'s-reqdetail': () => ph('s-reqdetail', `
+  <div class="app-nav">
+    <div class="nav-back">←</div>
+    <div class="nav-title">요청서 상세</div>
+  </div>
+  <div style="padding:14px 18px 10px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <span class="badge bd-new">미제안</span>
+      <span style="font-size:11px;color:var(--rose);font-family:'DM Mono',monospace">⏱ 요청 만료까지 21시간</span>
+    </div>
+    <div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px;margin-bottom:12px">
+      <div class="info-row"><span class="info-k">목적</span><span class="info-v">🎂 생일</span></div>
+      <div class="info-row"><span class="info-k">관계</span><span class="info-v">부모님</span></div>
+      <div class="info-row"><span class="info-k">분위기</span><span class="info-v">로맨틱 · 자연스러운</span></div>
+      <div class="info-row"><span class="info-k">예산</span><span class="info-v">기본형 (6~8만원 참고)</span></div>
+      <div class="info-row"><span class="info-k">수령</span><span class="info-v">픽업 · 3/15 14:00</span></div>
+      <div class="info-row" style="border-bottom:none"><span class="info-k">픽업 장소</span><span class="info-v">강남구 역삼동 근처 · 1.2km</span></div>
+    </div>
+    <div class="notice notice-warn">⚠️ 제안서 작성을 시작하면 24시간 내에 완료해주세요. 미완료 시 <strong>신뢰도 지수가 하락</strong>할 수 있어요.</div>
+  </div>
+  <div class="bottom-cta">
+    <div class="btn btn-seller" onclick="selectScreen('s-p1')">제안서 작성하기 ✍️</div>
+  </div>
+  ${sellerNav('s-tab-req')}
+`, '요청서 상세'),
+
+// ── 제안서 Step1 ──
+'s-p1': () => ph('s-p1', `
+  <div class="app-nav">
+    <div class="nav-back">←</div>
+    <div class="nav-title">제안서 작성</div>
+  </div>
+  <div class="step-bar">
+    <div class="step-dot" style="background:var(--sage);color:#fff">1</div>
+    <div class="step-line"></div>
+    <div class="step-dot sd-todo">2</div>
+  </div>
+  <div style="overflow-y:auto;flex:1;padding:0 18px 16px">
+    <div class="notice notice-green">📋 구매자 요청: 생일 · 부모님 · 로맨틱·자연스러운 · 기본형(6~8만원)</div>
+    <div class="field">
+      <div class="field-label">🌸 꽃다발 이름 <span class="req-dot">*</span></div>
+      <div class="input-box filled">핑크 작약으로 물든 봄날의 꽃다발</div>
+      <div style="font-size:10px;color:var(--ink-30);margin-top:4px">구매자 목록에 이 이름이 노출돼요</div>
+    </div>
+    <div class="field">
+      <div class="field-label">📝 꽃 구성 설명 <span class="req-dot">*</span></div>
+      <div class="tmpl-block">
+        <div class="tmpl-q">🌹 메인 꽃</div>
+        <div class="tmpl-a">핑크 장미 5송이, 작약 3송이</div>
+      </div>
+      <div class="tmpl-block">
+        <div class="tmpl-q">🌿 서브 꽃·그린</div>
+        <div class="tmpl-a">유칼립투스, 스타티스</div>
+      </div>
+      <div class="tmpl-block">
+        <div class="tmpl-q">🎨 전체 컨셉·색감</div>
+        <div class="tmpl-a">따뜻한 봄 핑크톤, 로맨틱하고 풍성한 느낌</div>
+      </div>
+      <div class="tmpl-block">
+        <div class="tmpl-q">🎀 포장·마무리</div>
+        <div class="tmpl-a">크림색 새틴 리본, 크라프트지 포장</div>
+      </div>
+      <div class="tmpl-block">
+        <div class="tmpl-q">💌 추천 이유</div>
+        <div class="tmpl-a">어머니께 드리기 딱 좋은 따뜻한 컬러. 받는 분이 특별함을 느끼실 수 있어요.</div>
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-label">💰 제안 가격 <span class="req-dot">*</span></div>
+      <div class="input-box filled">68,000원</div>
+      <div class="notice" style="margin-top:8px">💡 구매자 예산 참고 범위는 6~8만원이에요. 범위를 크게 벗어나면 선택률이 낮아질 수 있어요.</div>
+    </div>
+    <div class="field">
+      <div class="field-label">📷 사진 첨부 <span style="font-weight:400;color:var(--ink-30);font-size:10px">(선택)</span></div>
+      <div class="photo-row">
+        <div class="photo-add">+</div>
+        <div class="photo-hint">레퍼런스나 직접 제작한 예시 이미지를 올려주세요. 선택률이 높아져요!</div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-cta">
+    <div class="btn btn-seller" onclick="selectScreen('s-p2')">다음 — 시간 선택 →</div>
+  </div>
+  ${sellerNav('')}
+`, 'Step 1 — 큐레이션·가격·사진'),
+
+// ── 제안서 Step2 ──
+'s-p2': () => ph('s-p2', `
+  <div class="app-nav">
+    <div class="nav-back">←</div>
+    <div class="nav-title">제안서 작성</div>
+  </div>
+  <div class="step-bar">
+    <div class="step-dot sd-done-s">✓</div>
+    <div class="step-line step-line-done-s"></div>
+    <div class="step-dot" style="background:var(--ink);color:#fff">2</div>
+  </div>
+  <div style="overflow-y:auto;flex:1;padding:0 18px 16px">
+    <div class="notice notice-green">📌 구매자가 희망하는 픽업 시간은 <strong>14:00, 14:30</strong>이에요.<br>가능하다면 해당 시간을 우선 선택해주세요.</div>
+    <div class="field" style="margin-top:10px">
+      <div class="field-label">⏰ 픽업 가능한 시간 선택 <span class="req-dot">*</span></div>
+      <div style="font-size:11px;color:var(--ink-60);margin-bottom:10px">구매자 희망 시간을 고려하여 가능한 시간을 선택해주세요.<br>단 하나의 시간만 선택해 확정 약속으로 제안돼요.</div>
+      <div class="slot-grid">
+        ${['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00'].map((t,i)=>`<div class="slot${i===8?' on-s':''}">${t}</div>`).join('')}
+      </div>
+      <div style="font-size:10px;color:var(--ink-30);margin-top:4px">* 선택한 시간은 예약 확정 시 약속으로 확정됩니다</div>
+    </div>
+    <div class="notice notice-warn">⚠️ 제안서는 24시간 내 전송해주세요. 미전송 시 신뢰도 지수가 하락해요.</div>
+  </div>
+  <div class="bottom-cta">
+    <div class="btn btn-seller" onclick="selectScreen('s-pdone')">제안서 전송하기 📨</div>
+  </div>
+  ${sellerNav('')}
+`, 'Step 2 — 픽업 시간 선택'),
+
+// ── 제안 전송 완료 ──
+'s-pdone': () => ph('s-pdone', `
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;gap:14px;text-align:center;background:linear-gradient(180deg,var(--sage-lt) 0%,var(--warm-w) 40%)">
+    <div style="width:72px;height:72px;background:var(--sage);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:32px">📨</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600">제안서를 전송했어요!</div>
+    <div style="font-size:12px;color:var(--ink-60);line-height:1.7">구매자가 확인하면 알림을 드릴게요.<br>선택되면 예약이 즉시 확정됩니다 🌷</div>
+    <div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;width:100%;margin-top:4px">
+      <div class="info-row"><span class="info-k">요청</span><span class="info-v">생일 · 기본형</span></div>
+      <div class="info-row"><span class="info-k">제안 제목</span><span class="info-v" style="font-size:11px">핑크 작약으로 물든 봄날의 꽃다발</span></div>
+      <div class="info-row"><span class="info-k">제안 가격</span><span class="info-v">68,000원</span></div>
+      <div class="info-row"><span class="info-k">픽업 시간</span><span class="info-v">3/15 14:00</span></div>
+      <div class="info-row" style="border-bottom:none"><span class="info-k">제안 만료</span><span class="info-v" style="color:var(--rose)">⏱ 20시간 45분</span></div>
+    </div>
+  </div>
+  <div class="bottom-cta">
+    <div class="btn btn-seller">요청 목록으로</div>
+  </div>
+  ${sellerNav('s-tab-req')}
+`, '제안 전송 완료'),
+
+// ── 판매자 예약 확정 ──
+'s-done': () => ph('s-done', `
+  <div class="confirm-hero" style="background:linear-gradient(180deg,var(--sage-lt) 0%,var(--warm-w) 100%)">
+    <div class="confirm-icon">🎊</div>
+    <div class="confirm-title" style="color:var(--sage)">예약이 확정됐어요!</div>
+    <div style="font-size:12px;color:var(--ink-60);line-height:1.7;margin-top:6px">구매자가 제안을 선택했어요.<br>소중한 꽃다발을 준비해주세요 🌷</div>
+  </div>
+  <div style="padding:0 18px 16px">
+    <div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px">
+      <div class="info-row"><span class="info-k">구매자</span><span class="info-v">이지수 님</span></div>
+      <div class="info-row"><span class="info-k">연락처</span><span class="info-v">010-****-1234</span></div>
+      <div class="info-row"><span class="info-k">픽업 시간</span><span class="info-v" style="color:var(--sage)">3/15 (토) 14:00</span></div>
+      <div class="info-row"><span class="info-k">픽업 장소</span><span class="info-v">우리 가게 (내방)</span></div>
+      <div class="info-row"><span class="info-k">확정 금액</span><span class="info-v">68,000원</span></div>
+      <div class="info-row" style="border-bottom:none"><span class="info-k">상태</span><span class="badge bd-done">✅ 예약 확정</span></div>
+    </div>
+  </div>
+  <div class="bottom-cta">
+    <div class="btn btn-seller">홈으로 돌아가기</div>
+  </div>
+  ${sellerNav('s-home')}
+`, '예약 확정 알림'),
+
+// ── 판매자 요청 탭 ──
+'s-tab-req': () => ph('s-tab-req', `
+  <div style="padding:14px 18px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+    <div style="font-size:17px;font-weight:700">요청</div>
+    <span class="badge bd-new">NEW 3</span>
+  </div>
+  <div style="display:flex;gap:6px;padding:10px 18px;border-bottom:1px solid var(--border)">
+    <div class="tag on-s">전체</div>
+    <div class="tag">미제안</div>
+    <div class="tag">제안완료</div>
+  </div>
+  <div class="list-item">
+    <div class="list-thumb list-thumb-s">🎂</div>
+    <div class="list-body">
+      <div class="list-title">생일 · 기본형 · 픽업</div>
+      <div class="list-sub">로맨틱 · 자연스러운 · 1.2km</div>
+    </div>
+    <div class="list-right">
+      <span class="badge bd-new">미제안</span>
+      <div class="list-time" style="color:var(--rose)">⏱ 21h</div>
+    </div>
+  </div>
+  <div class="list-item">
+    <div class="list-thumb list-thumb-s">💍</div>
+    <div class="list-body">
+      <div class="list-title">기념일 · 풍성함 · 배송</div>
+      <div class="list-sub">고급스러운 · 2.8km</div>
+    </div>
+    <div class="list-right">
+      <span class="badge bd-done">제안완료</span>
+      <div class="list-time">1시간 전</div>
+    </div>
+  </div>
+  ${sellerNav('s-tab-req')}
+`, '요청 탭'),
+
+// ── 판매자 현황 탭 ──
+'s-tab-hist': () => ph('s-tab-hist', `
+  <div style="padding:14px 18px 10px;border-bottom:1px solid var(--border)">
+    <div style="font-size:17px;font-weight:700">현황</div>
+  </div>
+  <div style="padding:14px 18px">
+    <div class="sec-label">이번 달 통계</div>
+    <div class="stat-row">
+      <div class="stat-card"><div class="stat-num" style="color:var(--sage)">12</div><div class="stat-label">받은 요청</div></div>
+      <div class="stat-card"><div class="stat-num">8</div><div class="stat-label">제안 전송</div></div>
+      <div class="stat-card"><div class="stat-num">5</div><div class="stat-label">예약 확정</div></div>
+    </div>
+    <div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--r-md);padding:14px;margin-bottom:10px">
+      <div class="sec-label" style="margin-bottom:8px">신뢰도 지수</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:28px;font-weight:700;color:var(--sage)">92</div>
+        <div style="flex:1">
+          <div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden"><div style="width:92%;height:100%;background:var(--sage);border-radius:4px"></div></div>
+          <div style="font-size:10px;color:var(--ink-60);margin-top:4px">미완료 제안이 없을수록 높아져요</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="padding:0 18px">
+    <div class="sec-label">최근 확정 내역</div>
+    <div class="list-item" style="padding:12px 0">
+      <div class="list-thumb list-thumb-s" style="width:40px;height:40px;font-size:16px">🌸</div>
+      <div class="list-body">
+        <div class="list-title" style="font-size:12px">핑크 작약 꽃다발</div>
+        <div class="list-sub">68,000원 · 3/10 확정</div>
+      </div>
+      <span class="badge bd-done">완료</span>
+    </div>
+  </div>
+  ${sellerNav('s-tab-hist')}
+`, '현황 탭'),
+
+// ── 판매자 마이 탭 ──
+'s-tab-my': () => ph('s-tab-my', `
+  <div style="padding:20px 18px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
+    <div style="width:52px;height:52px;border-radius:50%;background:var(--sage-lt);display:flex;align-items:center;justify-content:center;font-size:22px">🌸</div>
+    <div>
+      <div style="font-size:15px;font-weight:700">플라워 그로브</div>
+      <div style="font-size:11px;color:var(--ink-60)">서울 강남구 역삼동</div>
+      <span class="badge bd-done" style="margin-top:4px;display:inline-block">신뢰도 92점</span>
+    </div>
+  </div>
+  <div style="padding:10px 18px">
+    ${['🏪 가게 정보 관리','🕐 영업시간 설정','🔔 알림 설정','❓ 고객센터','📄 이용약관'].map(t=>`<div class="list-item" style="padding:14px 0">${t}<span style="margin-left:auto;color:var(--ink-30)">›</span></div>`).join('')}
+  </div>
+  ${sellerNav('s-tab-my')}
+`, '마이 탭'),
+};
+
+// ══════════════════════════════════════
+// 픽업 step3A 재정의 (장소·날짜만)
+// ══════════════════════════════════════
+SCREENS['b-r3a'] = () => ph('b-r3a', `
+  <div class="app-nav">
+    <div class="nav-back">←</div>
+    <div class="nav-title">꽃다발 요청하기</div>
+  </div>
+  <div class="step-bar">
+    <div class="step-dot sd-done-b">✓</div>
+    <div class="step-line step-line-done-b"></div>
+    <div class="step-dot sd-done-b">✓</div>
+    <div class="step-line step-line-done-b"></div>
+    <div class="step-dot sd-active">3</div>
+    <div class="step-line"></div>
+    <div class="step-dot sd-todo">4</div>
+  </div>
+  <div style="overflow-y:auto;flex:1;padding:0 18px 16px">
+    <div class="toggle-row">
+      <div class="toggle-btn on-b">🏪 직접 픽업</div>
+      <div class="toggle-btn" onclick="selectScreen('b-r3b')">🚚 배송 받기</div>
+    </div>
+    <div class="field">
+      <div class="field-label">📍 픽업 장소</div>
+      <div class="input-box filled"><span>서울 강남구 역삼동</span><span style="font-size:15px">🔍</span></div>
+    </div>
+    <div class="map-ph">📍 지도 미리보기</div>
+    <div class="field">
+      <div class="field-label">📅 픽업 날짜</div>
+      <div class="input-box filled">2025년 3월 15일 (토) <span>📅</span></div>
+    </div>
+    <div class="notice notice-green">✅ 입력한 위치 반경 2km 내 플로리스트에게 요청서가 전달돼요.</div>
+  </div>
+  <div class="bottom-cta">
+    <div class="btn btn-buyer" onclick="selectScreen('b-r4a')">다음 — 시간 선택 →</div>
+  </div>
+  ${buyerNav('')}
+`, 'Step 3A — 픽업 장소·날짜');
+
+// ══════════════════════════════════════
+// 구매자 Step4A — 픽업 시간 선택 (NEW)
+// ══════════════════════════════════════
+SCREENS['b-r4a'] = () => ph('b-r4a', `
+  <div class="app-nav">
+    <div class="nav-back">←</div>
+    <div class="nav-title">꽃다발 요청하기</div>
+  </div>
+  <div class="step-bar">
+    <div class="step-dot sd-done-b">✓</div>
+    <div class="step-line step-line-done-b"></div>
+    <div class="step-dot sd-done-b">✓</div>
+    <div class="step-line step-line-done-b"></div>
+    <div class="step-dot sd-done-b">✓</div>
+    <div class="step-line step-line-done-b"></div>
+    <div class="step-dot sd-active">4</div>
+  </div>
+  <div style="overflow-y:auto;flex:1;padding:0 18px 16px">
+    <div style="margin-bottom:14px">
+      <div class="sec-title" style="margin-bottom:4px">픽업 희망 시간을 선택해주세요</div>
+      <div class="sec-sub">여러 시간대를 선택할 수 있어요.<br>플로리스트가 가능한 시간에 맞춰 제안해드려요.</div>
+    </div>
+    <div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 13px;margin-bottom:14px;display:flex;align-items:center;gap:8px">
+      <span style="font-size:13px">📅</span>
+      <span style="font-size:12px;color:var(--ink-60)">선택한 날짜</span>
+      <span style="font-size:12px;font-weight:600;margin-left:auto">2025년 3월 15일 (토)</span>
+    </div>
+    <div class="field">
+      <div class="field-label">⏰ 희망 시간 <span style="font-weight:400;color:var(--ink-30);font-size:10px">(복수 선택 가능, 10:00 ~ 20:00)</span></div>
+      <div class="slot-grid">
+        ${['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00'].map((t,i)=>`<div class="slot${[8,9].includes(i)?' on':''}">${t}</div>`).join('')}
+      </div>
+      <div style="font-size:10px;color:var(--ink-30);margin-top:6px;line-height:1.5">
+        * 복수 선택 가능 · 플로리스트가 이 중 가능한 시간으로 제안해드려요
+      </div>
+    </div>
+    <div class="notice">💡 원하는 시간이 정해지지 않았다면 여러 슬롯을 선택해두세요!</div>
+  </div>
+  <div class="bottom-cta">
+    <div class="btn btn-buyer" onclick="selectScreen('b-rdone')">요청서 제출하기 🌷</div>
+  </div>
+  ${buyerNav('')}
+`, 'Step 4A — 픽업 시간 선택');
+
+// ══════════════════════════════════════
+// 구매자 Step3B 재정의 — 배송 장소만
+// ══════════════════════════════════════
+SCREENS['b-r3b'] = () => ph('b-r3b', `
+  <div class="app-nav">
+    <div class="nav-back">←</div>
+    <div class="nav-title">꽃다발 요청하기</div>
+  </div>
+  <div class="step-bar">
+    <div class="step-dot sd-done-b">✓</div>
+    <div class="step-line step-line-done-b"></div>
+    <div class="step-dot sd-done-b">✓</div>
+    <div class="step-line step-line-done-b"></div>
+    <div class="step-dot sd-active">3</div>
+    <div class="step-line"></div>
+    <div class="step-dot sd-todo">4</div>
+  </div>
+  <div style="overflow-y:auto;flex:1;padding:0 18px 16px">
+    <div class="toggle-row">
+      <div class="toggle-btn" onclick="selectScreen('b-r3a')">🏪 직접 픽업</div>
+      <div class="toggle-btn on-b">🚚 배송 받기</div>
+    </div>
+    <div class="field">
+      <div class="field-label">🏠 배송지 주소</div>
+      <div class="input-box" style="color:var(--ink-30)">주소를 검색해주세요 🔍</div>
+      <div class="input-box" style="margin-top:6px;color:var(--ink-30)">상세 주소 (동·호수 등)</div>
+    </div>
+    <div class="map-ph">📍 지도 미리보기</div>
+    <div class="notice notice-green">✅ 배송지 반경 2km 내 플로리스트에게 요청서가 전달돼요.</div>
+  </div>
+  <div class="bottom-cta">
+    <div class="btn btn-buyer" onclick="selectScreen('b-r4b')">다음 — 날짜·시간대 선택 →</div>
+  </div>
+  ${buyerNav('')}
+`, 'Step 3B — 배송 장소 입력');
+
+// ══════════════════════════════════════
+// 구매자 Step4B — 배송 날짜·시간대 선택 (NEW)
+// ══════════════════════════════════════
+SCREENS['b-r4b'] = () => ph('b-r4b', `
+  <div class="app-nav">
+    <div class="nav-back">←</div>
+    <div class="nav-title">꽃다발 요청하기</div>
+  </div>
+  <div class="step-bar">
+    <div class="step-dot sd-done-b">✓</div>
+    <div class="step-line step-line-done-b"></div>
+    <div class="step-dot sd-done-b">✓</div>
+    <div class="step-line step-line-done-b"></div>
+    <div class="step-dot sd-done-b">✓</div>
+    <div class="step-line step-line-done-b"></div>
+    <div class="step-dot sd-active">4</div>
+  </div>
+  <div style="overflow-y:auto;flex:1;padding:0 18px 16px">
+    <div style="margin-bottom:14px">
+      <div class="sec-title" style="margin-bottom:4px">배송 날짜와 시간대를 선택해주세요</div>
+      <div class="sec-sub">원하는 배송 날짜와 시간대를 알려주세요.</div>
+    </div>
+    <div class="field">
+      <div class="field-label">📅 배송 날짜</div>
+      <div class="input-box filled">2025년 3월 16일 (일) <span>📅</span></div>
+    </div>
+    <div class="field">
+      <div class="field-label">⏰ 배송 희망 시간대 <span style="font-weight:400;color:var(--ink-30);font-size:10px">(복수 선택 가능)</span></div>
+      <div class="band-grid">
+        <div class="band on">
+          <div style="font-size:15px;margin-bottom:3px">🌤</div>
+          <div style="font-weight:600">오전</div>
+          <div class="band-time">09:00 ~ 12:00</div>
+        </div>
+        <div class="band">
+          <div style="font-size:15px;margin-bottom:3px">☀️</div>
+          <div style="font-weight:600">오후</div>
+          <div class="band-time">12:00 ~ 18:00</div>
+        </div>
+        <div class="band">
+          <div style="font-size:15px;margin-bottom:3px">🌙</div>
+          <div style="font-weight:600">저녁</div>
+          <div class="band-time">18:00 ~ 21:00</div>
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--ink-30);margin-top:4px;line-height:1.5">
+        * 복수 선택 가능 · 플로리스트가 가능한 시간대로 제안해드려요
+      </div>
+    </div>
+    <div class="notice">💡 시간대가 유연하다면 여러 옵션을 선택해두세요. 제안이 더 빨리 올 수 있어요!</div>
+  </div>
+  <div class="bottom-cta">
+    <div class="btn btn-buyer" onclick="selectScreen('b-rdone')">요청서 제출하기 🌷</div>
+  </div>
+  ${buyerNav('')}
+`, 'Step 4B — 배송 날짜·시간대 선택');
+
+// ══════════════════════════════════════
+// 판매자 — 배송 요청서 상세 (NEW)
+// ══════════════════════════════════════
+SCREENS['s-reqdetail-delivery'] = () => ph('s-reqdetail-delivery', `
+  <div class="app-nav">
+    <div class="nav-back">←</div>
+    <div class="nav-title">요청서 상세</div>
+  </div>
+  <div style="padding:14px 18px 10px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <span class="badge bd-new">미제안</span>
+      <span style="font-size:11px;color:var(--rose);font-family:'DM Mono',monospace">⏱ 요청 만료까지 30시간</span>
+    </div>
+    <div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px;margin-bottom:12px">
+      <div class="info-row"><span class="info-k">목적</span><span class="info-v">💍 기념일</span></div>
+      <div class="info-row"><span class="info-k">관계</span><span class="info-v">연인</span></div>
+      <div class="info-row"><span class="info-k">분위기</span><span class="info-v">고급스러운 · 로맨틱</span></div>
+      <div class="info-row"><span class="info-k">예산</span><span class="info-v">풍성한 꽃다발 (9~13만원 참고)</span></div>
+      <div class="info-row"><span class="info-k">수령 방법</span><span class="info-v" style="color:var(--rose)">🚚 배송</span></div>
+      <div class="info-row"><span class="info-k">배송 날짜</span><span class="info-v">3월 16일 (일)</span></div>
+      <div class="info-row"><span class="info-k">희망 시간대</span><span class="info-v">오전 (9~12시) · 오후 (12~18시)</span></div>
+      <div class="info-row" style="border-bottom:none"><span class="info-k">배송지</span><span class="info-v">서초구 반포동 근처 · 2.1km</span></div>
+    </div>
+    <div class="notice notice-warn">⚠️ 제안서 작성을 시작하면 24시간 내에 완료해주세요. 미완료 시 <strong>신뢰도 지수가 하락</strong>할 수 있어요.</div>
+  </div>
+  <div class="bottom-cta">
+    <div class="btn btn-seller" onclick="selectScreen('s-p1-delivery')">제안서 작성하기 ✍️</div>
+  </div>
+  ${sellerNav('s-tab-req')}
+`, '요청서 상세 — 배송 요청');
+
+// ══════════════════════════════════════
+// 판매자 — 배송 제안서 Step1 (NEW)
+// ══════════════════════════════════════
+SCREENS['s-p1-delivery'] = () => ph('s-p1-delivery', `
+  <div class="app-nav">
+    <div class="nav-back">←</div>
+    <div class="nav-title">제안서 작성</div>
+  </div>
+  <div class="step-bar">
+    <div class="step-dot" style="background:var(--sage);color:#fff">1</div>
+    <div class="step-line"></div>
+    <div class="step-dot sd-todo">2</div>
+  </div>
+  <div style="overflow-y:auto;flex:1;padding:0 18px 16px">
+    <div class="notice notice-green">📋 구매자 요청: 기념일 · 연인 · 고급스러운·로맨틱 · 풍성한 꽃다발(9~13만원) · 🚚 배송</div>
+    <div class="field">
+      <div class="field-label">🌸 꽃다발 이름 <span class="req-dot">*</span></div>
+      <div class="input-box" style="color:var(--ink-30)">예) 붉은 열정으로 가득한 로맨틱 부케</div>
+      <div style="font-size:10px;color:var(--ink-30);margin-top:4px">구매자 목록에 이 이름이 노출돼요</div>
+    </div>
+    <div class="field">
+      <div class="field-label">📝 꽃 구성 설명 <span class="req-dot">*</span></div>
+      <div class="tmpl-block">
+        <div class="tmpl-q">🌹 메인 꽃</div>
+        <div class="tmpl-a">레드 장미 7송이, 모란 2송이</div>
+      </div>
+      <div class="tmpl-block">
+        <div class="tmpl-q">🌿 서브 꽃·그린</div>
+        <div class="tmpl-a">루스커스, 와이어플랜트</div>
+      </div>
+      <div class="tmpl-block">
+        <div class="tmpl-q">🎨 전체 컨셉·색감</div>
+        <div class="tmpl-a">깊고 진한 레드톤, 고급스럽고 열정적인 느낌</div>
+      </div>
+      <div class="tmpl-block">
+        <div class="tmpl-q">🎀 포장·마무리</div>
+        <div class="tmpl-a">블랙 새틴 리본, 고급 플라워 박스</div>
+      </div>
+      <div class="tmpl-block">
+        <div class="tmpl-q">💌 추천 이유</div>
+        <div class="tmpl-a">기념일에 받는 분이 특별함을 느끼실 수 있는 프리미엄 구성이에요.</div>
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-label">💰 제안 가격 <span class="req-dot">*</span></div>
+      <div class="input-box" style="color:var(--ink-30)">직접 입력 (원)</div>
+      <div class="notice" style="margin-top:8px">💡 구매자 예산 참고 범위는 9~13만원이에요. 배송비를 포함하여 범위를 크게 벗어나지 않도록 해주세요.</div>
+    </div>
+    <div class="field">
+      <div class="field-label">📷 사진 첨부 <span style="font-weight:400;color:var(--ink-30);font-size:10px">(선택)</span></div>
+      <div class="photo-row">
+        <div class="photo-add">+</div>
+        <div class="photo-hint">레퍼런스나 직접 제작한 예시 이미지를 올려주세요. 선택률이 높아져요!</div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-cta">
+    <div class="btn btn-seller" onclick="selectScreen('s-p2-delivery')">다음 — 배송 시간대 선택 →</div>
+  </div>
+  ${sellerNav('')}
+`, 'Step 1 (배송) — 큐레이션·가격·사진');
+
+// ══════════════════════════════════════
+// 판매자 — 배송 제안서 Step2 시간대 선택 (NEW)
+// ══════════════════════════════════════
+SCREENS['s-p2-delivery'] = () => ph('s-p2-delivery', `
+  <div class="app-nav">
+    <div class="nav-back">←</div>
+    <div class="nav-title">제안서 작성</div>
+  </div>
+  <div class="step-bar">
+    <div class="step-dot sd-done-s">✓</div>
+    <div class="step-line step-line-done-s"></div>
+    <div class="step-dot" style="background:var(--ink);color:#fff">2</div>
+  </div>
+  <div style="overflow-y:auto;flex:1;padding:0 18px 16px">
+    <div class="notice notice-green">📌 구매자가 희망하는 배송 시간대는 <strong>오전 (9~12시)</strong>, <strong>오후 (12~18시)</strong>예요.<br>가능한 시간대를 우선적으로 선택해주세요.</div>
+    <div class="field" style="margin-top:12px">
+      <div class="field-label">📅 배송 날짜 확인</div>
+      <div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 13px;display:flex;align-items:center;gap:8px;margin-bottom:14px">
+        <span style="font-size:13px">📅</span>
+        <span style="font-size:12px;color:var(--ink-60)">구매자 요청 날짜</span>
+        <span style="font-size:12px;font-weight:600;margin-left:auto">2025년 3월 16일 (일)</span>
+      </div>
+      <div class="field-label">🚚 배송 가능한 시간대 선택 <span class="req-dot">*</span></div>
+      <div style="font-size:11px;color:var(--ink-60);margin-bottom:12px">구매자 희망 시간대를 고려하여 배송 가능한 시간대를 선택해주세요.<br>단 하나의 시간대만 선택해 확정 약속으로 제안돼요.</div>
+      <div class="band-grid" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="band" style="border-color:var(--sage);background:var(--sage-lt);color:var(--sage)">
+          <div style="font-size:15px;margin-bottom:4px">🌤</div>
+          <div style="font-weight:700">오전</div>
+          <div class="band-time" style="color:var(--sage)">09:00~12:00</div>
+          <div style="font-size:9px;margin-top:4px;color:var(--sage);font-weight:600">✓ 선택됨</div>
+        </div>
+        <div class="band">
+          <div style="font-size:15px;margin-bottom:4px">☀️</div>
+          <div style="font-weight:600">오후</div>
+          <div class="band-time">12:00~18:00</div>
+        </div>
+        <div class="band" style="opacity:.45">
+          <div style="font-size:15px;margin-bottom:4px">🌙</div>
+          <div style="font-weight:600">저녁</div>
+          <div class="band-time">18:00~21:00</div>
+          <div style="font-size:9px;margin-top:4px;color:var(--ink-30)">구매자 미선택</div>
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--ink-30);margin-top:6px;line-height:1.5">
+        * 선택한 시간대는 예약 확정 시 배송 약속으로 확정됩니다<br>
+        * 구매자가 선택하지 않은 시간대도 제안은 가능해요
+      </div>
+    </div>
+    <div class="notice notice-warn">⚠️ 제안서는 24시간 내 전송해주세요. 미전송 시 신뢰도 지수가 하락해요.</div>
+  </div>
+  <div class="bottom-cta">
+    <div class="btn btn-seller" onclick="selectScreen('s-pdone')">제안서 전송하기 📨</div>
+  </div>
+  ${sellerNav('')}
+`, 'Step 2 (배송) — 배송 시간대 선택');
+
+// ══════════════════════════════════════
+// STATE & RENDER
+// ══════════════════════════════════════
+let app = 'buyer';
+let screen = 'b-home';
+
+function switchApp(a, btn) {
+  app = a;
+  screen = a === 'buyer' ? 'b-home' : 's-home';
+  document.querySelectorAll('.sw-btn').forEach(b => b.classList.remove('on-buyer','on-seller'));
+  btn.classList.add(a === 'buyer' ? 'on-buyer' : 'on-seller');
+  renderNav(); renderScreen();
+}
+
+function selectScreen(id) {
+  screen = id;
+  renderNav(); renderScreen();
+  document.getElementById('canvas').scrollTop = 0;
+}
+
+function renderNav() {
+  const nav = NAV[app];
+  let html = '';
+  nav.forEach(grp => {
+    html += `<div class="nav-group"><div class="nav-group-label">${grp.group}</div>`;
+    grp.items.forEach(it => {
+      const active = it.id === screen;
+      const cls = active ? (app === 'buyer' ? 'sel-b' : 'sel-s') : '';
+      html += `<div class="nav-item ${cls}" onclick="selectScreen('${it.id}')">
+        <span class="nav-icon">${it.icon}</span>${it.label}
+      </div>`;
+    });
+    html += '</div>';
+  });
+  document.getElementById('sidenav').innerHTML = html;
+}
+
+function renderScreen() {
+  const canvas = document.getElementById('canvas');
+  const builder = SCREENS[screen];
+  const tag = NAV[app].flatMap(g=>g.items).find(i=>i.id===screen)?.label || screen;
+  if (builder) {
+    canvas.innerHTML = builder();
+  } else {
+    canvas.innerHTML = `<div style="color:var(--ink-30);margin-top:60px;font-size:13px">준비 중인 화면이에요</div>`;
+  }
+}
+
+renderNav(); renderScreen();
+</script>
+</body>
+</html>
