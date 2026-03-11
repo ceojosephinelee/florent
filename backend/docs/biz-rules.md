@@ -5,6 +5,43 @@
 
 ---
 
+## 0. 인증 규칙
+
+### 카카오 로그인 플로우
+```
+카카오 앱에서 인가 코드 수신
+  → POST /api/v1/auth/kakao { kakaoAccessToken }
+  → 서버: 카카오 사용자 정보 조회 (kakao_id)
+  → 신규 유저: USER 생성, isNewUser=true 반환
+  → 기존 유저: JWT 재발급
+```
+
+### 역할(Role) 결정
+- 신규 유저: 로그인 직후 `/auth/role` 화면으로 이동 → BUYER 또는 SELLER 선택
+- SELLER 선택 시: 사업자 정보 입력 화면 추가 진입 (`/auth/seller-info`)
+- 역할 결정 후 각 앱의 홈으로 이동
+
+### 사업자 정보 (SELLER 전용)
+| 필드 | 제약 |
+|---|---|
+| shopName | 필수 |
+| shopAddress | 필수 |
+| shopLat / shopLng | 필수 (카카오 주소 검색으로 자동 입력) |
+| businessNumber | 선택 (MVP) |
+
+### JWT 토큰 규칙
+- Access Token 유효시간: 1시간
+- Refresh Token 유효시간: 30일
+- Access Token 만료 시: Refresh Token으로 자동 갱신 (`POST /auth/reissue`)
+- Refresh Token 만료 시: 재로그인 (카카오 로그인 화면으로 이동)
+- 로그아웃 시: 서버의 Refresh Token 무효화 (`USER.refresh_token = null`)
+
+### 인증 필요 여부
+- 인증 불필요: `POST /auth/kakao`, `POST /auth/reissue`
+- 인증 필요: 그 외 모든 API
+
+---
+
 ## 1. 용어
 
 | 용어 | 정의 |

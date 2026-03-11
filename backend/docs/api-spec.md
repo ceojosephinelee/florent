@@ -19,6 +19,9 @@
 | `FORBIDDEN` | 403 | 권한 없음 |
 | `VALIDATION_ERROR` | 400 | 요청 필드 검증 실패 |
 | `BUSINESS_ERROR` | 422 | 비즈니스 규칙 위반 |
+| `TOKEN_EXPIRED` | 401 | Access Token 만료 → Refresh Token으로 재발급 필요 |
+| `REFRESH_TOKEN_EXPIRED` | 401 | Refresh Token 만료 → 재로그인 필요 |
+| `SELLER_ALREADY_REGISTERED` | 409 | 판매자 정보 중복 등록 시도 |
 
 ---
 
@@ -70,9 +73,25 @@ POST /api/v1/auth/logout
 ```
 Response 200 — `USER.refresh_token = null` 처리
 
----
+### 1-5. 판매자 사업자 정보 등록 (최초 1회)
+```
+POST /api/v1/auth/seller-info
+```
+Request:
+```json
+{
+  "shopName": "string",
+  "shopAddress": "string",
+  "shopLat": 37.123456,
+  "shopLng": 127.123456,
+  "businessNumber": "string (optional)"
+}
+```
+Response 200: `{ "sellerId": 1, "shopName": "string" }`
+- SELLER 역할 설정 직후 1회만 호출
+- 이미 등록된 경우 `SELLER_ALREADY_REGISTERED` 에러
 
-## 2. 구매자 — 요청
+---
 
 ### 2-1. 요청 생성
 ```
