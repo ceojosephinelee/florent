@@ -1,6 +1,10 @@
 package com.florent.support;
 
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
@@ -15,5 +19,26 @@ public class TestAdapter {
 
     public ResponseEntity<String> getHealth() {
         return restTemplate.getForEntity("/actuator/health", String.class);
+    }
+
+    public ResponseEntity<String> createRequest(String token, String body) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/buyer/requests",
+                HttpMethod.POST,
+                new HttpEntity<>(body, headers),
+                String.class);
+    }
+
+    public ResponseEntity<String> createRequestWithoutAuth(String body) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return restTemplate.exchange(
+                "/api/v1/buyer/requests",
+                HttpMethod.POST,
+                new HttpEntity<>(body, headers),
+                String.class);
     }
 }

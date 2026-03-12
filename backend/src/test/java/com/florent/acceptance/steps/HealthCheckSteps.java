@@ -22,18 +22,18 @@ public class HealthCheckSteps {
 
     private ResponseEntity<String> response;
 
-    @When("the client requests the health endpoint")
-    public void the_client_requests_the_health_endpoint() {
+    @When("클라이언트가 헬스 체크 엔드포인트를 호출한다")
+    public void 클라이언트가_헬스_체크_엔드포인트를_호출한다() {
         response = testAdapter.getHealth();
     }
 
-    @Then("the response status code is {int}")
-    public void the_response_status_code_is(int statusCode) {
+    @Then("헬스 체크 응답 상태 코드는 {int}이다")
+    public void 헬스_체크_응답_상태_코드는(int statusCode) {
         assertThat(response.getStatusCode().value()).isEqualTo(statusCode);
     }
 
-    @And("the response body contains {string}")
-    public void the_response_body_contains(String expectedContent) {
-        assertThat(response.getBody()).contains(expectedContent);
+    @And("응답 바디에 {string} 이 포함된다")
+    public void 응답_바디에_이_포함된다(String expected) {
+        assertThat(response.getBody()).contains(expected);
     }
 }

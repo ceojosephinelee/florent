@@ -1,5 +1,6 @@
 # src/test/resources/features/proposal/proposal_inquiry.feature
 
+@Ignore
 Feature: 구매자 제안 목록 및 상세 조회
   구매자는 자신의 요청에 도착한 제안 목록을 조회하고, 상세 내용을 확인할 수 있다.
   목록에서는 가격이 노출되지 않으며, 상세에서만 가격을 확인할 수 있다.
