@@ -1,0 +1,15 @@
+package com.florent.adapter.out.notification;
+
+import com.florent.domain.notification.SaveNotificationUseCase;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+@Slf4j
+@Component
+public class NoOpSaveNotificationAdapter implements SaveNotificationUseCase {
+
+    @Override
+    public void saveRequestArrived(Long sellerId, Long requestId) {
+        log.info("[Mock] REQUEST_ARRIVED 알림 — sellerId={}, requestId={}", sellerId, requestId);
+    }
+}

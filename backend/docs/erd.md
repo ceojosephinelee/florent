@@ -125,6 +125,7 @@ erDiagram
         varchar reference_type "REQUEST|PROPOSAL|RESERVATION, NOT NULL"
         bigint reference_id "NOT NULL"
         varchar title "NOT NULL"
+        varchar body "NULLABLE"
         boolean is_read "NOT NULL DEFAULT FALSE"
         datetime created_at "NOT NULL"
         datetime updated_at "NOT NULL"

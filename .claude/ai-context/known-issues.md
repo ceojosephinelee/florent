@@ -40,6 +40,36 @@
 
 ---
 
+### [DEBT-004] CurationRequest 도메인 단위 테스트 부재
+
+- **유형**: 테스트 부채
+- **위치**: `test/domain/request/` (미작성)
+- **내용**: `CurationRequest.create()`, `confirm()`, `expire()`, `isExpired()`에 대한 도메인 단위 테스트가 없음. conventions.md §7 — "Domain 변경 시 도메인 단위 테스트 필수".
+- **심각도**: Medium
+- **상태**: OPEN
+
+---
+
+### [DEBT-005] BuyerRequestService 서비스 단위 테스트 부재
+
+- **유형**: 테스트 부채
+- **위치**: `test/application/buyer/BuyerRequestServiceTest.java` (미작성)
+- **내용**: Fake 구현체(`FakeCurationRequestRepository`, `FakeFlowerShopRepository`, `FakeSaveNotificationUseCase`)는 작성되었으나, 이를 활용한 Service 단위 테스트 클래스가 없음.
+- **심각도**: Medium
+- **상태**: OPEN
+
+---
+
+### [DEBT-006] TimeSlot Value Object에 IllegalArgumentException 사용
+
+- **유형**: 컨벤션 검토
+- **위치**: `domain/request/TimeSlot.java:8-10`
+- **내용**: `IllegalArgumentException`을 직접 throw. conventions.md §5에서 RuntimeException 직접 사용 금지, `BusinessException(ErrorCode.XXX)` 사용 요구. Value Object 생성자 검증에 한해 Java 관례상 허용 가능하나 프로젝트 컨벤션 일관성 검토 필요.
+- **심각도**: Low
+- **상태**: OPEN
+
+---
+
 ## 버그 목록
 
 > 버그 발견 시 아래 형식으로 추가
@@ -55,6 +85,15 @@
 - **해결 방법**: {방법}
 - **상태**: OPEN / RESOLVED
 ```
+
+---
+
+## 정합성 검증 이력
+
+### [2026-03-12] 정합성 검증 — 백엔드 구현 전
+- Critical: 10건 (모두 RESOLVED — api-spec.md, erd.md 수정 완료)
+- Warning: 13건 (OPEN)
+- 주요 내용: API 엔드포인트 3개 누락(buyer/me, seller/me, seller/stats), 예약 상세 Response에 요청 원문·이미지 필드 누락, NOTIFICATION 테이블 body 컬럼 누락. Critical 항목은 api-spec.md 및 erd.md에 반영 완료. Warning 항목(Mock↔API 구조 불일치, HTTP Method 불일치, DRAFT 제안 CONFIRMED 후 처리 미명시 등)은 백엔드 구현 중 순차 해결 필요.
 
 ---
 

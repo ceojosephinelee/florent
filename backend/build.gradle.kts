@@ -29,6 +29,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+
+    // Swagger
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 
     // Database
     runtimeOnly("org.postgresql:postgresql")
@@ -41,6 +45,8 @@ dependencies {
 
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testRuntimeOnly("com.h2database:h2")
+    testImplementation("org.apache.httpcomponents.client5:httpclient5")
 
     // Cucumber
     testImplementation("io.cucumber:cucumber-java:7.15.0")
