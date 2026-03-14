@@ -50,4 +50,22 @@
 
 ---
 
+## [AD-006] JwtAuthenticationFilter @Profile("!local & !test")
+
+- **결정일**: 2026-03-15
+- **결정 내용**: JWT 필터를 `@Profile("prod")`에서 `@Profile("!local & !test")`로 변경.
+- **이유**: prod, staging 등 local 이외 모든 환경에서 JWT 검증 활성화. test 프로파일에서는 `TestSecurityConfig` + `TestAuthFilter`가 대체하므로 제외. `@WebMvcTest` 컨텍스트에서는 `@MockBean JwtProvider`로 의존성 해결.
+- **영향 파일**: `JwtAuthenticationFilter.java`, `BuyerRequestControllerTest.java`, `BuyerProposalControllerTest.java`
+
+---
+
+## [AD-007] JwtAuthenticationFilter shouldNotFilter 화이트리스트 방식
+
+- **결정일**: 2026-03-15
+- **결정 내용**: `Set.of` prefix match 방식에서 exact match + prefix match 혼합 방식으로 변경.
+- **이유**: `/api/v1/auth/` prefix로 매칭하면 향후 추가되는 인증 필요 API(`/api/v1/auth/me` 등)가 의도치 않게 제외될 수 있음. `/api/v1/auth/kakao`, `/api/v1/auth/reissue`만 명시적으로 제외.
+- **영향 파일**: `JwtAuthenticationFilter.java`
+
+---
+
 > 새 결정이 발생하면 [AD-{N}] 형식으로 추가한다.
