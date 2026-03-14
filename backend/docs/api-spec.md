@@ -246,6 +246,8 @@ Response 200:
   "reservationId": 1,
   "status": "CONFIRMED",
   "shopName": "string",
+  "conceptTitle": "string",
+  "price": 35000,
   "fulfillmentType": "PICKUP",
   "fulfillmentDate": "2025-06-01",
   "fulfillmentSlot": { "kind": "PICKUP_30M", "value": "14:00" },
@@ -270,15 +272,43 @@ Response 200:
   "fulfillmentDate": "2025-06-01",
   "fulfillmentSlot": { "kind": "PICKUP_30M", "value": "14:00" },
   "placeAddressText": "string",
-  "confirmedAt": "2025-05-30T10:00:00"
+  "confirmedAt": "2025-05-30T10:00:00",
+  "request": {
+    "requestId": 1,
+    "purposeTags": ["string"],
+    "relationTags": ["string"],
+    "moodTags": ["string"],
+    "budgetTier": "TIER1"
+  }
 }
 ```
 
 ---
 
-## 5. 판매자 — 요청함
+## 5. 구매자 — 프로필
 
-### 5-1. 요청 목록 조회
+### 5-1. 내 프로필 조회
+```
+GET /api/v1/buyer/me
+```
+Response 200:
+```json
+{
+  "buyerId": 1,
+  "nickName": "string",
+  "email": "string (nullable)",
+  "role": "BUYER",
+  "createdAt": "2025-05-01T10:00:00"
+}
+```
+- 카카오 로그인 시 받아온 닉네임, 이메일 반환
+- 이메일은 카카오 미제공 시 `null`
+
+---
+
+## 6. 판매자 — 요청함
+
+### 6-1. 요청 목록 조회
 ```
 GET /api/v1/seller/requests?page=0&size=20
 ```
@@ -301,7 +331,7 @@ Response 200 (페이지네이션):
 
 ---
 
-### 5-2. 요청 상세 조회
+### 6-2. 요청 상세 조회
 ```
 GET /api/v1/seller/requests/{requestId}
 ```
@@ -325,9 +355,9 @@ Response 200:
 
 ---
 
-## 6. 판매자 — 제안
+## 7. 판매자 — 제안
 
-### 6-1. 제안 작성 시작 (DRAFT 생성)
+### 7-1. 제안 작성 시작 (DRAFT 생성)
 ```
 POST /api/v1/seller/requests/{requestId}/proposals
 ```
@@ -341,7 +371,7 @@ Response 201:
 
 ---
 
-### 6-2. 제안 임시저장 (DRAFT 수정)
+### 7-2. 제안 임시저장 (DRAFT 수정)
 ```
 PATCH /api/v1/seller/proposals/{proposalId}
 ```
@@ -364,7 +394,7 @@ Response 200: `{ "proposalId": 1, "status": "DRAFT" }`
 
 ---
 
-### 6-3. 제안 제출
+### 7-3. 제안 제출
 ```
 POST /api/v1/seller/proposals/{proposalId}/submit
 ```
@@ -378,7 +408,7 @@ Response 200:
 
 ---
 
-### 6-4. 내 제안 목록 조회
+### 7-4. 내 제안 목록 조회
 ```
 GET /api/v1/seller/proposals?page=0&size=20
 ```
@@ -396,9 +426,9 @@ Response 200 (페이지네이션):
 
 ---
 
-## 7. 판매자 — 예약
+## 8. 판매자 — 예약
 
-### 7-1. 예약 목록 조회
+### 8-1. 예약 목록 조회
 ```
 GET /api/v1/seller/reservations
 ```
@@ -407,6 +437,8 @@ Response 200:
 [{
   "reservationId": 1,
   "status": "CONFIRMED",
+  "conceptTitle": "string",
+  "price": 35000,
   "fulfillmentType": "PICKUP",
   "fulfillmentDate": "2025-06-01",
   "fulfillmentSlot": { "kind": "PICKUP_30M", "value": "14:00" },
@@ -417,7 +449,7 @@ Response 200:
 
 ---
 
-### 7-2. 예약 상세 조회
+### 8-2. 예약 상세 조회
 ```
 GET /api/v1/seller/reservations/{reservationId}
 ```
@@ -426,20 +458,28 @@ Response 200:
 {
   "reservationId": 1,
   "status": "CONFIRMED",
-  "proposal": { "proposalId": 1, "conceptTitle": "string", "description": "string", "price": 35000 },
+  "buyerNickName": "string",
+  "proposal": { "proposalId": 1, "conceptTitle": "string", "description": "string", "imageUrls": ["string"], "price": 35000 },
   "fulfillmentType": "PICKUP",
   "fulfillmentDate": "2025-06-01",
   "fulfillmentSlot": { "kind": "PICKUP_30M", "value": "14:00" },
   "placeAddressText": "string",
   "placeLat": 37.123456,
   "placeLng": 127.123456,
-  "confirmedAt": "2025-05-30T10:00:00"
+  "confirmedAt": "2025-05-30T10:00:00",
+  "request": {
+    "requestId": 1,
+    "purposeTags": ["string"],
+    "relationTags": ["string"],
+    "moodTags": ["string"],
+    "budgetTier": "TIER1"
+  }
 }
 ```
 
 ---
 
-## 8. 판매자 — 홈 대시보드
+## 9. 판매자 — 홈 대시보드
 
 ```
 GET /api/v1/seller/home
@@ -450,15 +490,77 @@ Response 200:
   "openRequestCount": 5,
   "draftProposalCount": 1,
   "submittedProposalCount": 3,
-  "confirmedReservationCount": 2
+  "confirmedReservationCount": 2,
+  "recentRequests": [
+    {
+      "requestId": 1,
+      "status": "OPEN",
+      "purposeTags": ["string"],
+      "budgetTier": "TIER2",
+      "fulfillmentType": "PICKUP",
+      "fulfillmentDate": "2025-06-01",
+      "expiresAt": "2025-06-03T14:00:00"
+    }
+  ]
 }
 ```
+- recentRequests: 반경 2km 내 최근 OPEN 요청 (최대 5건)
 
 ---
 
-## 9. 꽃집
+## 10. 판매자 — 프로필
 
-### 9-1. 꽃집 등록 (최초 1회)
+### 10-1. 내 프로필 조회
+```
+GET /api/v1/seller/me
+```
+Response 200:
+```json
+{
+  "sellerId": 1,
+  "shopName": "string",
+  "shopAddress": "string",
+  "role": "SELLER",
+  "createdAt": "2025-05-01T10:00:00"
+}
+```
+- FLOWER_SHOP 정보 기반으로 가게명, 주소 반환
+- 신뢰도 지수는 MVP 제외 (향후 추가 예정)
+
+---
+
+## 11. 판매자 — 통계
+
+### 11-1. 현황 조회
+```
+GET /api/v1/seller/stats
+```
+Response 200:
+```json
+{
+  "monthlyReceivedRequestCount": 12,
+  "monthlySubmittedProposalCount": 8,
+  "monthlyConfirmedReservationCount": 5,
+  "recentReservations": [
+    {
+      "reservationId": 1,
+      "conceptTitle": "string",
+      "price": 35000,
+      "fulfillmentType": "PICKUP",
+      "confirmedAt": "2025-05-30T10:00:00"
+    }
+  ]
+}
+```
+- 월별 통계: 당월 기준 집계
+- recentReservations: 최근 확정 예약 (최대 10건)
+- 신뢰도 지수는 MVP 제외
+
+---
+
+## 12. 꽃집
+
+### 12-1. 꽃집 등록 (최초 1회)
 ```
 POST /api/v1/seller/shop
 ```
@@ -470,24 +572,24 @@ Response 201: `{ "shopId": 1, "name": "string" }`
 
 ---
 
-### 9-2. 꽃집 정보 조회
+### 12-2. 꽃집 정보 조회
 ```
 GET /api/v1/seller/shop
 ```
 
 ---
 
-### 9-3. 꽃집 정보 수정
+### 12-3. 꽃집 정보 수정
 ```
 PATCH /api/v1/seller/shop
 ```
-Request: 9-1과 동일 구조 (변경할 필드만 포함)
+Request: 12-1과 동일 구조 (변경할 필드만 포함)
 
 ---
 
-## 10. S3 이미지 업로드
+## 13. S3 이미지 업로드
 
-### 10-1. Presigned URL 발급
+### 13-1. Presigned URL 발급
 ```
 POST /api/v1/images/presigned-url
 ```
@@ -504,9 +606,9 @@ Response 200:
 
 ---
 
-## 11. 알림
+## 14. 알림
 
-### 11-1. 알림 목록 조회
+### 14-1. 알림 목록 조회
 ```
 GET /api/v1/notifications?page=0&size=20
 ```
@@ -518,6 +620,7 @@ Response 200 (페이지네이션):
   "referenceType": "REQUEST | PROPOSAL | RESERVATION",
   "referenceId": 1,
   "title": "string",
+  "body": "string",
   "isRead": false,
   "createdAt": "2025-05-30T10:00:00"
 }
@@ -525,7 +628,7 @@ Response 200 (페이지네이션):
 
 ---
 
-### 11-2. 알림 읽음 처리
+### 14-2. 알림 읽음 처리
 ```
 PATCH /api/v1/notifications/{notificationId}/read
 ```
@@ -533,9 +636,9 @@ Response 200: `{ "notificationId": 1, "isRead": true }`
 
 ---
 
-## 12. FCM 디바이스 토큰
+## 15. FCM 디바이스 토큰
 
-### 12-1. FCM 토큰 등록/갱신
+### 15-1. FCM 토큰 등록/갱신
 ```
 POST /api/v1/devices
 ```
@@ -563,6 +666,7 @@ Response 200: `{ "deviceId": 1 }`
 | POST | `/buyer/proposals/{id}/select` | 제안 선택 + Mock 결제 | 구매자 |
 | GET | `/buyer/reservations` | 예약 목록 | 구매자 |
 | GET | `/buyer/reservations/{id}` | 예약 상세 | 구매자 |
+| GET | `/buyer/me` | 프로필 조회 | 구매자 |
 | GET | `/seller/home` | 홈 대시보드 | 판매자 |
 | GET | `/seller/requests` | 요청함 목록 | 판매자 |
 | GET | `/seller/requests/{id}` | 요청 상세 | 판매자 |
@@ -572,6 +676,8 @@ Response 200: `{ "deviceId": 1 }`
 | GET | `/seller/proposals` | 내 제안 목록 | 판매자 |
 | GET | `/seller/reservations` | 예약 목록 | 판매자 |
 | GET | `/seller/reservations/{id}` | 예약 상세 | 판매자 |
+| GET | `/seller/me` | 프로필 조회 | 판매자 |
+| GET | `/seller/stats` | 현황 통계 | 판매자 |
 | POST | `/seller/shop` | 꽃집 등록 | 판매자 |
 | GET | `/seller/shop` | 꽃집 정보 조회 | 판매자 |
 | PATCH | `/seller/shop` | 꽃집 정보 수정 | 판매자 |
