@@ -61,4 +61,24 @@ public class TestAdapter {
                 new HttpEntity<>(headers),
                 String.class);
     }
+
+    public ResponseEntity<String> getProposalList(String token, Long requestId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/buyer/requests/" + requestId + "/proposals",
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                String.class);
+    }
+
+    public ResponseEntity<String> getProposalDetail(String token, Long proposalId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/buyer/proposals/" + proposalId,
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                String.class);
+    }
 }

@@ -83,12 +83,12 @@ class BuyerRequestServiceTest {
         // given — 기준점: 37.498095, 127.027610
         // 약 1km 거리 꽃집
         FlowerShop nearbyShop = FlowerShop.reconstitute(
-                1L, 10L, "가까운꽃집", "서울시 강남구",
+                1L, 10L, "가까운꽃집", null, "서울시 강남구",
                 new BigDecimal("37.505"),
                 new BigDecimal("127.027"));
         // 약 10km 거리 꽃집
         FlowerShop farShop = FlowerShop.reconstitute(
-                2L, 20L, "먼꽃집", "서울시 마포구",
+                2L, 20L, "먼꽃집", null, "서울시 마포구",
                 new BigDecimal("37.560"),
                 new BigDecimal("126.920"));
         shopRepository.save(nearbyShop);
@@ -107,7 +107,7 @@ class BuyerRequestServiceTest {
     void 반경_밖_꽃집_알림_미발송() {
         // given — 모든 꽃집이 반경 밖
         FlowerShop farShop = FlowerShop.reconstitute(
-                1L, 10L, "먼꽃집", "서울시 마포구",
+                1L, 10L, "먼꽃집", null, "서울시 마포구",
                 new BigDecimal("37.560"),
                 new BigDecimal("126.920"));
         shopRepository.save(farShop);

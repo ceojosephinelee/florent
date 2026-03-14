@@ -22,6 +22,7 @@ public enum ErrorCode {
     PROPOSAL_NOT_FOUND(HttpStatus.NOT_FOUND, "제안을 찾을 수 없습니다."),
     PROPOSAL_ALREADY_EXISTS(HttpStatus.UNPROCESSABLE_ENTITY, "이미 제안서를 작성했습니다."),
     PROPOSAL_NOT_SUBMITTABLE(HttpStatus.UNPROCESSABLE_ENTITY, "제출할 수 없는 상태입니다."),
+    PROPOSAL_NOT_SELECTABLE(HttpStatus.UNPROCESSABLE_ENTITY, "선택할 수 없는 상태입니다."),
     PROPOSAL_EXPIRED(HttpStatus.UNPROCESSABLE_ENTITY, "만료된 제안입니다."),
 
     // Payment

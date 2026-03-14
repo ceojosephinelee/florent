@@ -136,7 +136,7 @@
 - **위치**: `adapter/out/persistence/proposal/ProposalJpaEntity.java`
 - **내용**: Proposal 도메인 엔티티가 아직 없어 `toDomain()` / `from()` 변환 메서드 미작성. Proposal 도메인 구현 시 함께 작성.
 - **심각도**: Low
-- **상태**: OPEN
+- **상태**: RESOLVED — ProposalJpaEntity에 toDomain()/from() 구현 완료
 
 ---
 
@@ -185,6 +185,36 @@
 - **해결 방법**: {방법}
 - **상태**: OPEN / RESOLVED
 ```
+
+---
+
+### [DEBT-017] SlotKind enum 미사용 — availableSlotKind가 String
+
+- **유형**: 기술 부채 (타입 안전성)
+- **위치**: `domain/proposal/Proposal.java` — `availableSlotKind`, `availableSlotValue`
+- **내용**: Request 도메인은 `SlotKind` enum + `TimeSlot` Value Object를 사용하지만, Proposal 도메인은 String으로 저장. enum 기반 `ProposalSlot` Value Object 도입 검토.
+- **심각도**: Low
+- **상태**: OPEN
+
+---
+
+### [DEBT-018] ProposalDetail이 Shop 데이터 직접 포함 — Read Model 분리 검토
+
+- **유형**: 기술 부채 (아키텍처)
+- **위치**: `domain/proposal/ProposalDetail.java`
+- **내용**: ProposalDetail record가 Shop 필드(shopId, shopName, shopPhone, shopAddressText)를 직접 포함. 조회 전용 Read Model(CQRS)로 분리하면 Service에서 Shop 조합 로직 제거 가능.
+- **심각도**: Low
+- **상태**: OPEN
+
+---
+
+### [DEBT-019] Proposal status DB 필터링 — 현재 메모리 필터링
+
+- **유형**: 기술 부채 (성능)
+- **위치**: `BuyerProposalService.getProposalsByRequestId()`
+- **내용**: `findByRequestId()`로 전체 제안을 조회한 뒤 Java에서 `isVisibleToBuyer()` 필터링. 제안 수 증가 시 `findByRequestIdAndStatusIn(requestId, visibleStatuses)` WHERE 절 DB 필터링으로 전환 필요.
+- **심각도**: Low
+- **상태**: OPEN
 
 ---
 

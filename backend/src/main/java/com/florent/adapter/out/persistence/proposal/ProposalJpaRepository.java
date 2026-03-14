@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface ProposalJpaRepository extends JpaRepository<ProposalJpaEntity, Long> {
 
+    List<ProposalJpaEntity> findByRequestId(Long requestId);
+
     @Query("SELECT p.requestId, p.status, COUNT(p) "
             + "FROM ProposalJpaEntity p "
             + "WHERE p.requestId IN :requestIds "

@@ -49,6 +49,7 @@ public class RequestSteps {
     @Given("구매자 {string} 이 로그인되어 있다")
     public void 구매자가_로그인되어_있다(String name) {
         buyerToken = testDataFactory.createBuyerAndGetToken(name);
+        scenarioContext.setBuyerToken(buyerToken);
     }
 
     @Given("반경 2km 이내에 꽃집 {string} 이 위치해 있다 \\(위도 {double}, 경도 {double})")

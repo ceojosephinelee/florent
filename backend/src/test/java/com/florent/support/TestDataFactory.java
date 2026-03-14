@@ -212,6 +212,25 @@ public class TestDataFactory {
                 requestId, flowerShopId, status);
     }
 
+    public Long createProposalAndGetId(Long requestId, Long flowerShopId, String status) {
+        String expiresAtExpr = "EXPIRED".equals(status)
+                ? "now() - INTERVAL '1' HOUR"
+                : "now() + INTERVAL '24' HOUR";
+        jdbcTemplate.update(
+                "INSERT INTO proposal "
+                + "(request_id, flower_shop_id, status, concept_title, description, "
+                + "available_slot_kind, available_slot_value, price, "
+                + "created_at, expires_at, submitted_at, updated_at) "
+                + "VALUES (?, ?, ?, '테스트 컨셉', '테스트 제안 설명', "
+                + "'PICKUP_30M', '14:00', 35000, "
+                + "now() - INTERVAL '25' HOUR, " + expiresAtExpr + ", "
+                + "CASE WHEN ? = 'SUBMITTED' THEN now() ELSE NULL END, now())",
+                requestId, flowerShopId, status, status);
+        return jdbcTemplate.queryForObject(
+                "SELECT id FROM proposal WHERE request_id = ? AND flower_shop_id = ?",
+                Long.class, requestId, flowerShopId);
+    }
+
     public Long getBuyerIdFromToken(String token) {
         try {
             String json = new String(java.util.Base64.getDecoder().decode(token));
