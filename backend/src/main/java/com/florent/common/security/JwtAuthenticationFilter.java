@@ -1,5 +1,6 @@
 package com.florent.common.security;
 
+import com.florent.common.exception.BusinessException;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,22 +16,22 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
 @Component
-@Profile("prod")
+@Profile("!local & !test")
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
-    private static final Set<String> EXCLUDED_PATHS = Set.of(
-            "/api/v1/auth/", "/actuator/", "/swagger-ui/", "/v3/api-docs/");
 
     private final JwtProvider jwtProvider;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return EXCLUDED_PATHS.stream().anyMatch(path::startsWith);
+        return path.equals("/api/v1/auth/kakao")
+                || path.equals("/api/v1/auth/reissue")
+                || path.equals("/actuator/health")
+                || path.startsWith("/swagger-ui/")
+                || path.startsWith("/v3/api-docs/");
     }
 
     @Override
@@ -39,20 +40,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         String token = extractBearerToken(request);
         if (token != null) {
-            Claims claims = jwtProvider.validateAndExtractClaims(token);
+            try {
+                Claims claims = jwtProvider.validateAndExtractClaims(token);
 
-            Long userId = Long.valueOf(claims.getSubject());
-            String role = claims.get("role", String.class);
-            Long buyerId = claims.get("buyerId", Long.class);
-            Long sellerId = claims.get("sellerId", Long.class);
+                Long userId = Long.valueOf(claims.getSubject());
+                String role = claims.get("role", String.class);
+                Long buyerId = claims.get("buyerId", Long.class);
+                Long sellerId = claims.get("sellerId", Long.class);
 
-            UserPrincipal principal = new UserPrincipal(
-                    userId, buyerId, sellerId,
-                    List.of(new SimpleGrantedAuthority("ROLE_" + role)));
+                UserPrincipal principal = new UserPrincipal(
+                        userId, buyerId, sellerId,
+                        List.of(new SimpleGrantedAuthority("ROLE_" + role)));
 
-            UsernamePasswordAuthenticationToken auth =
-                    new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(auth);
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            } catch (BusinessException e) {
+                response.setStatus(e.getErrorCode().getHttpStatus());
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write(
+                        "{\"success\":false,\"error\":{\"code\":\"" + e.getErrorCode().name()
+                                + "\",\"message\":\"" + e.getErrorCode().getMessage() + "\"}}");
+                return;
+            }
         }
         filterChain.doFilter(request, response);
     }

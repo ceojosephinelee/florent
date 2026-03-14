@@ -2,6 +2,7 @@ package com.florent.adapter.in.buyer;
 
 import com.florent.common.exception.BusinessException;
 import com.florent.common.exception.ErrorCode;
+import com.florent.common.security.JwtProvider;
 import com.florent.domain.proposal.GetProposalDetailUseCase;
 import com.florent.domain.proposal.GetProposalListUseCase;
 import com.florent.domain.proposal.ProposalDetail;
@@ -38,6 +39,9 @@ class BuyerProposalControllerTest {
 
     @MockBean
     private GetProposalDetailUseCase getProposalDetailUseCase;
+
+    @MockBean
+    private JwtProvider jwtProvider;
 
     @Test
     @DisplayName("제안 목록 조회 성공")

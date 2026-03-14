@@ -5,12 +5,12 @@ import com.florent.common.exception.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import com.florent.support.TestFixtures;
+
 import java.math.BigDecimal;
 import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,8 +18,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CurationRequestTest {
 
-    private final Clock fixedClock = Clock.fixed(
-            Instant.parse("2026-03-15T10:00:00Z"), ZoneId.of("Asia/Seoul"));
+    private final Clock fixedClock = TestFixtures.FIXED_CLOCK;
 
     private CreateRequestCommand defaultCommand() {
         return new CreateRequestCommand(

@@ -15,6 +15,7 @@ import com.florent.domain.request.RequestStatus;
 import com.florent.domain.request.RequestSummaryResult;
 import com.florent.domain.request.SlotKind;
 import com.florent.domain.request.TimeSlot;
+import com.florent.common.security.JwtProvider;
 import com.florent.support.WithMockBuyer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -56,6 +57,9 @@ class BuyerRequestControllerTest {
 
     @MockBean
     private GetRequestDetailUseCase getRequestDetailUseCase;
+
+    @MockBean
+    private JwtProvider jwtProvider;
 
     @Test
     @DisplayName("요청 생성 성공 시 201 응답")

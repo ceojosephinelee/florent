@@ -20,11 +20,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import com.florent.support.TestFixtures;
+
 import java.math.BigDecimal;
 import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,8 +39,7 @@ class BuyerProposalServiceTest {
 
     private static final Long BUYER_ID = 1L;
     private static final Long SHOP_ID = 100L;
-    private final Clock fixedClock = Clock.fixed(
-            Instant.parse("2026-03-15T10:00:00Z"), ZoneId.of("Asia/Seoul"));
+    private final Clock fixedClock = TestFixtures.FIXED_CLOCK;
 
     @BeforeEach
     void setUp() {

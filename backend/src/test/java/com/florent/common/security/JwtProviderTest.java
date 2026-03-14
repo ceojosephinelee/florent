@@ -7,8 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import com.florent.support.TestFixtures;
+
 import java.time.Clock;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 
@@ -22,11 +23,10 @@ class JwtProviderTest {
     private static final long REFRESH_TOKEN_VALIDITY_MS = 2592000000L;
 
     private JwtProvider sut;
-    private Clock fixedClock;
+    private final Clock fixedClock = TestFixtures.FIXED_CLOCK;
 
     @BeforeEach
     void setUp() {
-        fixedClock = Clock.fixed(Instant.parse("2026-03-15T10:00:00Z"), ZoneId.of("Asia/Seoul"));
         JwtProperties properties = new JwtProperties(SECRET_KEY, ACCESS_TOKEN_VALIDITY_MS, REFRESH_TOKEN_VALIDITY_MS);
         sut = new JwtProvider(properties, fixedClock);
     }
@@ -79,6 +79,22 @@ class JwtProviderTest {
                 .isInstanceOf(BusinessException.class)
                 .extracting(e -> ((BusinessException) e).getErrorCode())
                 .isEqualTo(ErrorCode.UNAUTHORIZED);
+    }
+
+    @Test
+    @DisplayName("리프레시 토큰 생성 및 검증 성공 — subject만 포함")
+    void 리프레시_토큰_생성_및_검증_성공() {
+        // given
+        String token = sut.generateRefreshToken(1L);
+
+        // when
+        Claims claims = sut.validateAndExtractClaims(token);
+
+        // then
+        assertThat(claims.getSubject()).isEqualTo("1");
+        assertThat(claims.get("role")).isNull();
+        assertThat(claims.get("buyerId")).isNull();
+        assertThat(claims.get("sellerId")).isNull();
     }
 
     @Test

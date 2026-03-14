@@ -218,6 +218,36 @@
 
 ---
 
+### [DEBT-020] @WebMvcTest addFilters=false → JWT 통합 슬라이스 테스트 필요
+
+- **유형**: 테스트 부채
+- **위치**: Controller 테스트 전반 (`@WebMvcTest(addFilters = false)`)
+- **내용**: 현재 Controller 단위 테스트에서 `addFilters=false`로 JWT 필터를 비활성화. JWT 필터가 올바르게 동작하는지 확인하는 통합 슬라이스 테스트가 별도로 필요.
+- **심각도**: Medium
+- **상태**: OPEN
+
+---
+
+### [DEBT-021] @WithMockSeller 미구현
+
+- **유형**: 테스트 부채
+- **위치**: `support/` 패키지
+- **내용**: `@WithMockBuyer` 커스텀 어노테이션은 구현되어 있으나, 판매자 역할(`@WithMockSeller`)에 대응하는 어노테이션이 미구현. 판매자 Controller 테스트에서 필요.
+- **심각도**: Low
+- **상태**: OPEN
+
+---
+
+### [DEBT-022] refreshToken 검증/재발급 로직 미구현
+
+- **유형**: 기능 미완성
+- **위치**: auth 도메인
+- **내용**: `JwtProvider.generateRefreshToken()`은 구현되었으나, refreshToken을 DB에서 조회·검증하고 새 accessToken을 재발급하는 서비스 로직(`/api/v1/auth/reissue` 엔드포인트)이 미구현. auth 도메인 구현 시 함께 처리.
+- **심각도**: Medium
+- **상태**: OPEN
+
+---
+
 ## 정합성 검증 이력
 
 ### [2026-03-12] 정합성 검증 — 백엔드 구현 전
