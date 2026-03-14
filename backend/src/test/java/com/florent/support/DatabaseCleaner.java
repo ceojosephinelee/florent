@@ -15,14 +15,8 @@ public class DatabaseCleaner {
 
     @Before(order = 0)
     public void clean() {
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.execute("TRUNCATE TABLE proposal");
-        jdbcTemplate.execute("TRUNCATE TABLE curation_request");
-        jdbcTemplate.execute("TRUNCATE TABLE flower_shop");
-        jdbcTemplate.execute("TRUNCATE TABLE seller");
-        jdbcTemplate.execute("TRUNCATE TABLE buyer");
-        jdbcTemplate.execute("TRUNCATE TABLE \"user\"");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
+        jdbcTemplate.execute(
+                "TRUNCATE TABLE proposal, curation_request, flower_shop, seller, buyer, \"user\" CASCADE");
         fakeNotification.clear();
     }
 }

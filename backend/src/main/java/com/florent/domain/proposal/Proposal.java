@@ -5,6 +5,7 @@ import com.florent.common.exception.ErrorCode;
 import lombok.Getter;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,12 +32,12 @@ public class Proposal {
 
     private Proposal() {}
 
-    public static Proposal create(Long requestId, Long flowerShopId) {
+    public static Proposal create(Long requestId, Long flowerShopId, Clock clock) {
         Proposal p = new Proposal();
         p.requestId = requestId;
         p.flowerShopId = flowerShopId;
         p.status = ProposalStatus.DRAFT;
-        p.createdAt = LocalDateTime.now();
+        p.createdAt = LocalDateTime.now(clock);
         p.expiresAt = p.createdAt.plusHours(24);
         return p;
     }
@@ -71,12 +72,12 @@ public class Proposal {
         return p;
     }
 
-    public void submit() {
+    public void submit(Clock clock) {
         if (status != ProposalStatus.DRAFT) {
             throw new BusinessException(ErrorCode.PROPOSAL_NOT_SUBMITTABLE);
         }
         this.status = ProposalStatus.SUBMITTED;
-        this.submittedAt = LocalDateTime.now();
+        this.submittedAt = LocalDateTime.now(clock);
     }
 
     public void select() {
@@ -105,10 +106,10 @@ public class Proposal {
             || status == ProposalStatus.SELECTED || status == ProposalStatus.NOT_SELECTED;
     }
 
-    public boolean isExpired() {
+    public boolean isExpired(Clock clock) {
         return status == ProposalStatus.EXPIRED
             || (status != ProposalStatus.SELECTED
                 && status != ProposalStatus.NOT_SELECTED
-                && LocalDateTime.now().isAfter(expiresAt));
+                && LocalDateTime.now(clock).isAfter(expiresAt));
     }
 }

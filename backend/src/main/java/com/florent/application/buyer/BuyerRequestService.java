@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -39,11 +40,12 @@ public class BuyerRequestService implements CreateRequestUseCase,
     private final FlowerShopRepository shopRepository;
     private final SaveNotificationPort saveNotificationPort;
     private final ProposalCountPort proposalCountPort;
+    private final Clock clock;
 
     @Transactional
     @Override
     public CreateRequestResult create(CreateRequestCommand command) {
-        CurationRequest request = CurationRequest.create(command);
+        CurationRequest request = CurationRequest.create(command, clock);
         CurationRequest saved = requestRepository.save(request);
         notifyNearbyShops(command.placeLat(), command.placeLng(), saved.getId());
         return CreateRequestResult.from(saved);

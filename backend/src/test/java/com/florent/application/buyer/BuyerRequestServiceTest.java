@@ -20,7 +20,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import com.florent.support.TestFixtures;
+
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -35,13 +38,15 @@ class BuyerRequestServiceTest {
     private FakeProposalCountPort proposalCountPort;
     private BuyerRequestService sut;
 
+    private final Clock fixedClock = TestFixtures.FIXED_CLOCK;
+
     @BeforeEach
     void setUp() {
         requestRepository = new FakeCurationRequestRepository();
         shopRepository = new FakeFlowerShopRepository();
         notificationPort = new FakeSaveNotificationPort();
         proposalCountPort = new FakeProposalCountPort();
-        sut = new BuyerRequestService(requestRepository, shopRepository, notificationPort, proposalCountPort);
+        sut = new BuyerRequestService(requestRepository, shopRepository, notificationPort, proposalCountPort, fixedClock);
     }
 
     private CreateRequestCommand defaultCommand() {

@@ -193,7 +193,7 @@ public class TestDataFactory {
                 + "'TIER2', 'PICKUP', ?, ?, "
                 + "'서울시 강남구 테헤란로 1', 37.498095, 127.027610, now(), now() + INTERVAL '48' HOUR, now())",
                 buyerId,
-                LocalDate.now().plusDays(3).toString(),
+                java.sql.Date.valueOf(LocalDate.now().plusDays(3)),
                 timeSlotsJson);
         return jdbcTemplate.queryForObject(
                 "SELECT id FROM curation_request WHERE buyer_id = ? ORDER BY id DESC LIMIT 1",
