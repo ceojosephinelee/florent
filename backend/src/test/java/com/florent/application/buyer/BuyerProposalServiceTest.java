@@ -21,7 +21,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,6 +39,8 @@ class BuyerProposalServiceTest {
 
     private static final Long BUYER_ID = 1L;
     private static final Long SHOP_ID = 100L;
+    private final Clock fixedClock = Clock.fixed(
+            Instant.parse("2026-03-15T10:00:00Z"), ZoneId.of("Asia/Seoul"));
 
     @BeforeEach
     void setUp() {
@@ -53,13 +58,13 @@ class BuyerProposalServiceTest {
                 List.of(new TimeSlot(SlotKind.PICKUP_30M, "14:00")),
                 "서울시 강남구", new BigDecimal("37.498095"), new BigDecimal("127.027610")
         );
-        return requestRepository.save(CurationRequest.create(cmd));
+        return requestRepository.save(CurationRequest.create(cmd, fixedClock));
     }
 
     private Proposal createAndSaveProposal(Long requestId, Long shopId, ProposalStatus targetStatus) {
-        Proposal proposal = Proposal.create(requestId, shopId);
+        Proposal proposal = Proposal.create(requestId, shopId, fixedClock);
         if (targetStatus == ProposalStatus.SUBMITTED) {
-            proposal.submit();
+            proposal.submit(fixedClock);
         } else if (targetStatus == ProposalStatus.EXPIRED) {
             proposal.expire();
         }

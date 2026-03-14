@@ -21,7 +21,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,13 +38,16 @@ class BuyerRequestServiceTest {
     private FakeProposalCountPort proposalCountPort;
     private BuyerRequestService sut;
 
+    private final Clock fixedClock = Clock.fixed(
+            Instant.parse("2026-03-15T10:00:00Z"), ZoneId.of("Asia/Seoul"));
+
     @BeforeEach
     void setUp() {
         requestRepository = new FakeCurationRequestRepository();
         shopRepository = new FakeFlowerShopRepository();
         notificationPort = new FakeSaveNotificationPort();
         proposalCountPort = new FakeProposalCountPort();
-        sut = new BuyerRequestService(requestRepository, shopRepository, notificationPort, proposalCountPort);
+        sut = new BuyerRequestService(requestRepository, shopRepository, notificationPort, proposalCountPort, fixedClock);
     }
 
     private CreateRequestCommand defaultCommand() {
