@@ -34,4 +34,11 @@ public class FakeFlowerShopRepository implements FlowerShopRepository {
                 .filter(java.util.Objects::nonNull)
                 .toList();
     }
+
+    @Override
+    public Optional<FlowerShop> findBySellerId(Long sellerId) {
+        return store.values().stream()
+                .filter(shop -> shop.getSellerId().equals(sellerId))
+                .findFirst();
+    }
 }

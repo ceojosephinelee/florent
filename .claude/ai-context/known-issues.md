@@ -170,6 +170,46 @@
 
 ---
 
+### [DEBT-023] updateDraft() VO 도입 검토
+
+- **유형**: 기술 부채 (설계)
+- **위치**: `domain/proposal/Proposal.updateDraft()`
+- **내용**: updateDraft()의 파라미터가 11개 원시 타입. `ProposalDraftContent` Value Object로 묶으면 가독성·유지보수성 향상.
+- **심각도**: Low
+- **상태**: OPEN
+
+---
+
+### [DEBT-024] imageUrls 검증 부재
+
+- **유형**: 기술 부채 (검증)
+- **위치**: `domain/proposal/Proposal.updateDraft()`, `validateForSubmission()`
+- **내용**: imageUrls에 대해 URL 형식 검증, 최대 개수 제한 등이 없음. 악의적 입력 방어를 위해 도메인 검증 추가 검토.
+- **심각도**: Low
+- **상태**: OPEN
+
+---
+
+### [DEBT-025] validateForSubmission() 필드별 에러 메시지
+
+- **유형**: 기술 부채 (UX)
+- **위치**: `domain/proposal/Proposal.validateForSubmission()`
+- **내용**: 모든 필수 필드 누락을 동일한 `VALIDATION_ERROR`로 반환. 프론트엔드에서 어떤 필드가 누락인지 알 수 없음. 필드별 에러 코드 또는 메시지 도입 검토.
+- **심각도**: Low
+- **상태**: OPEN
+
+---
+
+### [DEBT-026] SellerProposalController @WebMvcTest 미작성
+
+- **유형**: 테스트 부채
+- **위치**: `test/adapter/in/seller/` (미작성)
+- **내용**: SellerProposalController에 대한 `@WebMvcTest` 슬라이스 테스트가 없음. 요청/응답 직렬화, Validation, HTTP 상태 코드를 검증하는 Controller 단위 테스트 필요.
+- **심각도**: Medium
+- **상태**: OPEN
+
+---
+
 ## 버그 목록
 
 > 버그 발견 시 아래 형식으로 추가

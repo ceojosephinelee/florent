@@ -1,8 +1,11 @@
 package com.florent.adapter.out.persistence.proposal;
 
 import com.florent.domain.proposal.Proposal;
+import com.florent.domain.proposal.ProposalPage;
 import com.florent.domain.proposal.ProposalRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -32,5 +35,22 @@ public class ProposalRepositoryImpl implements ProposalRepository {
         return jpaRepository.findByRequestId(requestId).stream()
                 .map(ProposalJpaEntity::toDomain)
                 .toList();
+    }
+
+    @Override
+    public ProposalPage findByFlowerShopId(Long flowerShopId, int page, int size) {
+        Page<ProposalJpaEntity> jpaPage =
+                jpaRepository.findByFlowerShopIdOrderByCreatedAtDesc(
+                        flowerShopId, PageRequest.of(page, size));
+        return new ProposalPage(
+                jpaPage.getContent().stream().map(ProposalJpaEntity::toDomain).toList(),
+                jpaPage.getTotalElements(),
+                jpaPage.getTotalPages(),
+                jpaPage.isLast());
+    }
+
+    @Override
+    public boolean existsByRequestIdAndFlowerShopId(Long requestId, Long flowerShopId) {
+        return jpaRepository.existsByRequestIdAndFlowerShopId(requestId, flowerShopId);
     }
 }

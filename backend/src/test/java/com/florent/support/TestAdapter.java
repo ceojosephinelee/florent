@@ -81,4 +81,49 @@ public class TestAdapter {
                 new HttpEntity<>(headers),
                 String.class);
     }
+
+    // ─── Seller Proposal APIs ───
+
+    public ResponseEntity<String> startProposal(String token, Long requestId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/seller/requests/" + requestId + "/proposals",
+                HttpMethod.POST,
+                new HttpEntity<>("{}", headers),
+                String.class);
+    }
+
+    public ResponseEntity<String> saveProposal(String token, Long proposalId, String body) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/seller/proposals/" + proposalId,
+                HttpMethod.PATCH,
+                new HttpEntity<>(body, headers),
+                String.class);
+    }
+
+    public ResponseEntity<String> submitProposal(String token, Long proposalId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/seller/proposals/" + proposalId + "/submit",
+                HttpMethod.POST,
+                new HttpEntity<>("{}", headers),
+                String.class);
+    }
+
+    public ResponseEntity<String> getSellerProposals(String token, int page, int size) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/seller/proposals?page=" + page + "&size=" + size,
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                String.class);
+    }
 }

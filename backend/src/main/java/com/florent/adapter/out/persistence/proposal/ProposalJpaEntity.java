@@ -58,19 +58,18 @@ public class ProposalJpaEntity {
     @Column(columnDefinition = "TEXT")
     private String careTips;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column(columnDefinition = "TEXT")
     private String imageUrlsJson;
 
-    @Column(nullable = false, length = 30)
+    @Column(length = 30)
     private String availableSlotKind;
 
-    @Column(nullable = false, length = 30)
+    @Column(length = 30)
     private String availableSlotValue;
 
-    @Column(nullable = false)
     private BigDecimal price;
 
     @Column(nullable = false, updatable = false)

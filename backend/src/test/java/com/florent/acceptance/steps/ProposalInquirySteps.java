@@ -42,6 +42,7 @@ public class ProposalInquirySteps {
         // given
         Long buyerId = getBuyerIdFromCurrentToken();
         requestId = testDataFactory.createOpenRequest(buyerId);
+        scenarioContext.setRequestId(requestId);
     }
 
     @Given("해당 요청에 SUBMITTED 제안 1건과 EXPIRED 제안 1건이 존재한다")

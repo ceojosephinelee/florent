@@ -23,6 +23,7 @@ public enum ErrorCode {
     PROPOSAL_NOT_FOUND(404, "제안을 찾을 수 없습니다."),
     PROPOSAL_ALREADY_EXISTS(422, "이미 제안서를 작성했습니다."),
     PROPOSAL_NOT_SUBMITTABLE(422, "제출할 수 없는 상태입니다."),
+    PROPOSAL_NOT_EDITABLE(422, "수정할 수 없는 상태입니다."),
     PROPOSAL_NOT_SELECTABLE(422, "선택할 수 없는 상태입니다."),
     PROPOSAL_EXPIRED(422, "만료된 제안입니다."),
 
