@@ -46,7 +46,7 @@
 - **위치**: `test/domain/request/` (미작성)
 - **내용**: `CurationRequest.create()`, `confirm()`, `expire()`, `isExpired()`에 대한 도메인 단위 테스트가 없음. conventions.md §7 — "Domain 변경 시 도메인 단위 테스트 필수".
 - **심각도**: Medium
-- **상태**: OPEN
+- **상태**: RESOLVED — CurationRequestTest.java 작성 완료
 
 ---
 
@@ -54,9 +54,9 @@
 
 - **유형**: 테스트 부채
 - **위치**: `test/application/buyer/BuyerRequestServiceTest.java` (미작성)
-- **내용**: Fake 구현체(`FakeCurationRequestRepository`, `FakeFlowerShopRepository`, `FakeSaveNotificationUseCase`)는 작성되었으나, 이를 활용한 Service 단위 테스트 클래스가 없음.
+- **내용**: Fake 구현체(`FakeCurationRequestRepository`, `FakeFlowerShopRepository`, `FakeSaveNotificationPort`)는 작성되었으나, 이를 활용한 Service 단위 테스트 클래스가 없음.
 - **심각도**: Medium
-- **상태**: OPEN
+- **상태**: RESOLVED — BuyerRequestServiceTest.java 작성 완료
 
 ---
 
@@ -65,6 +65,56 @@
 - **유형**: 컨벤션 검토
 - **위치**: `domain/request/TimeSlot.java:8-10`
 - **내용**: `IllegalArgumentException`을 직접 throw. conventions.md §5에서 RuntimeException 직접 사용 금지, `BusinessException(ErrorCode.XXX)` 사용 요구. Value Object 생성자 검증에 한해 Java 관례상 허용 가능하나 프로젝트 컨벤션 일관성 검토 필요.
+- **심각도**: Low
+- **상태**: OPEN
+
+---
+
+### [DEBT-007] ErrorCode에 HttpStatus 의존 (도메인 순수성)
+
+- **유형**: 기술 부채 (아키텍처)
+- **위치**: `common/exception/ErrorCode.java`
+- **내용**: ErrorCode enum이 `org.springframework.http.HttpStatus`를 직접 참조. 도메인 레이어에서 사용 시 Spring 의존이 전이됨. int statusCode + 매핑 테이블 방식으로 분리 검토 필요.
+- **심각도**: Low
+- **상태**: OPEN
+
+---
+
+### [DEBT-008] LocalDateTime.now() 직접 호출 (Clock 도입 검토)
+
+- **유형**: 기술 부채 (테스트 용이성)
+- **위치**: `domain/request/CurationRequest.create()`, `CurationRequest.isExpired()`
+- **내용**: `LocalDateTime.now()`를 직접 호출하여 테스트에서 시간 제어 불가. `Clock` 주입 또는 `TimeProvider` 인터페이스 도입 검토.
+- **심각도**: Low
+- **상태**: OPEN
+
+---
+
+### [DEBT-009] prod JWT 필터 미구현
+
+- **유형**: 기능 미완성
+- **위치**: `common/config/SecurityConfig.java`
+- **내용**: 현재 DevAuthFilter(local 프로파일)만 존재. prod 환경 JWT 검증 필터 미구현. auth 도메인 구현 시 함께 처리.
+- **심각도**: High
+- **상태**: OPEN
+
+---
+
+### [DEBT-010] H2 → Testcontainers PostgreSQL 전환
+
+- **유형**: 기술 부채 (테스트 환경)
+- **위치**: `src/test/resources/application-test.yml`
+- **내용**: 인수 테스트가 H2 인메모리 DB 사용 중. PostgreSQL 고유 기능(JSON 연산, 인덱스 동작) 테스트 불가. Testcontainers PostgreSQL로 전환 필요.
+- **심각도**: Medium
+- **상태**: OPEN
+
+---
+
+### [DEBT-011] 배치 알림 발송 (saveRequestArrivedBatch)
+
+- **유형**: 기술 부채 (성능)
+- **위치**: `application/buyer/BuyerRequestService.notifyNearbyShops()`
+- **내용**: 반경 내 꽃집에 1건씩 개별 알림 저장. 꽃집 수 증가 시 N번 DB 호출. `saveRequestArrivedBatch(List<Long> sellerIds, Long requestId)` 배치 메서드 도입 검토.
 - **심각도**: Low
 - **상태**: OPEN
 

@@ -89,6 +89,9 @@ public class CurationRequestJpaEntity {
 
     @PrePersist
     void prePersist() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
         this.updatedAt = LocalDateTime.now();
     }
 
