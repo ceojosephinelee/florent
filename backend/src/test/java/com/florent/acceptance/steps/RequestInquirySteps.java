@@ -86,6 +86,7 @@ public class RequestInquirySteps {
         Long otherBuyerId = testDataFactory.getBuyerIdFromToken(otherToken);
         Long otherRequestId = testDataFactory.createOpenRequest(otherBuyerId);
         otherBuyerRequestIds.put(name, otherRequestId);
+        scenarioContext.putOtherBuyerRequestId(name, otherRequestId);
     }
 
     @When("구매자 {string} 이 {string} 의 요청 상세를 조회한다")
