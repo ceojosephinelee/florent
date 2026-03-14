@@ -76,7 +76,7 @@
 - **위치**: `common/exception/ErrorCode.java`
 - **내용**: ErrorCode enum이 `org.springframework.http.HttpStatus`를 직접 참조. 도메인 레이어에서 사용 시 Spring 의존이 전이됨. int statusCode + 매핑 테이블 방식으로 분리 검토 필요.
 - **심각도**: Low
-- **상태**: OPEN
+- **상태**: RESOLVED — ErrorCode에서 HttpStatus 제거, int httpStatus로 변경 완료
 
 ---
 
@@ -86,7 +86,7 @@
 - **위치**: `domain/request/CurationRequest.create()`, `CurationRequest.isExpired()`
 - **내용**: `LocalDateTime.now()`를 직접 호출하여 테스트에서 시간 제어 불가. `Clock` 주입 또는 `TimeProvider` 인터페이스 도입 검토.
 - **심각도**: Low
-- **상태**: OPEN
+- **상태**: RESOLVED — Clock 파라미터 주입 방식으로 도메인 순수성 유지하며 해결. ClockConfig 빈 등록.
 
 ---
 
@@ -96,7 +96,7 @@
 - **위치**: `common/config/SecurityConfig.java`
 - **내용**: 현재 DevAuthFilter(local 프로파일)만 존재. prod 환경 JWT 검증 필터 미구현. auth 도메인 구현 시 함께 처리.
 - **심각도**: High
-- **상태**: OPEN
+- **상태**: RESOLVED — JwtProvider + JwtAuthenticationFilter(@Profile("prod")) 구현 완료. jjwt 0.12.6 사용.
 
 ---
 
@@ -106,7 +106,7 @@
 - **위치**: `src/test/resources/application-test.yml`
 - **내용**: 인수 테스트가 H2 인메모리 DB 사용 중. PostgreSQL 고유 기능(JSON 연산, 인덱스 동작) 테스트 불가. Testcontainers PostgreSQL로 전환 필요.
 - **심각도**: Medium
-- **상태**: OPEN
+- **상태**: RESOLVED — Testcontainers PostgreSQL 15-alpine으로 전환, H2 의존성 제거, DatabaseCleaner PostgreSQL 호환 완료
 
 ---
 
@@ -166,7 +166,7 @@
 - **위치**: `src/test/resources/application-test.yml`
 - **내용**: DEBT-010과 동일 맥락. H2에서 PostgreSQL 고유 문법(INTERVAL, DESC INDEX 등) 호환 문제 발생 가능. Testcontainers 전환 시 함께 해결.
 - **심각도**: Medium
-- **상태**: OPEN
+- **상태**: RESOLVED — DEBT-010과 함께 해결. Testcontainers PostgreSQL 전환 완료.
 
 ---
 
