@@ -26,6 +26,15 @@ git status
 git diff --stat HEAD
 ```
 
+### Step 0. develop 최신화 확인 (반드시 먼저)
+```bash
+git checkout develop
+git pull origin develop
+git log --oneline -3
+```
+→ 이전 PR 머지 커밋이 포함되어 있는지 확인
+→ 포함되어 있지 않으면 중단하고 GitHub에서 PR 머지 후 다시 실행
+
 ### Step 3. 브랜치 + worktree 생성
 ```bash
 # $BRANCH_NAME 은 아래 규칙으로 결정:
