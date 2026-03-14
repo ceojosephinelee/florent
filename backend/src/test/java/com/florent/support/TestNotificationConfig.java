@@ -1,7 +1,7 @@
 package com.florent.support;
 
-import com.florent.fake.FakeSaveNotificationUseCase;
-import com.florent.domain.notification.SaveNotificationUseCase;
+import com.florent.fake.FakeSaveNotificationPort;
+import com.florent.domain.notification.SaveNotificationPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -10,13 +10,13 @@ import org.springframework.context.annotation.Primary;
 public class TestNotificationConfig {
 
     @Bean
-    public FakeSaveNotificationUseCase fakeSaveNotificationUseCase() {
-        return new FakeSaveNotificationUseCase();
+    public FakeSaveNotificationPort fakeSaveNotificationPort() {
+        return new FakeSaveNotificationPort();
     }
 
     @Bean
     @Primary
-    public SaveNotificationUseCase saveNotificationUseCase(FakeSaveNotificationUseCase fake) {
+    public SaveNotificationPort saveNotificationPort(FakeSaveNotificationPort fake) {
         return fake;
     }
 }

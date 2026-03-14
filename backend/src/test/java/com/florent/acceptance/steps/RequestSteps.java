@@ -2,7 +2,7 @@ package com.florent.acceptance.steps;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.florent.fake.FakeSaveNotificationUseCase;
+import com.florent.fake.FakeSaveNotificationPort;
 import com.florent.support.TestAdapter;
 import com.florent.support.TestDataFactory;
 import io.cucumber.java.en.And;
@@ -29,7 +29,7 @@ public class RequestSteps {
     private TestDataFactory testDataFactory;
 
     @Autowired
-    private FakeSaveNotificationUseCase fakeNotification;
+    private FakeSaveNotificationPort fakeNotification;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

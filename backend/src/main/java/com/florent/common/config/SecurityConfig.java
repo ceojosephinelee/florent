@@ -2,9 +2,7 @@ package com.florent.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.florent.common.response.ApiResponse;
-import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -14,12 +12,17 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.Optional;
+
 @Configuration
 @Profile("!test")
 public class SecurityConfig {
 
-    @Autowired(required = false)
-    private DevAuthFilter devAuthFilter;
+    private final Optional<DevAuthFilter> devAuthFilter;
+
+    public SecurityConfig(Optional<DevAuthFilter> devAuthFilter) {
+        this.devAuthFilter = devAuthFilter;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -48,9 +51,8 @@ public class SecurityConfig {
                             mapper.writeValueAsString(ApiResponse.error("FORBIDDEN", "접근 권한이 없습니다.")));
                 }));
 
-        if (devAuthFilter != null) {
-            http.addFilterBefore(devAuthFilter, UsernamePasswordAuthenticationFilter.class);
-        }
+        devAuthFilter.ifPresent(filter ->
+                http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class));
 
         return http.build();
     }

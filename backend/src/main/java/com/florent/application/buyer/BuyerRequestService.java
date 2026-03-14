@@ -1,7 +1,7 @@
 package com.florent.application.buyer;
 
 import com.florent.common.util.HaversineUtil;
-import com.florent.domain.notification.SaveNotificationUseCase;
+import com.florent.domain.notification.SaveNotificationPort;
 import com.florent.domain.request.CreateRequestCommand;
 import com.florent.domain.request.CreateRequestResult;
 import com.florent.domain.request.CreateRequestUseCase;
@@ -24,7 +24,7 @@ public class BuyerRequestService implements CreateRequestUseCase {
 
     private final CurationRequestRepository requestRepository;
     private final FlowerShopRepository shopRepository;
-    private final SaveNotificationUseCase saveNotificationUseCase;
+    private final SaveNotificationPort saveNotificationPort;
 
     @Transactional
     @Override
@@ -43,6 +43,6 @@ public class BuyerRequestService implements CreateRequestUseCase {
                 .toList();
 
         nearbyShops.forEach(shop ->
-                saveNotificationUseCase.saveRequestArrived(shop.getSellerId(), requestId));
+                saveNotificationPort.saveRequestArrived(shop.getSellerId(), requestId));
     }
 }
