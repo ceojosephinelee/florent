@@ -98,6 +98,7 @@ OutboxWorker (@Scheduled, 10초 간격)
 
 | 날짜 | 모호한 부분 | 결정 | 근거 |
 |---|---|---|---|
-| — | — | — | — |
+| 2026-03-15 | 구매자에게 DRAFT 제안 노출 여부 | DRAFT 비노출, isVisibleToBuyer()로 SUBMITTED/EXPIRED/SELECTED/NOT_SELECTED만 노출 | biz-rules §9: 목록에 SUBMITTED/EXPIRED만 표시. SELECTED/NOT_SELECTED도 히스토리 확인용 노출 |
+| 2026-03-15 | EXPIRED 제안의 expires_at 테스트 데이터 | EXPIRED 상태는 expires_at = now() - 1h로 설정 | 만료 상태와 시간이 일관되어야 테스트 신뢰성 확보 |
 
 > 구현 중 새 결정이 발생하면 이 표에 추가한다.

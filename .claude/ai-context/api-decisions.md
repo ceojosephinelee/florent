@@ -32,4 +32,22 @@
 
 ---
 
+## [AD-004] FlowerShop.phone 도메인 필드 추가
+
+- **결정일**: 2026-03-15
+- **결정 내용**: `FlowerShop` 도메인 모델에 `shopPhone` 필드 추가. `ProposalDetailResponse.ShopInfo`에 phone 포함.
+- **이유**: api-spec.md §3-2 제안 상세 응답의 `shop.phone` 필드 지원. `FlowerShopJpaEntity`에는 이미 `phone` 컬럼이 존재했으나 `toDomain()`에서 누락되어 있었음.
+- **영향 파일**: `FlowerShop.java`, `FlowerShopJpaEntity.java`, `ProposalDetail.java`, `ProposalDetailResponse.java`
+
+---
+
+## [AD-005] select/markNotSelected ErrorCode 분리 — PROPOSAL_NOT_SELECTABLE
+
+- **결정일**: 2026-03-15
+- **결정 내용**: `Proposal.select()`, `markNotSelected()`에서 `PROPOSAL_NOT_SUBMITTABLE` 대신 `PROPOSAL_NOT_SELECTABLE`(422) 사용.
+- **이유**: submit과 select은 의미적으로 다른 동작. 에러 코드를 분리하면 클라이언트가 제출 불가/선택 불가를 구분 가능.
+- **영향 파일**: `Proposal.java`, `ErrorCode.java`
+
+---
+
 > 새 결정이 발생하면 [AD-{N}] 형식으로 추가한다.

@@ -309,6 +309,52 @@ repository.findById(id)
 > 아래를 순서대로 **직접 실행**한다.
 > 명령어를 알려주는 게 아니라 네가 bash로 직접 실행한다.
 
+## 10. 레퍼런스 구현 (반드시 참고)
+
+새 기능 구현 전 아래 파일들을 **반드시 먼저 읽어라**.
+독자적인 패턴 금지. 레퍼런스와 다른 방식을 쓰려면 반드시 먼저 질문한다.
+
+레퍼런스: `feature/backend/request-api-v2` 브랜치의 request API 구현
+(현재 develop 브랜치에 머지됨)
+
+반드시 읽을 파일 목록:
+- domain/request/CurationRequest.java
+- domain/request/CreateRequestCommand.java
+- domain/request/CreateRequestResult.java
+- domain/request/CreateRequestUseCase.java
+- domain/notification/SaveNotificationPort.java
+- application/buyer/BuyerRequestService.java
+- adapter/in/buyer/BuyerRequestController.java
+- adapter/in/buyer/dto/CreateRequestRequest.java
+- adapter/out/persistence/request/CurationRequestJpaEntity.java
+- adapter/out/persistence/request/CurationRequestRepositoryImpl.java
+- test/java/com/florent/fake/FakeCurationRequestRepository.java
+- test/java/com/florent/acceptance/steps/RequestSteps.java
+
+새 API는 반드시 레퍼런스 API와 동일한 구조를 따른다.
+
+- Domain
+- UseCase
+- Application Service
+- Controller
+- DTO
+- Persistence Adapter
+- Fake Repository
+- Acceptance Test
+
+이 계층을 동일하게 구현한다.
+
+### 작업 절차
+
+코드를 작성하기 전에 반드시 다음 절차를 따른다.
+
+1. 위 레퍼런스 파일들을 모두 읽는다.
+2. 각 파일의 역할을 요약한다.
+3. 레퍼런스에서 사용된 아키텍처 패턴을 정리한다.
+4. 새 기능을 레퍼런스 패턴에 어떻게 맞출지 계획을 작성한다.
+
+이 계획을 먼저 출력한 뒤에만 코드 생성을 시작한다.
+
 ### Step 1. 테스트 실행
 ```bash
 ./gradlew test
