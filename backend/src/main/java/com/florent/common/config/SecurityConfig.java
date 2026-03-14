@@ -12,6 +12,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.florent.common.security.JwtAuthenticationFilter;
+
 import java.util.Optional;
 
 @Configuration
@@ -19,9 +21,12 @@ import java.util.Optional;
 public class SecurityConfig {
 
     private final Optional<DevAuthFilter> devAuthFilter;
+    private final Optional<JwtAuthenticationFilter> jwtAuthenticationFilter;
 
-    public SecurityConfig(Optional<DevAuthFilter> devAuthFilter) {
+    public SecurityConfig(Optional<DevAuthFilter> devAuthFilter,
+                          Optional<JwtAuthenticationFilter> jwtAuthenticationFilter) {
         this.devAuthFilter = devAuthFilter;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
     @Bean
@@ -52,6 +57,9 @@ public class SecurityConfig {
                 }));
 
         devAuthFilter.ifPresent(filter ->
+                http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class));
+
+        jwtAuthenticationFilter.ifPresent(filter ->
                 http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class));
 
         return http.build();
