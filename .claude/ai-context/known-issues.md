@@ -120,6 +120,56 @@
 
 ---
 
+### [DEBT-012] RequestPage Domain에 페이징 인프라 개념 누출
+
+- **유형**: 기술 부채 (아키텍처)
+- **위치**: `domain/request/RequestPage.java`
+- **내용**: `totalElements`, `totalPages`, `last` 등 Spring Data Page 개념이 Domain record에 그대로 노출. Domain은 인프라 비의존이어야 하므로 Cursor 기반 또는 별도 추상화 검토.
+- **심각도**: Low
+- **상태**: OPEN
+
+---
+
+### [DEBT-013] ProposalJpaEntity toDomain()/from() 미구현
+
+- **유형**: 기술 부채 (구현 미완)
+- **위치**: `adapter/out/persistence/proposal/ProposalJpaEntity.java`
+- **내용**: Proposal 도메인 엔티티가 아직 없어 `toDomain()` / `from()` 변환 메서드 미작성. Proposal 도메인 구현 시 함께 작성.
+- **심각도**: Low
+- **상태**: OPEN
+
+---
+
+### [DEBT-014] DRAFT description NOT NULL 검토
+
+- **유형**: 기술 부채 (스키마)
+- **위치**: `V3__create_proposal.sql` — `description TEXT NOT NULL`
+- **내용**: DRAFT 상태에서는 description이 비어 있을 수 있으나 NOT NULL 제약으로 빈 문자열 저장 필요. Proposal 구현 시 NULL 허용 여부 재검토.
+- **심각도**: Low
+- **상태**: OPEN
+
+---
+
+### [DEBT-015] getCurrentBuyerToken() ScenarioContext 통합
+
+- **유형**: 기술 부채 (테스트)
+- **위치**: `RequestInquirySteps.getCurrentBuyerToken()`
+- **내용**: RequestSteps에서 설정한 buyerToken을 RequestInquirySteps에서 DB 직접 조회로 재생성. ScenarioContext에 buyerToken을 저장하고 공유하도록 통합 필요.
+- **심각도**: Low
+- **상태**: OPEN
+
+---
+
+### [DEBT-016] Testcontainers 전환 (H2 → PostgreSQL)
+
+- **유형**: 기술 부채 (테스트 환경)
+- **위치**: `src/test/resources/application-test.yml`
+- **내용**: DEBT-010과 동일 맥락. H2에서 PostgreSQL 고유 문법(INTERVAL, DESC INDEX 등) 호환 문제 발생 가능. Testcontainers 전환 시 함께 해결.
+- **심각도**: Medium
+- **상태**: OPEN
+
+---
+
 ## 버그 목록
 
 > 버그 발견 시 아래 형식으로 추가

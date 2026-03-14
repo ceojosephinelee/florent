@@ -41,4 +41,24 @@ public class TestAdapter {
                 new HttpEntity<>(body, headers),
                 String.class);
     }
+
+    public ResponseEntity<String> getRequestList(String token, int page, int size) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/buyer/requests?page=" + page + "&size=" + size,
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                String.class);
+    }
+
+    public ResponseEntity<String> getRequestDetail(String token, Long requestId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/buyer/requests/" + requestId,
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                String.class);
+    }
 }

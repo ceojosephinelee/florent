@@ -182,6 +182,45 @@ public class TestDataFactory {
                 .toArray(String[]::new);
     }
 
+    public Long createOpenRequest(Long buyerId) {
+        String timeSlotsJson = "[{\"kind\":\"PICKUP_30M\",\"value\":\"14:00\"}]";
+        jdbcTemplate.update(
+                "INSERT INTO curation_request "
+                + "(buyer_id, status, purpose_tags_json, relation_tags_json, mood_tags_json, "
+                + "budget_tier, fulfillment_type, fulfillment_date, requested_time_slots_json, "
+                + "place_address_text, place_lat, place_lng, created_at, expires_at, updated_at) "
+                + "VALUES (?, 'OPEN', '[\"생일\"]', '[\"친구\"]', '[\"밝음\"]', "
+                + "'TIER2', 'PICKUP', ?, ?, "
+                + "'서울시 강남구 테헤란로 1', 37.498095, 127.027610, now(), now() + INTERVAL '48' HOUR, now())",
+                buyerId,
+                LocalDate.now().plusDays(3).toString(),
+                timeSlotsJson);
+        return jdbcTemplate.queryForObject(
+                "SELECT id FROM curation_request WHERE buyer_id = ? ORDER BY id DESC LIMIT 1",
+                Long.class, buyerId);
+    }
+
+    public void createProposal(Long requestId, Long flowerShopId, String status) {
+        jdbcTemplate.update(
+                "INSERT INTO proposal "
+                + "(request_id, flower_shop_id, status, description, "
+                + "available_slot_kind, available_slot_value, price, "
+                + "created_at, expires_at, updated_at) "
+                + "VALUES (?, ?, ?, '테스트 제안 설명', "
+                + "'PICKUP_30M', '14:00', 30000, "
+                + "now(), now() + INTERVAL '24' HOUR, now())",
+                requestId, flowerShopId, status);
+    }
+
+    public Long getBuyerIdFromToken(String token) {
+        try {
+            String json = new String(java.util.Base64.getDecoder().decode(token));
+            return MAPPER.readTree(json).get("buyerId").asLong();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private String parseFulfillmentDate(String text) {
         if (text.contains("오늘로부터") && text.contains("일 후")) {
             String daysStr = text.replaceAll("[^0-9]", "");
