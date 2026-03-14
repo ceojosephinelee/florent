@@ -1,6 +1,5 @@
 # src/test/resources/features/request/request_inquiry.feature
 
-@Ignore
 Feature: 구매자 요청 조회
   구매자는 자신이 생성한 요청 목록과 상세 내용을 조회할 수 있다.
   요청 목록에는 "제안 작성 중인 판매자 수"와 "도착한 제안 수"가 표시된다.
@@ -40,4 +39,4 @@ Feature: 구매자 요청 조회
   Scenario: 존재하지 않는 요청 상세를 조회하면 404가 반환된다
     When  구매자가 존재하지 않는 requestId 99999 로 조회한다
     Then  응답 상태 코드는 404이다
-    And   에러 코드는 "NOT_FOUND"
+    And   에러 코드는 "REQUEST_NOT_FOUND" 이다

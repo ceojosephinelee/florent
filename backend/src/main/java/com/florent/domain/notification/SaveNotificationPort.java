@@ -1,5 +1,5 @@
 package com.florent.domain.notification;
 
-public interface SaveNotificationUseCase {
+public interface SaveNotificationPort {
     void saveRequestArrived(Long sellerId, Long requestId);
 }

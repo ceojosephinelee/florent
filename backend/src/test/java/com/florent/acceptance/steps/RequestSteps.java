@@ -2,7 +2,8 @@ package com.florent.acceptance.steps;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.florent.fake.FakeSaveNotificationUseCase;
+import com.florent.fake.FakeSaveNotificationPort;
+import com.florent.support.ScenarioContext;
 import com.florent.support.TestAdapter;
 import com.florent.support.TestDataFactory;
 import io.cucumber.java.en.And;
@@ -29,16 +30,18 @@ public class RequestSteps {
     private TestDataFactory testDataFactory;
 
     @Autowired
-    private FakeSaveNotificationUseCase fakeNotification;
+    private FakeSaveNotificationPort fakeNotification;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private ScenarioContext scenarioContext;
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private String buyerToken;
     private String sellerToken;
-    private ResponseEntity<String> response;
     private final Map<String, Long> shopSellerIds = new HashMap<>();
 
     // ─── Background ───
@@ -69,32 +72,33 @@ public class RequestSteps {
     @When("구매자가 아래 내용으로 꽃 요청을 생성한다")
     public void 구매자가_아래_내용으로_꽃_요청을_생성한다(Map<String, String> data) {
         String body = testDataFactory.requestBodyFromDataTable(data);
-        response = testAdapter.createRequest(buyerToken, body);
+        ResponseEntity<String> response = testAdapter.createRequest(buyerToken, body);
+        scenarioContext.setResponse(response);
     }
 
     @When("구매자가 픽업 방식 요청을 생성한다 \\(기준 좌표 {double}, {double})")
     public void 구매자가_픽업_방식_요청을_생성한다(double lat, double lng) {
         String body = testDataFactory.requestBodyForPickup(lat, lng);
-        response = testAdapter.createRequest(buyerToken, body);
+        scenarioContext.setResponse(testAdapter.createRequest(buyerToken, body));
     }
 
     @When("구매자가 타임슬롯 [{word}:{word}, {word}:{word}] 으로 요청을 생성한다")
     public void 구매자가_타임슬롯으로_요청을_생성한다(String kind1, String val1, String kind2, String val2) {
         String slotsStr = kind1 + ":" + val1 + ", " + kind2 + ":" + val2;
         String body = testDataFactory.requestBodyWithTimeSlots(slotsStr);
-        response = testAdapter.createRequest(buyerToken, body);
+        scenarioContext.setResponse(testAdapter.createRequest(buyerToken, body));
     }
 
     @When("인증 헤더 없이 요청 생성 API를 호출한다")
     public void 인증_헤더_없이_요청_생성_API를_호출한다() {
         String body = testDataFactory.validRequestBody();
-        response = testAdapter.createRequestWithoutAuth(body);
+        scenarioContext.setResponse(testAdapter.createRequestWithoutAuth(body));
     }
 
     @When("구매자가 budgetTier 없이 요청 생성을 시도한다")
     public void 구매자가_budgetTier_없이_요청_생성을_시도한다() {
         String body = testDataFactory.requestBodyWithoutBudgetTier();
-        response = testAdapter.createRequest(buyerToken, body);
+        scenarioContext.setResponse(testAdapter.createRequest(buyerToken, body));
     }
 
     @Given("판매자 {string} 이 로그인되어 있다")
@@ -105,26 +109,26 @@ public class RequestSteps {
     @When("판매자가 요청 생성 API를 호출한다")
     public void 판매자가_요청_생성_API를_호출한다() {
         String body = testDataFactory.validRequestBody();
-        response = testAdapter.createRequest(sellerToken, body);
+        scenarioContext.setResponse(testAdapter.createRequest(sellerToken, body));
     }
 
     // ─── Then ───
 
     @Then("응답 상태 코드는 {int}이다")
     public void 응답_상태_코드는(int statusCode) {
-        assertThat(response.getStatusCode().value()).isEqualTo(statusCode);
+        assertThat(scenarioContext.getResponse().getStatusCode().value()).isEqualTo(statusCode);
     }
 
     @And("요청 상태는 {string} 이다")
     public void 요청_상태는(String expectedStatus) throws Exception {
-        JsonNode root = MAPPER.readTree(response.getBody());
+        JsonNode root = MAPPER.readTree(scenarioContext.getResponse().getBody());
         String status = root.path("data").path("status").asText();
         assertThat(status).isEqualTo(expectedStatus);
     }
 
     @And("만료 시각은 생성 시각으로부터 48시간 후다")
     public void 만료_시각은_48시간_후다() throws Exception {
-        JsonNode root = MAPPER.readTree(response.getBody());
+        JsonNode root = MAPPER.readTree(scenarioContext.getResponse().getBody());
         String expiresAtStr = root.path("data").path("expiresAt").asText();
         LocalDateTime expiresAt = LocalDateTime.parse(expiresAtStr);
         LocalDateTime now = LocalDateTime.now();
@@ -152,7 +156,7 @@ public class RequestSteps {
 
     @And("저장된 요청의 타임슬롯 수는 {int}개다")
     public void 저장된_요청의_타임슬롯_수는(int expectedCount) throws Exception {
-        JsonNode root = MAPPER.readTree(response.getBody());
+        JsonNode root = MAPPER.readTree(scenarioContext.getResponse().getBody());
         Long requestId = root.path("data").path("requestId").asLong();
 
         String slotsJson = jdbcTemplate.queryForObject(
@@ -164,7 +168,7 @@ public class RequestSteps {
 
     @And("에러 코드는 {string} 이다")
     public void 에러_코드는(String expectedErrorCode) throws Exception {
-        JsonNode root = MAPPER.readTree(response.getBody());
+        JsonNode root = MAPPER.readTree(scenarioContext.getResponse().getBody());
         String errorCode = root.path("error").path("code").asText();
         assertThat(errorCode).isEqualTo(expectedErrorCode);
     }

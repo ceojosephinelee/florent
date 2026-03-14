@@ -1,6 +1,6 @@
 package com.florent.support;
 
-import com.florent.fake.FakeSaveNotificationUseCase;
+import com.florent.fake.FakeSaveNotificationPort;
 import io.cucumber.java.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,11 +11,12 @@ public class DatabaseCleaner {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private FakeSaveNotificationUseCase fakeNotification;
+    private FakeSaveNotificationPort fakeNotification;
 
     @Before(order = 0)
     public void clean() {
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
+        jdbcTemplate.execute("TRUNCATE TABLE proposal");
         jdbcTemplate.execute("TRUNCATE TABLE curation_request");
         jdbcTemplate.execute("TRUNCATE TABLE flower_shop");
         jdbcTemplate.execute("TRUNCATE TABLE seller");
