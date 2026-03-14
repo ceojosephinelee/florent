@@ -75,6 +75,12 @@ public class CurationRequest {
         return r;
     }
 
+    public void validateAcceptingProposals() {
+        if (status != RequestStatus.OPEN) {
+            throw new BusinessException(ErrorCode.REQUEST_NOT_OPEN);
+        }
+    }
+
     public void confirm() {
         if (status != RequestStatus.OPEN) {
             throw new BusinessException(ErrorCode.REQUEST_NOT_OPEN);

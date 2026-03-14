@@ -3,6 +3,9 @@ package com.florent.fake;
 import com.florent.domain.proposal.Proposal;
 import com.florent.domain.proposal.ProposalRepository;
 
+import com.florent.domain.proposal.ProposalPage;
+
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,5 +57,25 @@ public class FakeProposalRepository implements ProposalRepository {
         return store.values().stream()
                 .filter(p -> p.getRequestId().equals(requestId))
                 .toList();
+    }
+
+    @Override
+    public ProposalPage findByFlowerShopId(Long flowerShopId, int page, int size) {
+        List<Proposal> all = store.values().stream()
+                .filter(p -> p.getFlowerShopId().equals(flowerShopId))
+                .sorted(Comparator.comparing(Proposal::getCreatedAt).reversed())
+                .toList();
+        int start = page * size;
+        int end = Math.min(start + size, all.size());
+        List<Proposal> content = start < all.size() ? all.subList(start, end) : List.of();
+        int totalPages = (int) Math.ceil((double) all.size() / size);
+        return new ProposalPage(content, all.size(), totalPages, page >= totalPages - 1);
+    }
+
+    @Override
+    public boolean existsByRequestIdAndFlowerShopId(Long requestId, Long flowerShopId) {
+        return store.values().stream()
+                .anyMatch(p -> p.getRequestId().equals(requestId)
+                        && p.getFlowerShopId().equals(flowerShopId));
     }
 }

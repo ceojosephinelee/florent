@@ -62,7 +62,11 @@ class BuyerProposalServiceTest {
 
     private Proposal createAndSaveProposal(Long requestId, Long shopId, ProposalStatus targetStatus) {
         Proposal proposal = Proposal.create(requestId, shopId, fixedClock);
-        if (targetStatus == ProposalStatus.SUBMITTED) {
+        if (targetStatus == ProposalStatus.SUBMITTED || targetStatus == ProposalStatus.SELECTED
+                || targetStatus == ProposalStatus.NOT_SELECTED) {
+            proposal.updateDraft("타이틀", List.of("RED"), List.of("장미"),
+                    List.of("리본"), null, null, "설명",
+                    null, "PICKUP_30M", "14:00", new java.math.BigDecimal("30000"));
             proposal.submit(fixedClock);
         } else if (targetStatus == ProposalStatus.EXPIRED) {
             proposal.expire();

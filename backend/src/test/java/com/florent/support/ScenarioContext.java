@@ -13,7 +13,11 @@ import java.util.Map;
 public class ScenarioContext {
     private ResponseEntity<String> response;
     private String buyerToken;
+    private String sellerToken;
+    private Long requestId;
+    private Long proposalId;
     private final Map<String, Long> otherBuyerRequestIds = new HashMap<>();
+    private final Map<String, String> sellerTokens = new HashMap<>();
 
     public ResponseEntity<String> getResponse() {
         return response;
@@ -31,11 +35,43 @@ public class ScenarioContext {
         this.buyerToken = buyerToken;
     }
 
+    public String getSellerToken() {
+        return sellerToken;
+    }
+
+    public void setSellerToken(String sellerToken) {
+        this.sellerToken = sellerToken;
+    }
+
+    public Long getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(Long requestId) {
+        this.requestId = requestId;
+    }
+
+    public Long getProposalId() {
+        return proposalId;
+    }
+
+    public void setProposalId(Long proposalId) {
+        this.proposalId = proposalId;
+    }
+
     public void putOtherBuyerRequestId(String name, Long requestId) {
         otherBuyerRequestIds.put(name, requestId);
     }
 
     public Long getOtherBuyerRequestId(String name) {
         return otherBuyerRequestIds.get(name);
+    }
+
+    public void putSellerToken(String name, String token) {
+        sellerTokens.put(name, token);
+    }
+
+    public String getSellerToken(String name) {
+        return sellerTokens.get(name);
     }
 }

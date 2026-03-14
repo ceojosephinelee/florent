@@ -7,4 +7,5 @@ public interface FlowerShopRepository {
     Optional<FlowerShop> findById(Long id);
     List<FlowerShop> findAll();
     List<FlowerShop> findAllByIds(List<Long> ids);
+    Optional<FlowerShop> findBySellerId(Long sellerId);
 }

@@ -72,10 +72,50 @@ public class Proposal {
         return p;
     }
 
+    public void updateDraft(String conceptTitle, List<String> moodColors,
+                           List<String> mainFlowers, List<String> wrappingStyle,
+                           String allergyNote, String careTips, String description,
+                           List<String> imageUrls, String availableSlotKind,
+                           String availableSlotValue, BigDecimal price) {
+        if (status != ProposalStatus.DRAFT) {
+            throw new BusinessException(ErrorCode.PROPOSAL_NOT_EDITABLE);
+        }
+        this.conceptTitle = conceptTitle;
+        this.moodColors = moodColors;
+        this.mainFlowers = mainFlowers;
+        this.wrappingStyle = wrappingStyle;
+        this.allergyNote = allergyNote;
+        this.careTips = careTips;
+        this.description = description;
+        this.imageUrls = imageUrls;
+        this.availableSlotKind = availableSlotKind;
+        this.availableSlotValue = availableSlotValue;
+        this.price = price;
+    }
+
+    private void validateForSubmission() {
+        if (description == null || description.isBlank()) {
+            throw new BusinessException(ErrorCode.VALIDATION_ERROR);
+        }
+        if (availableSlotKind == null || availableSlotKind.isBlank()) {
+            throw new BusinessException(ErrorCode.VALIDATION_ERROR);
+        }
+        if (availableSlotValue == null || availableSlotValue.isBlank()) {
+            throw new BusinessException(ErrorCode.VALIDATION_ERROR);
+        }
+        if (price == null || price.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException(ErrorCode.VALIDATION_ERROR);
+        }
+    }
+
     public void submit(Clock clock) {
+        if (LocalDateTime.now(clock).isAfter(expiresAt)) {
+            throw new BusinessException(ErrorCode.PROPOSAL_EXPIRED);
+        }
         if (status != ProposalStatus.DRAFT) {
             throw new BusinessException(ErrorCode.PROPOSAL_NOT_SUBMITTABLE);
         }
+        validateForSubmission();
         this.status = ProposalStatus.SUBMITTED;
         this.submittedAt = LocalDateTime.now(clock);
     }
