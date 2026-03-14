@@ -45,7 +45,6 @@ dependencies {
 
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testRuntimeOnly("com.h2database:h2")
     testImplementation("org.apache.httpcomponents.client5:httpclient5")
 
     // Cucumber
