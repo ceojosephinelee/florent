@@ -48,8 +48,15 @@ public class RequestSteps {
 
     @Given("구매자 {string} 이 로그인되어 있다")
     public void 구매자가_로그인되어_있다(String name) {
-        buyerToken = testDataFactory.createBuyerAndGetToken(name);
+        // E2E 시나리오에서 이미 생성된 구매자 토큰이 있으면 재사용
+        String existingToken = scenarioContext.getBuyerToken(name);
+        if (existingToken != null) {
+            buyerToken = existingToken;
+        } else {
+            buyerToken = testDataFactory.createBuyerAndGetToken(name);
+        }
         scenarioContext.setBuyerToken(buyerToken);
+        scenarioContext.putBuyerToken(name, buyerToken);
     }
 
     @Given("반경 2km 이내에 꽃집 {string} 이 위치해 있다 \\(위도 {double}, 경도 {double})")
