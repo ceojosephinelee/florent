@@ -159,4 +159,39 @@ public class TestAdapter {
                 new HttpEntity<>(headers),
                 String.class);
     }
+
+    // ─── Notification APIs ───
+
+    public ResponseEntity<String> getNotifications(String token, int page, int size) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/notifications?page=" + page + "&size=" + size,
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                String.class);
+    }
+
+    public ResponseEntity<String> markNotificationAsRead(String token, Long notificationId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/notifications/" + notificationId + "/read",
+                HttpMethod.PATCH,
+                new HttpEntity<>(headers),
+                String.class);
+    }
+
+    // ─── Device APIs ───
+
+    public ResponseEntity<String> registerDevice(String token, String body) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/devices",
+                HttpMethod.POST,
+                new HttpEntity<>(body, headers),
+                String.class);
+    }
 }

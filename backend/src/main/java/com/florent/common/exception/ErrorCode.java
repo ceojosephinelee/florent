@@ -33,6 +33,10 @@ public enum ErrorCode {
     // Payment
     DUPLICATE_PAYMENT(422, "중복 결제 요청입니다."),
 
+    // Notification
+    NOTIFICATION_NOT_FOUND(404, "알림을 찾을 수 없습니다."),
+    NOTIFICATION_ALREADY_READ(422, "이미 읽은 알림입니다."),
+
     // Shop
     SHOP_NOT_FOUND(404, "꽃집을 찾을 수 없습니다."),
     SHOP_ALREADY_EXISTS(422, "이미 꽃집이 등록되어 있습니다.");

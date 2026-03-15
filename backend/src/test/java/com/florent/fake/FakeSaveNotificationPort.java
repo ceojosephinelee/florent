@@ -1,11 +1,11 @@
 package com.florent.fake;
 
-import com.florent.domain.notification.SaveNotificationPort;
+import com.florent.domain.notification.SaveNotificationUseCase;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FakeSaveNotificationPort implements SaveNotificationPort {
+public class FakeSaveNotificationPort implements SaveNotificationUseCase {
 
     private final List<NotificationRecord> records = new ArrayList<>();
     private final List<ProposalNotificationRecord> proposalRecords = new ArrayList<>();

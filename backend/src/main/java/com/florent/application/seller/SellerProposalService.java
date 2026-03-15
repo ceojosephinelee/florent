@@ -2,7 +2,7 @@ package com.florent.application.seller;
 
 import com.florent.common.exception.BusinessException;
 import com.florent.common.exception.ErrorCode;
-import com.florent.domain.notification.SaveNotificationPort;
+import com.florent.domain.notification.SaveNotificationUseCase;
 import com.florent.domain.proposal.GetSellerProposalDetailUseCase;
 import com.florent.domain.proposal.GetSellerProposalListUseCase;
 import com.florent.domain.proposal.Proposal;
@@ -40,7 +40,7 @@ public class SellerProposalService implements StartProposalUseCase, SaveProposal
     private final ProposalRepository proposalRepository;
     private final CurationRequestRepository requestRepository;
     private final FlowerShopRepository shopRepository;
-    private final SaveNotificationPort saveNotificationPort;
+    private final SaveNotificationUseCase saveNotificationPort;
     private final Clock clock;
 
     @Override

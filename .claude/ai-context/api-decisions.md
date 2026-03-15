@@ -104,4 +104,40 @@
 
 ---
 
+## [AD-012] SaveNotificationPort 삭제 → SaveNotificationUseCase로 통합
+
+- **결정일**: 2026-03-16
+- **결정 내용**: `SaveNotificationPort`(outbound) 인터페이스 삭제. 기존 3개 서비스가 `SaveNotificationUseCase`(inbound)를 직접 주입받도록 변경. `NotificationService`는 `SaveNotificationUseCase`만 implements.
+- **이유**: 코드 리뷰에서 outbound/inbound 이중 구현의 의미적 혼동 지적. SaveNotificationPort를 제거하고 단일 인터페이스로 통합. 기존 3개 서비스의 import + 필드 타입만 변경 (메서드 시그니처 동일).
+- **영향 파일**: `NotificationService.java`, `BuyerRequestService.java`, `BuyerReservationService.java`, `SellerProposalService.java`, `FakeSaveNotificationPort.java`, `TestNotificationConfig.java`
+
+---
+
+## [AD-013] Notification 조회 API — userId 기반 (role 무관)
+
+- **결정일**: 2026-03-16
+- **결정 내용**: `GET /api/v1/notifications`는 buyer/seller 구분 없이 `userId`로 조회. 경로에 `/buyer/` 또는 `/seller/` prefix 없음.
+- **이유**: api-spec.md §14에서 공통 경로로 정의. 알림은 역할과 무관하게 사용자 단위로 관리. `UserPrincipal.getUserId()`로 인증된 사용자 식별.
+- **영향 파일**: `NotificationController.java`, `DeviceController.java`
+
+---
+
+## [AD-014] NotificationPageResult에 NotificationItem 내부 record 도입
+
+- **결정일**: 2026-03-16
+- **결정 내용**: `NotificationPageResult` 내부에 `NotificationItem` record 추가. Adapter/in의 `NotificationResponse`가 Domain `Notification` 대신 `NotificationItem`만 참조.
+- **이유**: Adapter 레이어에서 Domain 클래스 직접 import를 제거하여 레이어 의존성 순수화. Domain → DTO 변환이 Domain 내부에서 완결됨.
+- **영향 파일**: `NotificationPageResult.java`, `NotificationResponse.java`, `NotificationListResponse.java`
+
+---
+
+## [AD-015] DeviceService 분리 (NotificationService에서 추출)
+
+- **결정일**: 2026-03-16
+- **결정 내용**: `RegisterDeviceUseCase` 구현을 `NotificationService`에서 `DeviceService`로 분리.
+- **이유**: 디바이스 등록은 알림 저장/조회와 별개 Bounded Context. SRP 원칙 적용. `DeviceController` → `DeviceService` → `UserDeviceRepository` 의존 체인이 명확해짐.
+- **영향 파일**: `DeviceService.java` (신규), `NotificationService.java`, `DeviceServiceTest.java` (신규), `NotificationServiceTest.java`
+
+---
+
 > 새 결정이 발생하면 [AD-{N}] 형식으로 추가한다.
