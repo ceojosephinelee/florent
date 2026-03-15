@@ -53,6 +53,14 @@ public class FakeProposalRepository implements ProposalRepository {
     }
 
     @Override
+    public List<Proposal> findAllByIds(List<Long> ids) {
+        return ids.stream()
+                .map(store::get)
+                .filter(java.util.Objects::nonNull)
+                .toList();
+    }
+
+    @Override
     public List<Proposal> findByRequestId(Long requestId) {
         return store.values().stream()
                 .filter(p -> p.getRequestId().equals(requestId))

@@ -87,7 +87,10 @@ cd ../florent
 git worktree remove ../$WORKTREE_NAME
 ```
 
-### Step 8. ai-context 업데이트
+### Step 8. 머지 후 안내
+→ PR 머지 후 다음 세션 시작 전 반드시 `git pull origin develop` 실행
+
+### Step 9. ai-context 업데이트
 - `.claude/ai-context/api-decisions.md` — 이번 구현 중 발생한 설계 결정 추가
 - `.claude/ai-context/known-issues.md` — 새 DEBT/BUG 있으면 추가, 해결된 것은 RESOLVED 처리
 - `.claude/ai-context/domain-knowledge.md` — 도메인 관련 발견 사항 추가

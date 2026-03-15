@@ -17,4 +17,9 @@ public class NoOpSaveNotificationAdapter implements SaveNotificationPort {
     public void saveProposalArrived(Long buyerId, Long proposalId) {
         log.info("[Mock] PROPOSAL_ARRIVED 알림 — buyerId={}, proposalId={}", buyerId, proposalId);
     }
+
+    @Override
+    public void saveReservationConfirmed(Long sellerId, Long reservationId) {
+        log.info("[Mock] RESERVATION_CONFIRMED 알림 — sellerId={}, reservationId={}", sellerId, reservationId);
+    }
 }
