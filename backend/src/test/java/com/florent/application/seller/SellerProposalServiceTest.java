@@ -6,6 +6,7 @@ import com.florent.domain.proposal.Proposal;
 import com.florent.domain.proposal.ProposalStatus;
 import com.florent.domain.proposal.SaveProposalCommand;
 import com.florent.domain.proposal.SaveProposalResult;
+import com.florent.domain.proposal.ProposalDetail;
 import com.florent.domain.proposal.SellerProposalListResult;
 import com.florent.domain.proposal.StartProposalCommand;
 import com.florent.domain.proposal.StartProposalResult;
@@ -309,5 +310,59 @@ class SellerProposalServiceTest {
         // then
         assertThat(result.content()).isEmpty();
         assertThat(result.totalElements()).isEqualTo(0);
+    }
+
+    // ─── getSellerProposalDetail ───
+
+    @Test
+    @DisplayName("getSellerProposalDetail() — 정상 조회")
+    void getSellerProposalDetail_정상_조회() {
+        // given
+        CurationRequest request = createRequest(BUYER_ID);
+        setupShop(SHOP_ID, SELLER_ID);
+        StartProposalResult started = sut.start(new StartProposalCommand(request.getId(), SELLER_ID));
+        sut.save(validSaveCommand(started.proposalId(), SELLER_ID));
+
+        // when
+        ProposalDetail detail = sut.getSellerProposalDetail(started.proposalId(), SELLER_ID);
+
+        // then
+        assertThat(detail.proposalId()).isEqualTo(started.proposalId());
+        assertThat(detail.requestId()).isEqualTo(request.getId());
+        assertThat(detail.status()).isEqualTo(ProposalStatus.DRAFT);
+        assertThat(detail.shopName()).isEqualTo("테스트꽃집");
+        assertThat(detail.conceptTitle()).isEqualTo("봄의 향기");
+        assertThat(detail.price()).isEqualByComparingTo(new BigDecimal("35000"));
+    }
+
+    @Test
+    @DisplayName("getSellerProposalDetail() — 존재하지 않는 제안 PROPOSAL_NOT_FOUND")
+    void getSellerProposalDetail_존재하지_않는_제안_PROPOSAL_NOT_FOUND() {
+        // given
+        setupShop(SHOP_ID, SELLER_ID);
+
+        // when & then
+        assertThatThrownBy(() -> sut.getSellerProposalDetail(999L, SELLER_ID))
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.PROPOSAL_NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("getSellerProposalDetail() — 소유자 아닌 경우 FORBIDDEN")
+    void getSellerProposalDetail_소유자_아닌_경우_FORBIDDEN() {
+        // given
+        CurationRequest request = createRequest(BUYER_ID);
+        setupShop(SHOP_ID, SELLER_ID);
+        StartProposalResult started = sut.start(new StartProposalCommand(request.getId(), SELLER_ID));
+
+        Long otherSellerId = 20L;
+        setupShop(200L, otherSellerId);
+
+        // when & then
+        assertThatThrownBy(() -> sut.getSellerProposalDetail(started.proposalId(), otherSellerId))
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.FORBIDDEN);
     }
 }
