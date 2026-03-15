@@ -207,6 +207,9 @@ git worktree remove ../florent-backend
 
 ## 5. 작업 시작 전 체크리스트
 
+- [ ] `git pull origin develop` 실행하여 최신 상태인가?
+- [ ] `git status`로 unstaged 파일이 없는가? (있으면 먼저 처리)
+- [ ] Docker 실행 상태를 확인했는가? (Testcontainers 사용 여부 결정)
 - [ ] 루트 CLAUDE.md 읽었는가?
 - [ ] 해당 디렉토리 CLAUDE.md 읽었는가? (`backend/` 또는 `frontend/`)
 - [ ] `.claude/ai-context/` 3개 파일 읽었는가?

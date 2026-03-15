@@ -58,3 +58,22 @@ grep -r "@Ignore" backend/src/test/resources/features/ --include="*.feature" -l
 
 다음 도메인의 Layer 1 시작 프롬프트를 출력해줘.
 AGENT-PROMPTS.md의 Backend Dev 에이전트 형식을 따른다.
+
+### Step 5. Layer 완료 시 자동 진행 제안
+
+각 Layer 구현이 완료되면, 다음 Layer로의 진행을 자동으로 제안한다:
+
+```
+=== Layer 완료 ===
+✅ {현재 Layer} 구현 완료
+   생성 파일: {파일 목록}
+
+다음 Layer: {다음 Layer 이름}
+   예상 파일: {생성할 파일 목록}
+
+다음 Layer로 진행할까요? (Y/N)
+================
+```
+
+Layer 순서: Domain → Application → Adapter/in → Adapter/out → Test(단위) → Test(Cucumber)
+→ 사용자 승인 후 다음 Layer 진행. 거부 시 현재 Layer에서 추가 작업 또는 /ship 실행.
