@@ -140,4 +140,14 @@
 
 ---
 
+## [AD-016] Testcontainers 1.21.0 + api.version=1.44 (Docker 29.x 호환)
+
+- **결정일**: 2026-03-16
+- **결정 내용**: Testcontainers 1.19.8 → 1.21.0 업그레이드. `api.version=1.44` 시스템 프로퍼티 추가.
+- **이유**: Docker Engine 29.x (2026-02 릴리스)가 최소 API 버전을 1.44로 상향. Testcontainers 1.x는 기본 API 1.32를 사용하여 연결 실패. 2.x는 패키지 구조 전면 변경이므로 1.x + workaround 채택.
+- **트레이드오프**: Docker 28.x 이하 환경에서도 api.version=1.44가 동작하는지 미검증. Docker 28.x는 1.24~1.46 범위를 지원하므로 1.44는 호환됨.
+- **영향 파일**: `build.gradle.kts`
+
+---
+
 > 새 결정이 발생하면 [AD-{N}] 형식으로 추가한다.
