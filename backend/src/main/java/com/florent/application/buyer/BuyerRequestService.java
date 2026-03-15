@@ -3,7 +3,7 @@ package com.florent.application.buyer;
 import com.florent.common.exception.BusinessException;
 import com.florent.common.exception.ErrorCode;
 import com.florent.common.util.HaversineUtil;
-import com.florent.domain.notification.SaveNotificationPort;
+import com.florent.domain.notification.SaveNotificationUseCase;
 import com.florent.domain.proposal.ProposalCountPort;
 import com.florent.domain.proposal.ProposalStatus;
 import com.florent.domain.request.CreateRequestCommand;
@@ -38,7 +38,7 @@ public class BuyerRequestService implements CreateRequestUseCase,
 
     private final CurationRequestRepository requestRepository;
     private final FlowerShopRepository shopRepository;
-    private final SaveNotificationPort saveNotificationPort;
+    private final SaveNotificationUseCase saveNotificationPort;
     private final ProposalCountPort proposalCountPort;
     private final Clock clock;
 

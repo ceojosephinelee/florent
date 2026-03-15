@@ -2,19 +2,15 @@ package com.florent.application.notification;
 
 import com.florent.common.exception.BusinessException;
 import com.florent.common.exception.ErrorCode;
-import com.florent.domain.notification.DevicePlatform;
 import com.florent.domain.notification.MarkNotificationReadResult;
 import com.florent.domain.notification.Notification;
 import com.florent.domain.notification.NotificationPageResult;
 import com.florent.domain.notification.NotificationType;
 import com.florent.domain.notification.OutboxEvent;
 import com.florent.domain.notification.ReferenceType;
-import com.florent.domain.notification.RegisterDeviceCommand;
-import com.florent.domain.notification.RegisterDeviceResult;
 import com.florent.fake.FakeNotificationRepository;
 import com.florent.fake.FakeNotificationUserResolverPort;
 import com.florent.fake.FakeOutboxEventRepository;
-import com.florent.fake.FakeUserDeviceRepository;
 import com.florent.support.TestFixtures;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +26,6 @@ class NotificationServiceTest {
 
     private FakeNotificationRepository notificationRepository;
     private FakeOutboxEventRepository outboxEventRepository;
-    private FakeUserDeviceRepository userDeviceRepository;
     private FakeNotificationUserResolverPort userResolverPort;
     private NotificationService sut;
 
@@ -40,11 +35,10 @@ class NotificationServiceTest {
     void setUp() {
         notificationRepository = new FakeNotificationRepository();
         outboxEventRepository = new FakeOutboxEventRepository();
-        userDeviceRepository = new FakeUserDeviceRepository();
         userResolverPort = new FakeNotificationUserResolverPort();
         sut = new NotificationService(
                 notificationRepository, outboxEventRepository,
-                userDeviceRepository, userResolverPort, fixedClock);
+                userResolverPort, fixedClock);
     }
 
     // ─── saveRequestArrived ───
@@ -173,35 +167,5 @@ class NotificationServiceTest {
                 .isInstanceOf(BusinessException.class)
                 .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode())
                         .isEqualTo(ErrorCode.FORBIDDEN));
-    }
-
-    // ─── registerDevice ───
-
-    @Test
-    @DisplayName("새 디바이스를 등록한다")
-    void register_신규_디바이스() {
-        // given
-        RegisterDeviceCommand command = new RegisterDeviceCommand(
-                1L, "fcm-token-abc", DevicePlatform.IOS);
-
-        // when
-        RegisterDeviceResult result = sut.register(command);
-
-        // then
-        assertThat(result.deviceId()).isNotNull();
-    }
-
-    @Test
-    @DisplayName("기존 토큰이 있으면 업데이트한다")
-    void register_기존_토큰_업데이트() {
-        // given
-        sut.register(new RegisterDeviceCommand(1L, "same-token", DevicePlatform.IOS));
-
-        // when
-        RegisterDeviceResult result = sut.register(
-                new RegisterDeviceCommand(1L, "same-token", DevicePlatform.ANDROID));
-
-        // then — id가 동일 (업데이트)
-        assertThat(result.deviceId()).isEqualTo(1L);
     }
 }

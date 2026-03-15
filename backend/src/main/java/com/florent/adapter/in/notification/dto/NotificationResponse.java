@@ -1,6 +1,6 @@
 package com.florent.adapter.in.notification.dto;
 
-import com.florent.domain.notification.Notification;
+import com.florent.domain.notification.NotificationPageResult.NotificationItem;
 
 import java.time.LocalDateTime;
 
@@ -14,15 +14,15 @@ public record NotificationResponse(
         boolean isRead,
         LocalDateTime createdAt
 ) {
-    public static NotificationResponse from(Notification n) {
+    public static NotificationResponse from(NotificationItem item) {
         return new NotificationResponse(
-                n.getId(),
-                n.getType().name(),
-                n.getReferenceType().name(),
-                n.getReferenceId(),
-                n.getTitle(),
-                n.getBody(),
-                n.isRead(),
-                n.getCreatedAt());
+                item.notificationId(),
+                item.type(),
+                item.referenceType(),
+                item.referenceId(),
+                item.title(),
+                item.body(),
+                item.isRead(),
+                item.createdAt());
     }
 }

@@ -102,7 +102,7 @@ public class NotificationSteps {
     @And("알림 목록에 {int}건이 포함된다")
     public void 알림_목록에_N건이_포함된다(int expectedCount) throws Exception {
         JsonNode root = MAPPER.readTree(scenarioContext.getResponse().getBody());
-        JsonNode content = root.path("data").path("content");
+        JsonNode content = root.path("data").path("notifications");
         assertThat(content.size()).isEqualTo(expectedCount);
     }
 

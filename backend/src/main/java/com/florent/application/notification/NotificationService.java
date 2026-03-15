@@ -14,34 +14,26 @@ import com.florent.domain.notification.NotificationUserResolverPort;
 import com.florent.domain.notification.OutboxEvent;
 import com.florent.domain.notification.OutboxEventRepository;
 import com.florent.domain.notification.ReferenceType;
-import com.florent.domain.notification.RegisterDeviceCommand;
-import com.florent.domain.notification.RegisterDeviceResult;
-import com.florent.domain.notification.RegisterDeviceUseCase;
-import com.florent.domain.notification.SaveNotificationPort;
 import com.florent.domain.notification.SaveNotificationUseCase;
-import com.florent.domain.notification.UserDevice;
-import com.florent.domain.notification.UserDeviceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class NotificationService implements SaveNotificationPort, SaveNotificationUseCase,
-        GetNotificationsUseCase, MarkNotificationReadUseCase, RegisterDeviceUseCase {
+public class NotificationService implements SaveNotificationUseCase,
+        GetNotificationsUseCase, MarkNotificationReadUseCase {
 
     private final NotificationRepository notificationRepository;
     private final OutboxEventRepository outboxEventRepository;
-    private final UserDeviceRepository userDeviceRepository;
     private final NotificationUserResolverPort userResolverPort;
     private final Clock clock;
 
-    // ── SaveNotificationPort / SaveNotificationUseCase ──
+    // ── SaveNotificationUseCase ──
 
     @Override
     public void saveRequestArrived(Long sellerId, Long requestId) {
@@ -93,23 +85,6 @@ public class NotificationService implements SaveNotificationPort, SaveNotificati
         return MarkNotificationReadResult.from(saved);
     }
 
-    // ── RegisterDeviceUseCase ──
-
-    @Override
-    public RegisterDeviceResult register(RegisterDeviceCommand command) {
-        UserDevice device = userDeviceRepository.findByFcmToken(command.fcmToken())
-                .map(existing -> {
-                    existing.updateToken(command.fcmToken(), command.platform(), clock);
-                    return existing;
-                })
-                .orElseGet(() -> UserDevice.register(
-                        command.userId(), command.platform(),
-                        command.fcmToken(), clock));
-
-        UserDevice saved = userDeviceRepository.save(device);
-        return RegisterDeviceResult.from(saved);
-    }
-
     // ── private ──
 
     private void saveNotificationWithOutbox(
@@ -122,7 +97,7 @@ public class NotificationService implements SaveNotificationPort, SaveNotificati
                 clock);
         Notification saved = notificationRepository.save(notification);
 
-        String dedupKey = type.name() + ":" + referenceId + ":" + UUID.randomUUID();
+        String dedupKey = type.name() + ":" + referenceType.name() + ":" + referenceId;
         OutboxEvent outbox = OutboxEvent.create(saved.getId(), dedupKey, clock);
         outboxEventRepository.save(outbox);
     }
