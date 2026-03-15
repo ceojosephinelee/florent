@@ -27,6 +27,9 @@ public enum ErrorCode {
     PROPOSAL_NOT_SELECTABLE(422, "선택할 수 없는 상태입니다."),
     PROPOSAL_EXPIRED(422, "만료된 제안입니다."),
 
+    // Reservation
+    RESERVATION_NOT_FOUND(404, "예약을 찾을 수 없습니다."),
+
     // Payment
     DUPLICATE_PAYMENT(422, "중복 결제 요청입니다."),
 

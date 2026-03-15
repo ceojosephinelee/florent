@@ -31,6 +31,13 @@ public class ProposalRepositoryImpl implements ProposalRepository {
     }
 
     @Override
+    public List<Proposal> findAllByIds(List<Long> ids) {
+        return jpaRepository.findAllById(ids).stream()
+                .map(ProposalJpaEntity::toDomain)
+                .toList();
+    }
+
+    @Override
     public List<Proposal> findByRequestId(Long requestId) {
         return jpaRepository.findByRequestId(requestId).stream()
                 .map(ProposalJpaEntity::toDomain)

@@ -126,4 +126,37 @@ public class TestAdapter {
                 new HttpEntity<>(headers),
                 String.class);
     }
+
+    // ─── Reservation APIs ───
+
+    public ResponseEntity<String> selectProposal(String token, Long proposalId, String body) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/buyer/proposals/" + proposalId + "/select",
+                HttpMethod.POST,
+                new HttpEntity<>(body, headers),
+                String.class);
+    }
+
+    public ResponseEntity<String> getBuyerReservations(String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/buyer/reservations",
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                String.class);
+    }
+
+    public ResponseEntity<String> getBuyerReservationDetail(String token, Long reservationId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/buyer/reservations/" + reservationId,
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                String.class);
+    }
 }

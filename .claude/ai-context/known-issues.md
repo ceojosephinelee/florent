@@ -206,7 +206,7 @@
 - **위치**: `test/adapter/in/seller/` (미작성)
 - **내용**: SellerProposalController에 대한 `@WebMvcTest` 슬라이스 테스트가 없음. 요청/응답 직렬화, Validation, HTTP 상태 코드를 검증하는 Controller 단위 테스트 필요.
 - **심각도**: Medium
-- **상태**: OPEN
+- **상태**: RESOLVED — SellerProposalControllerTest 작성 완료 (제안 상세 조회 200/404/403 케이스, PR #15)
 
 ---
 
@@ -274,7 +274,7 @@
 - **위치**: `support/` 패키지
 - **내용**: `@WithMockBuyer` 커스텀 어노테이션은 구현되어 있으나, 판매자 역할(`@WithMockSeller`)에 대응하는 어노테이션이 미구현. 판매자 Controller 테스트에서 필요.
 - **심각도**: Low
-- **상태**: OPEN
+- **상태**: RESOLVED — WithMockSeller + WithMockSellerSecurityContextFactory 구현 완료 (PR #15)
 
 ---
 

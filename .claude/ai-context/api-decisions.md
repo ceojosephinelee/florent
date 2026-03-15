@@ -68,4 +68,13 @@
 
 ---
 
+## [AD-008] 판매자 제안 상세 응답 — buyer와 별도 DTO
+
+- **결정일**: 2026-03-15
+- **결정 내용**: `SellerProposalDetailResponse`를 buyer의 `ProposalDetailResponse`와 별도로 생성. 도메인 모델 `ProposalDetail`은 공유.
+- **이유**: 판매자 응답은 PATCH 필드 구성과 일치해야 하므로 ShopInfo 중첩 레코드 대신 shopName만 포함. buyer는 shop 연락처(phone, address)가 필요하지만 seller는 자기 가게이므로 간략화. createdAt 등 seller 전용 필드 확장 가능성 확보.
+- **영향 파일**: `SellerProposalDetailResponse.java`, `SellerProposalController.java`
+
+---
+
 > 새 결정이 발생하면 [AD-{N}] 형식으로 추가한다.
