@@ -39,3 +39,4 @@ skills/backend-dev.md를 읽어라.
 완료 후 변경된 파일 목록과 변경 섹션 요약을 보여줘.
 생성 완료 후 git add + commit + push까지 해줘.
 
+
