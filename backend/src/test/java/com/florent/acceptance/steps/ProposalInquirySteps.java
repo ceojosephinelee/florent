@@ -67,9 +67,10 @@ public class ProposalInquirySteps {
 
     @When("구매자가 요청의 제안 목록을 조회한다")
     public void 구매자가_요청의_제안_목록을_조회한다() {
-        // when
+        // when — requestId는 로컬 필드 우선, 없으면 scenarioContext에서 가져옴 (E2E 호환)
+        Long effectiveRequestId = requestId != null ? requestId : scenarioContext.getRequestId();
         scenarioContext.setResponse(
-                testAdapter.getProposalList(getCurrentBuyerToken(), requestId));
+                testAdapter.getProposalList(getCurrentBuyerToken(), effectiveRequestId));
     }
 
     @When("구매자가 SUBMITTED 제안의 상세를 조회한다")

@@ -104,7 +104,15 @@ public class RequestSteps {
 
     @Given("판매자 {string} 이 로그인되어 있다")
     public void 판매자가_로그인되어_있다(String name) {
-        sellerToken = testDataFactory.createSellerAndGetToken(name);
+        // E2E 시나리오에서 이미 생성된 판매자 토큰이 있으면 재사용
+        String existingToken = scenarioContext.getSellerToken(name);
+        if (existingToken != null) {
+            sellerToken = existingToken;
+        } else {
+            sellerToken = testDataFactory.createSellerAndGetToken(name);
+        }
+        scenarioContext.setSellerToken(sellerToken);
+        scenarioContext.putSellerToken(name, sellerToken);
     }
 
     @When("판매자가 요청 생성 API를 호출한다")
