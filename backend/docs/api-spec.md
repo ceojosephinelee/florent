@@ -674,6 +674,7 @@ Response 200: `{ "deviceId": 1 }`
 | PATCH | `/seller/proposals/{id}` | 제안 임시저장 | 판매자 |
 | POST | `/seller/proposals/{id}/submit` | 제안 제출 | 판매자 |
 | GET | `/seller/proposals` | 내 제안 목록 | 판매자 |
+| GET | `/seller/proposals/{id}` | 제안 상세 조회 | 판매자 |
 | GET | `/seller/reservations` | 예약 목록 | 판매자 |
 | GET | `/seller/reservations/{id}` | 예약 상세 | 판매자 |
 | GET | `/seller/me` | 프로필 조회 | 판매자 |

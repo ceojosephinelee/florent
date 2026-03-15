@@ -3,8 +3,10 @@ package com.florent.application.seller;
 import com.florent.common.exception.BusinessException;
 import com.florent.common.exception.ErrorCode;
 import com.florent.domain.notification.SaveNotificationPort;
+import com.florent.domain.proposal.GetSellerProposalDetailUseCase;
 import com.florent.domain.proposal.GetSellerProposalListUseCase;
 import com.florent.domain.proposal.Proposal;
+import com.florent.domain.proposal.ProposalDetail;
 import com.florent.domain.proposal.ProposalPage;
 import com.florent.domain.proposal.ProposalRepository;
 import com.florent.domain.proposal.SaveProposalCommand;
@@ -33,7 +35,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class SellerProposalService implements StartProposalUseCase, SaveProposalUseCase,
-        SubmitProposalUseCase, GetSellerProposalListUseCase {
+        SubmitProposalUseCase, GetSellerProposalListUseCase, GetSellerProposalDetailUseCase {
 
     private final ProposalRepository proposalRepository;
     private final CurationRequestRepository requestRepository;
@@ -121,6 +123,43 @@ public class SellerProposalService implements StartProposalUseCase, SaveProposal
                 proposalPage.totalElements(),
                 proposalPage.totalPages(),
                 proposalPage.last());
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public ProposalDetail getSellerProposalDetail(Long proposalId, Long sellerId) {
+        FlowerShop shop = findShopBySellerId(sellerId);
+
+        Proposal proposal = proposalRepository.findById(proposalId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PROPOSAL_NOT_FOUND));
+
+        verifyOwnership(proposal, shop);
+
+        return toDetail(proposal, shop);
+    }
+
+    private ProposalDetail toDetail(Proposal proposal, FlowerShop shop) {
+        return new ProposalDetail(
+                proposal.getId(),
+                proposal.getRequestId(),
+                proposal.getStatus(),
+                shop.getId(),
+                shop.getShopName(),
+                shop.getShopPhone(),
+                shop.getShopAddress(),
+                proposal.getConceptTitle(),
+                proposal.getMoodColors(),
+                proposal.getMainFlowers(),
+                proposal.getWrappingStyle(),
+                proposal.getAllergyNote(),
+                proposal.getCareTips(),
+                proposal.getDescription(),
+                proposal.getImageUrls(),
+                proposal.getAvailableSlotKind(),
+                proposal.getAvailableSlotValue(),
+                proposal.getExpiresAt(),
+                proposal.getPrice()
+        );
     }
 
     private FlowerShop findShopBySellerId(Long sellerId) {

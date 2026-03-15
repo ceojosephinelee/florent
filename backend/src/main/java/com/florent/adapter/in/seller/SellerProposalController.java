@@ -2,12 +2,15 @@ package com.florent.adapter.in.seller;
 
 import com.florent.adapter.in.seller.dto.SaveProposalRequest;
 import com.florent.adapter.in.seller.dto.SaveProposalResponse;
+import com.florent.adapter.in.seller.dto.SellerProposalDetailResponse;
 import com.florent.adapter.in.seller.dto.SellerProposalListResponse;
 import com.florent.adapter.in.seller.dto.StartProposalResponse;
 import com.florent.adapter.in.seller.dto.SubmitProposalResponse;
 import com.florent.common.response.ApiResponse;
 import com.florent.common.security.UserPrincipal;
+import com.florent.domain.proposal.GetSellerProposalDetailUseCase;
 import com.florent.domain.proposal.GetSellerProposalListUseCase;
+import com.florent.domain.proposal.ProposalDetail;
 import com.florent.domain.proposal.SaveProposalResult;
 import com.florent.domain.proposal.SaveProposalUseCase;
 import com.florent.domain.proposal.SellerProposalListResult;
@@ -43,6 +46,7 @@ public class SellerProposalController {
     private final SaveProposalUseCase saveProposalUseCase;
     private final SubmitProposalUseCase submitProposalUseCase;
     private final GetSellerProposalListUseCase getSellerProposalListUseCase;
+    private final GetSellerProposalDetailUseCase getSellerProposalDetailUseCase;
 
     @PostMapping("/requests/{requestId}/proposals")
     public ResponseEntity<ApiResponse<StartProposalResponse>> start(
@@ -74,6 +78,16 @@ public class SellerProposalController {
         SubmitProposalResult result = submitProposalUseCase.submit(
                 new SubmitProposalCommand(proposalId, principal.getSellerId()));
         return ResponseEntity.ok(ApiResponse.success(SubmitProposalResponse.from(result)));
+    }
+
+    @GetMapping("/proposals/{proposalId}")
+    public ResponseEntity<ApiResponse<SellerProposalDetailResponse>> getProposalDetail(
+            @PathVariable Long proposalId,
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        ProposalDetail detail = getSellerProposalDetailUseCase.getSellerProposalDetail(
+                proposalId, principal.getSellerId());
+        return ResponseEntity.ok(ApiResponse.success(SellerProposalDetailResponse.from(detail)));
     }
 
     @GetMapping("/proposals")
