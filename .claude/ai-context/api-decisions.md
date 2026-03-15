@@ -104,4 +104,23 @@
 
 ---
 
+## [AD-012] NotificationService가 SaveNotificationPort + SaveNotificationUseCase 이중 구현
+
+- **결정일**: 2026-03-16
+- **결정 내용**: `NotificationService`가 기존 outbound port(`SaveNotificationPort`)와 새 inbound port(`SaveNotificationUseCase`)를 모두 implements
+- **이유**: 기존 3개 서비스가 `SaveNotificationPort`를 주입받아 알림 저장을 호출. `SaveNotificationPort`를 제거/리네이밍하면 16개 파일 변경 필요. 대신 같은 3개 메서드를 `SaveNotificationUseCase`에도 선언하고 `NotificationService`가 둘 다 구현. 기존 코드 변경 0.
+- **트레이드오프**: Port 하나가 inbound/outbound 두 역할을 하므로 의미적 혼동 가능. MVP 이후 SaveNotificationPort를 제거하고 SaveNotificationUseCase로 통합 리팩토링 권장.
+- **영향 파일**: `NotificationService.java`, `SaveNotificationUseCase.java`
+
+---
+
+## [AD-013] Notification 조회 API — userId 기반 (role 무관)
+
+- **결정일**: 2026-03-16
+- **결정 내용**: `GET /api/v1/notifications`는 buyer/seller 구분 없이 `userId`로 조회. 경로에 `/buyer/` 또는 `/seller/` prefix 없음.
+- **이유**: api-spec.md §14에서 공통 경로로 정의. 알림은 역할과 무관하게 사용자 단위로 관리. `UserPrincipal.getUserId()`로 인증된 사용자 식별.
+- **영향 파일**: `NotificationController.java`, `DeviceController.java`
+
+---
+
 > 새 결정이 발생하면 [AD-{N}] 형식으로 추가한다.

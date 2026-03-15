@@ -210,6 +210,26 @@
 
 ---
 
+### [DEBT-027] OutboxWorker 미구현 (@Scheduled FCM 발송)
+
+- **유형**: 기능 미완성
+- **위치**: `application/notification/` (미작성)
+- **내용**: OutboxEvent를 주기적으로 폴링하여 FCM 푸시를 발송하는 `OutboxWorker` 스케줄러가 미구현. 현재 OutboxEvent는 PENDING 상태로만 저장됨. PushNotificationPort + UserDeviceRepository를 사용하여 구현 필요.
+- **심각도**: Medium
+- **상태**: OPEN
+
+---
+
+### [DEBT-028] NotificationController @WebMvcTest 미작성
+
+- **유형**: 테스트 부채
+- **위치**: `test/adapter/in/notification/` (미작성)
+- **내용**: NotificationController, DeviceController에 대한 `@WebMvcTest` 슬라이스 테스트가 없음. 요청/응답 직렬화, Validation, HTTP 상태 코드를 검증하는 Controller 단위 테스트 필요.
+- **심각도**: Low
+- **상태**: OPEN
+
+---
+
 ## 버그 목록
 
 > 버그 발견 시 아래 형식으로 추가

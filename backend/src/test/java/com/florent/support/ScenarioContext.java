@@ -18,6 +18,7 @@ public class ScenarioContext {
     private Long proposalId;
     private Long reservationId;
     private Long otherProposalId;
+    private Long notificationId;
     private final Map<String, Long> otherBuyerRequestIds = new HashMap<>();
     private final Map<String, String> sellerTokens = new HashMap<>();
 
@@ -91,5 +92,13 @@ public class ScenarioContext {
 
     public void setOtherProposalId(Long otherProposalId) {
         this.otherProposalId = otherProposalId;
+    }
+
+    public Long getNotificationId() {
+        return notificationId;
+    }
+
+    public void setNotificationId(Long notificationId) {
+        this.notificationId = notificationId;
     }
 }

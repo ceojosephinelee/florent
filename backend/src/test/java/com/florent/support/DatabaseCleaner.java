@@ -16,7 +16,9 @@ public class DatabaseCleaner {
     @Before(order = 0)
     public void clean() {
         jdbcTemplate.execute(
-                "TRUNCATE TABLE proposal, curation_request, flower_shop, seller, buyer, \"user\" CASCADE");
+                "TRUNCATE TABLE outbox_event, notification, user_device, "
+                        + "payment, reservation, proposal, curation_request, "
+                        + "flower_shop, seller, buyer, \"user\" CASCADE");
         fakeNotification.clear();
     }
 }
