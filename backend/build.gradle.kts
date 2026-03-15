@@ -19,6 +19,8 @@ configurations {
     }
 }
 
+extra["testcontainers.version"] = "1.21.0"
+
 repositories {
     mavenCentral()
 }
@@ -59,7 +61,7 @@ dependencies {
     testImplementation("io.cucumber:cucumber-junit-platform-engine:7.15.0")
     testImplementation("org.junit.platform:junit-platform-suite")
 
-    // Testcontainers
+    // Testcontainers (Spring Boot BOM 버전 오버라이드 → 1.21.0)
     testImplementation("org.testcontainers:postgresql")
     testImplementation("org.testcontainers:junit-jupiter")
 }
@@ -67,4 +69,6 @@ dependencies {
 tasks.withType<Test> {
     useJUnitPlatform()
     systemProperty("cucumber.junit-platform.naming-strategy", "long")
+    // Docker Engine 29.x requires API ≥ 1.44 (Testcontainers 1.x 기본값은 1.32)
+    systemProperty("api.version", "1.44")
 }

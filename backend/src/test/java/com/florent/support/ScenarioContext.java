@@ -21,6 +21,7 @@ public class ScenarioContext {
     private Long notificationId;
     private final Map<String, Long> otherBuyerRequestIds = new HashMap<>();
     private final Map<String, String> sellerTokens = new HashMap<>();
+    private final Map<String, String> buyerTokens = new HashMap<>();
 
     public ResponseEntity<String> getResponse() {
         return response;
@@ -76,6 +77,14 @@ public class ScenarioContext {
 
     public String getSellerToken(String name) {
         return sellerTokens.get(name);
+    }
+
+    public void putBuyerToken(String name, String token) {
+        buyerTokens.put(name, token);
+    }
+
+    public String getBuyerToken(String name) {
+        return buyerTokens.get(name);
     }
 
     public Long getReservationId() {

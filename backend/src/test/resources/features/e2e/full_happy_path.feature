@@ -1,6 +1,5 @@
 # src/test/resources/features/e2e/full_happy_path.feature
 
-@Ignore
 Feature: 전체 서비스 흐름 End-to-End (Happy Path)
   구매자가 요청을 생성하고, 판매자가 제안을 제출하고,
   구매자가 제안을 선택하여 예약을 확정하는 전체 플로우가 에러 없이 작동해야 한다.
