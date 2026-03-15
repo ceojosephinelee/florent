@@ -100,5 +100,8 @@ OutboxWorker (@Scheduled, 10초 간격)
 |---|---|---|---|
 | 2026-03-15 | 구매자에게 DRAFT 제안 노출 여부 | DRAFT 비노출, isVisibleToBuyer()로 SUBMITTED/EXPIRED/SELECTED/NOT_SELECTED만 노출 | biz-rules §9: 목록에 SUBMITTED/EXPIRED만 표시. SELECTED/NOT_SELECTED도 히스토리 확인용 노출 |
 | 2026-03-15 | EXPIRED 제안의 expires_at 테스트 데이터 | EXPIRED 상태는 expires_at = now() - 1h로 설정 | 만료 상태와 시간이 일관되어야 테스트 신뢰성 확보 |
+| 2026-03-15 | Payment 도메인 패키지 위치 | `domain/payment/`로 분리 (reservation과 별도) | Bounded Context 분리 — Payment는 PG 연동 시 독립 확장 필요 |
+| 2026-03-15 | UseCase 네이밍: 제안 선택 vs 예약 확정 | `ConfirmReservationUseCase.confirm()` 채택 (SelectProposal 폐기) | 도메인 의미 반영 — 실제 동작은 "예약 확정 + 결제"이지 단순 "선택"이 아님 |
+| 2026-03-15 | 예약 조회 서비스 분리 | BuyerReservationService + SellerReservationService 별도 클래스 | buyer/seller 응답 DTO가 다르고 권한 검증 로직 상이. 단일 서비스로 합치면 비대해짐 |
 
 > 구현 중 새 결정이 발생하면 이 표에 추가한다.

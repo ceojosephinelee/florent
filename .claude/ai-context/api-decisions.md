@@ -77,4 +77,31 @@
 
 ---
 
+## [AD-009] Payment를 별도 도메인 패키지(domain/payment/)로 분리
+
+- **결정일**: 2026-03-15
+- **결정 내용**: `Payment`, `PaymentStatus`, `PaymentProvider`, `PaymentRepository`를 `domain/reservation/`에서 `domain/payment/`로 이동
+- **이유**: Payment는 Reservation과 생명주기가 다르고, 향후 PG 연동 시 독립적으로 확장 가능해야 함. Bounded Context 분리 원칙 적용.
+- **영향 파일**: `domain/payment/` 패키지 전체, `PaymentJpaEntity.java`, `PaymentRepositoryImpl.java`
+
+---
+
+## [AD-010] PaymentPort 인터페이스 도입 — Mock/실PG 교체 가능
+
+- **결정일**: 2026-03-15
+- **결정 내용**: `PaymentPort` outbound port 인터페이스 생성, `MockPaymentAdapter`가 구현. Service는 `PaymentPort.pay()`만 호출.
+- **이유**: 기존에는 `Payment.createSucceeded()`를 Service에서 직접 호출하여 Mock 결제가 Service에 하드코딩. Port/Adapter 패턴으로 분리하면 토스/카카오 PG 어댑터 추가 시 Service 코드 변경 없음.
+- **영향 파일**: `PaymentPort.java`, `MockPaymentAdapter.java`, `FakePaymentPort.java`, `BuyerReservationService.java`
+
+---
+
+## [AD-011] SelectProposal → ConfirmReservation 네이밍 변경
+
+- **결정일**: 2026-03-15
+- **결정 내용**: `SelectProposalCommand/Result/UseCase` → `ConfirmReservationCommand/Result/UseCase`로 전면 리네이밍. 메서드도 `select()` → `confirm()`으로 변경.
+- **이유**: "제안 선택"은 UI 관점의 액션이지만 실제 도메인 동작은 "예약 확정 + 결제". UseCase명은 도메인 의미를 반영해야 함. API endpoint(`POST /proposals/{id}/select`)는 클라이언트 호환을 위해 유지.
+- **영향 파일**: Command/Result/UseCase 3개 생성, Request/Response DTO 2개 생성, 기존 5개 삭제, 12개 참조 파일 수정
+
+---
+
 > 새 결정이 발생하면 [AD-{N}] 형식으로 추가한다.

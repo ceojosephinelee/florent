@@ -32,8 +32,8 @@
 ### [DEBT-003] Mock 결제 — 실 PG 미연동
 
 - **유형**: 기능 제한 (MVP 의도적 제외)
-- **위치**: `MockPaymentAdapter.java`
-- **내용**: PaymentPort 인터페이스로 추상화되어 있어 토스/카카오 PG 어댑터 추가 시 Service 코드 변경 불필요.
+- **위치**: `adapter/out/payment/MockPaymentAdapter.java`
+- **내용**: PaymentPort 인터페이스로 추상화되어 있어 토스/카카오 PG 어댑터 추가 시 Service 코드 변경 불필요. PR #16에서 PaymentPort outbound port + MockPaymentAdapter 분리 완료.
 - **현재 결정**: MVP에서 Mock으로 즉시 성공 처리.
 - **심각도**: — (계획된 제한)
 - **상태**: MVP_SCOPE_OUT
