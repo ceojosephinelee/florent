@@ -68,8 +68,8 @@ git log --oneline -3
 # 백엔드 기능: feature/backend/{기능명}
 # 예: feature/backend/proposal-api
 
-git checkout develop
-git checkout -b $BRANCH_NAME
+# 항상 최신 develop 기준으로 브랜치 생성
+git checkout develop && git pull origin develop && git checkout -b $BRANCH_NAME
 git push -u origin $BRANCH_NAME
 git worktree add ../$WORKTREE_NAME $BRANCH_NAME
 ```
