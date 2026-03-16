@@ -21,7 +21,7 @@ import com.florent.fake.FakePaymentPort;
 import com.florent.fake.FakePaymentRepository;
 import com.florent.fake.FakeProposalRepository;
 import com.florent.fake.FakeReservationRepository;
-import com.florent.fake.FakeSaveNotificationPort;
+import com.florent.fake.FakeSaveNotificationUseCase;
 import com.florent.support.TestFixtures;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,7 +42,7 @@ class BuyerReservationServiceTest {
     private FakeProposalRepository proposalRepository;
     private FakeCurationRequestRepository requestRepository;
     private FakeFlowerShopRepository shopRepository;
-    private FakeSaveNotificationPort notificationPort;
+    private FakeSaveNotificationUseCase notificationPort;
     private BuyerReservationService sut;
 
     private static final Long BUYER_ID = 1L;
@@ -58,7 +58,7 @@ class BuyerReservationServiceTest {
         paymentRepository = new FakePaymentRepository();
         reservationRepository = new FakeReservationRepository(
                 requestRepository, proposalRepository, shopRepository);
-        notificationPort = new FakeSaveNotificationPort();
+        notificationPort = new FakeSaveNotificationUseCase();
         sut = new BuyerReservationService(
                 reservationRepository, paymentRepository, new FakePaymentPort(),
                 proposalRepository, requestRepository,

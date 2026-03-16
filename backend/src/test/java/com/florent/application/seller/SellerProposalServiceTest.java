@@ -23,7 +23,7 @@ import com.florent.domain.shop.FlowerShop;
 import com.florent.fake.FakeCurationRequestRepository;
 import com.florent.fake.FakeFlowerShopRepository;
 import com.florent.fake.FakeProposalRepository;
-import com.florent.fake.FakeSaveNotificationPort;
+import com.florent.fake.FakeSaveNotificationUseCase;
 import com.florent.support.TestFixtures;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,7 +42,7 @@ class SellerProposalServiceTest {
     private FakeProposalRepository proposalRepository;
     private FakeCurationRequestRepository requestRepository;
     private FakeFlowerShopRepository shopRepository;
-    private FakeSaveNotificationPort notificationPort;
+    private FakeSaveNotificationUseCase notificationPort;
     private SellerProposalService sut;
 
     private static final Long SELLER_ID = 10L;
@@ -55,7 +55,7 @@ class SellerProposalServiceTest {
         proposalRepository = new FakeProposalRepository();
         requestRepository = new FakeCurationRequestRepository();
         shopRepository = new FakeFlowerShopRepository();
-        notificationPort = new FakeSaveNotificationPort();
+        notificationPort = new FakeSaveNotificationUseCase();
         sut = new SellerProposalService(
                 proposalRepository, requestRepository, shopRepository,
                 notificationPort, fixedClock);

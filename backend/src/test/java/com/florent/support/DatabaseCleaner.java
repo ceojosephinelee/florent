@@ -1,6 +1,6 @@
 package com.florent.support;
 
-import com.florent.fake.FakeSaveNotificationPort;
+import com.florent.fake.FakeSaveNotificationUseCase;
 import io.cucumber.java.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,7 +11,7 @@ public class DatabaseCleaner {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private FakeSaveNotificationPort fakeNotification;
+    private FakeSaveNotificationUseCase fakeNotification;
 
     @Before(order = 0)
     public void clean() {

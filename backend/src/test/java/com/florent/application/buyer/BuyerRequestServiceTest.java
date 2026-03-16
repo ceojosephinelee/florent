@@ -15,7 +15,7 @@ import com.florent.domain.shop.FlowerShop;
 import com.florent.fake.FakeCurationRequestRepository;
 import com.florent.fake.FakeFlowerShopRepository;
 import com.florent.fake.FakeProposalCountPort;
-import com.florent.fake.FakeSaveNotificationPort;
+import com.florent.fake.FakeSaveNotificationUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ class BuyerRequestServiceTest {
 
     private FakeCurationRequestRepository requestRepository;
     private FakeFlowerShopRepository shopRepository;
-    private FakeSaveNotificationPort notificationPort;
+    private FakeSaveNotificationUseCase notificationPort;
     private FakeProposalCountPort proposalCountPort;
     private BuyerRequestService sut;
 
@@ -44,7 +44,7 @@ class BuyerRequestServiceTest {
     void setUp() {
         requestRepository = new FakeCurationRequestRepository();
         shopRepository = new FakeFlowerShopRepository();
-        notificationPort = new FakeSaveNotificationPort();
+        notificationPort = new FakeSaveNotificationUseCase();
         proposalCountPort = new FakeProposalCountPort();
         sut = new BuyerRequestService(requestRepository, shopRepository, notificationPort, proposalCountPort, fixedClock);
     }

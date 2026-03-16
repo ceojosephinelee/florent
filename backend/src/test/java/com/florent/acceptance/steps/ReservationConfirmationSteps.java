@@ -2,7 +2,7 @@ package com.florent.acceptance.steps;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.florent.fake.FakeSaveNotificationPort;
+import com.florent.fake.FakeSaveNotificationUseCase;
 import com.florent.support.ScenarioContext;
 import com.florent.support.TestAdapter;
 import com.florent.support.TestDataFactory;
@@ -30,7 +30,7 @@ public class ReservationConfirmationSteps {
     private ScenarioContext scenarioContext;
 
     @Autowired
-    private FakeSaveNotificationPort fakeNotification;
+    private FakeSaveNotificationUseCase fakeNotification;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
