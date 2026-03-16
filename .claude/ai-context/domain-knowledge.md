@@ -98,6 +98,14 @@ OutboxWorker (@Scheduled, 10초 간격)
 
 | 날짜 | 모호한 부분 | 결정 | 근거 |
 |---|---|---|---|
-| — | — | — | — |
+| 2026-03-15 | 구매자에게 DRAFT 제안 노출 여부 | DRAFT 비노출, isVisibleToBuyer()로 SUBMITTED/EXPIRED/SELECTED/NOT_SELECTED만 노출 | biz-rules §9: 목록에 SUBMITTED/EXPIRED만 표시. SELECTED/NOT_SELECTED도 히스토리 확인용 노출 |
+| 2026-03-15 | EXPIRED 제안의 expires_at 테스트 데이터 | EXPIRED 상태는 expires_at = now() - 1h로 설정 | 만료 상태와 시간이 일관되어야 테스트 신뢰성 확보 |
+| 2026-03-15 | Payment 도메인 패키지 위치 | `domain/payment/`로 분리 (reservation과 별도) | Bounded Context 분리 — Payment는 PG 연동 시 독립 확장 필요 |
+| 2026-03-15 | UseCase 네이밍: 제안 선택 vs 예약 확정 | `ConfirmReservationUseCase.confirm()` 채택 (SelectProposal 폐기) | 도메인 의미 반영 — 실제 동작은 "예약 확정 + 결제"이지 단순 "선택"이 아님 |
+| 2026-03-15 | 예약 조회 서비스 분리 | BuyerReservationService + SellerReservationService 별도 클래스 | buyer/seller 응답 DTO가 다르고 권한 검증 로직 상이. 단일 서비스로 합치면 비대해짐 |
+| 2026-03-16 | SaveNotificationPort vs SaveNotificationUseCase 분리 | 기존 SaveNotificationPort(outbound) 유지 + SaveNotificationUseCase(inbound) 신규 생성. NotificationService가 둘 다 구현 | 기존 3개 서비스(BuyerRequest, SellerProposal, BuyerReservation)가 SaveNotificationPort를 주입받고 있으므로 리네이밍 시 16파일 변경 필요. 인터페이스 2개로 분리하여 기존 코드 무변경 |
+| 2026-03-16 | buyerId/sellerId → userId 변환 | NotificationUserResolverPort 도입. NotificationService가 Notification.user_id에 USER.id를 저장하기 위해 BUYER/SELLER 테이블 경유 | NOTIFICATION.user_id는 USER.id 기준이나, SaveNotificationPort는 buyerId/sellerId를 받으므로 변환 레이어 필요 |
+| 2026-03-16 | OutboxEvent 재시도 전략 | 최대 3회 시도, 실패 시 FAILED. 재시도 간격 = attemptCount * 30초 (선형 백오프) | 지수 백오프는 MVP에서 과도. 선형 백오프로 단순화 |
+| 2026-03-16 | E2E 시나리오에서 동일 사용자 재등장 | ScenarioContext에 buyerTokens/sellerTokens 맵 도입, 이름 기반 토큰 재사용 | Cucumber 단일 시나리오 내 여러 Phase에서 같은 사용자가 반복 등장 시 DB 중복 키 방지 |
 
 > 구현 중 새 결정이 발생하면 이 표에 추가한다.

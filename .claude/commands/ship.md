@@ -14,17 +14,53 @@
 - worktree 안에 새 폴더를 만들거나 기존 폴더를 중첩하지 않는다
 - worktree는 레포 전체 구조가 그대로 들어가므로 추가 복사 없이 `git add`만 한다
 
+### Step 0.5. ai-context 업데이트 (커밋 전에 먼저)
+- `.claude/ai-context/known-issues.md` — 새 DEBT/BUG 추가, 해결된 것은 RESOLVED 처리
+- `.claude/ai-context/domain-knowledge.md` — 도메인 관련 발견 사항 추가
+- `.claude/ai-context/api-decisions.md` — 이번 구현 중 발생한 설계 결정 추가
+
+### Step 0.7. Medium 이상 DEBT 경고
+```bash
+# known-issues.md에서 Medium/High OPEN DEBT 확인
+grep -B2 -A2 "심각도: Medium\|심각도: High" .claude/ai-context/known-issues.md | grep -A4 "OPEN"
+```
+→ Medium 이상 OPEN DEBT가 있으면 사용자에게 경고하고 이번 PR에서 처리할지 확인 요청.
+→ 사용자가 이월을 선택하면 그대로 진행.
+
 ### Step 1. 최종 테스트
+
+Docker 상태를 먼저 확인한다:
+```bash
+docker info > /dev/null 2>&1 && echo "DOCKER_RUNNING" || echo "DOCKER_NOT_RUNNING"
+```
+
+**Docker 실행 중:**
 ```bash
 cd backend && ./gradlew test
 ```
-→ BUILD SUCCESSFUL 확인. FAILED 있으면 수정 후 재실행. 통과 전까지 다음 단계 금지.
+→ BUILD SUCCESSFUL (전체 GREEN) 확인. FAILED 있으면 수정 후 재실행. 통과 전까지 다음 단계 금지.
+
+**Docker 미실행:**
+```bash
+cd backend && ./gradlew test --tests "!com.florent.acceptance.*" 2>/dev/null || ./gradlew test -x cucumberTest 2>/dev/null || ./gradlew test
+```
+→ 단위 + 슬라이스 테스트 GREEN이면 통과. Cucumber(Testcontainers) 실패는 허용.
+→ 단위/슬라이스 테스트도 실패하면 수정 후 재실행.
 
 ### Step 2. 변경 파일 확인
 ```bash
 git status
 git diff --stat HEAD
 ```
+
+### Step 0. develop 최신화 확인 (반드시 먼저)
+```bash
+git checkout develop
+git pull origin develop
+git log --oneline -3
+```
+→ 이전 PR 머지 커밋이 포함되어 있는지 확인
+→ 포함되어 있지 않으면 중단하고 GitHub에서 PR 머지 후 다시 실행
 
 ### Step 3. 브랜치 + worktree 생성
 ```bash
@@ -78,7 +114,8 @@ cd ../florent
 git worktree remove ../$WORKTREE_NAME
 ```
 
-### Step 8. ai-context 업데이트
-- `.claude/ai-context/api-decisions.md` — 이번 구현 중 발생한 설계 결정 추가
-- `.claude/ai-context/known-issues.md` — 새 DEBT/BUG 있으면 추가, 해결된 것은 RESOLVED 처리
-- `.claude/ai-context/domain-knowledge.md` — 도메인 관련 발견 사항 추가
+### Step 8. 머지 후 안내
+→ PR 머지 후 다음 세션 시작 전 반드시 `git pull origin develop` 실행
+
+### Step 9. ai-context 최종 확인
+→ Step 0.5에서 이미 업데이트했으므로, 커밋/PR 과정에서 추가로 발견한 사항만 보완한다.

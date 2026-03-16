@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -27,6 +28,13 @@ public class CurationRequestRepositoryImpl implements CurationRequestRepository 
     public Optional<CurationRequest> findById(Long id) {
         return jpaRepository.findById(id)
                 .map(CurationRequestJpaEntity::toDomain);
+    }
+
+    @Override
+    public List<CurationRequest> findAllByIds(List<Long> ids) {
+        return jpaRepository.findAllById(ids).stream()
+                .map(CurationRequestJpaEntity::toDomain)
+                .toList();
     }
 
     @Override

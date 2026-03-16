@@ -110,12 +110,13 @@ src/main/java/com/florent/
 │   ├── auth/AuthService.java
 │   ├── buyer/
 │   │   ├── BuyerRequestService.java             # CreateRequestUseCase 구현
-│   │   └── BuyerProposalService.java            # Start/Save/SubmitProposalUseCase 구현
+│   │   ├── BuyerProposalService.java            # Start/Save/SubmitProposalUseCase 구현
+│   │   └── BuyerReservationService.java         # ConfirmReservationUseCase + GetBuyerReservation*UseCase 구현
 │   ├── seller/
 │   │   ├── SellerRequestService.java
 │   │   ├── SellerProposalService.java
+│   │   ├── SellerReservationService.java        # GetSellerReservation*UseCase 구현
 │   │   └── SellerShopService.java
-│   ├── reservation/ReservationService.java      # ConfirmReservationUseCase 구현
 │   ├── notification/NotificationService.java    # SaveNotificationUseCase 구현
 │   └── image/ImageService.java
 │

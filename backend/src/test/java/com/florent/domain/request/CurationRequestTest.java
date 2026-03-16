@@ -5,7 +5,10 @@ import com.florent.common.exception.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import com.florent.support.TestFixtures;
+
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,6 +17,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CurationRequestTest {
+
+    private final Clock fixedClock = TestFixtures.FIXED_CLOCK;
 
     private CreateRequestCommand defaultCommand() {
         return new CreateRequestCommand(
@@ -38,7 +43,7 @@ class CurationRequestTest {
         CreateRequestCommand command = defaultCommand();
 
         // when
-        CurationRequest request = CurationRequest.create(command);
+        CurationRequest request = CurationRequest.create(command, fixedClock);
 
         // then
         assertThat(request.getStatus()).isEqualTo(RequestStatus.OPEN);
@@ -51,7 +56,7 @@ class CurationRequestTest {
     @DisplayName("confirm() — OPEN 상태에서 CONFIRMED로 전이한다")
     void confirm_정상_전이() {
         // given
-        CurationRequest request = CurationRequest.create(defaultCommand());
+        CurationRequest request = CurationRequest.create(defaultCommand(), fixedClock);
 
         // when
         request.confirm();
@@ -64,7 +69,7 @@ class CurationRequestTest {
     @DisplayName("confirm() — OPEN이 아닌 상태에서 BusinessException이 발생한다")
     void confirm_잘못된_상태에서_예외_발생() {
         // given
-        CurationRequest request = CurationRequest.create(defaultCommand());
+        CurationRequest request = CurationRequest.create(defaultCommand(), fixedClock);
         request.expire();
 
         // when & then
@@ -78,7 +83,7 @@ class CurationRequestTest {
     @DisplayName("expire() — OPEN 상태에서 EXPIRED로 전이한다")
     void expire_정상_전이() {
         // given
-        CurationRequest request = CurationRequest.create(defaultCommand());
+        CurationRequest request = CurationRequest.create(defaultCommand(), fixedClock);
 
         // when
         request.expire();
@@ -91,11 +96,11 @@ class CurationRequestTest {
     @DisplayName("isExpired() — EXPIRED 상태이면 true를 반환한다")
     void isExpired_EXPIRED_상태이면_true() {
         // given
-        CurationRequest request = CurationRequest.create(defaultCommand());
+        CurationRequest request = CurationRequest.create(defaultCommand(), fixedClock);
         request.expire();
 
         // when & then
-        assertThat(request.isExpired()).isTrue();
+        assertThat(request.isExpired(fixedClock)).isTrue();
     }
 
     @Test
@@ -110,21 +115,21 @@ class CurationRequestTest {
                 List.of(new TimeSlot(SlotKind.DELIVERY_WINDOW, "14:00-16:00")),
                 "서울시 강남구",
                 new BigDecimal("37.498095"), new BigDecimal("127.027610"),
-                LocalDateTime.now().minusHours(49),
-                LocalDateTime.now().minusHours(1)
+                LocalDateTime.now(fixedClock).minusHours(49),
+                LocalDateTime.now(fixedClock).minusHours(1)
         );
 
         // when & then
-        assertThat(request.isExpired()).isTrue();
+        assertThat(request.isExpired(fixedClock)).isTrue();
     }
 
     @Test
     @DisplayName("isExpired() — OPEN이고 만료시각 전이면 false를 반환한다")
     void isExpired_OPEN이고_만료시각_전이면_false() {
         // given
-        CurationRequest request = CurationRequest.create(defaultCommand());
+        CurationRequest request = CurationRequest.create(defaultCommand(), fixedClock);
 
         // when & then
-        assertThat(request.isExpired()).isFalse();
+        assertThat(request.isExpired(fixedClock)).isFalse();
     }
 }

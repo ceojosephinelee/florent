@@ -23,3 +23,8 @@ management:
 
 server:
   port: 8080
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY:dev-secret-minimum-256-bits-long-key-for-local-development}
+  access-token-validity-ms: 3600000
+  refresh-token-validity-ms: 2592000000

@@ -5,6 +5,7 @@ import com.florent.common.exception.ErrorCode;
 import lombok.Getter;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,7 +30,7 @@ public class CurationRequest {
 
     private CurationRequest() {}
 
-    public static CurationRequest create(CreateRequestCommand cmd) {
+    public static CurationRequest create(CreateRequestCommand cmd, Clock clock) {
         CurationRequest r = new CurationRequest();
         r.buyerId = cmd.buyerId();
         r.status = RequestStatus.OPEN;
@@ -43,7 +44,7 @@ public class CurationRequest {
         r.placeAddressText = cmd.placeAddressText();
         r.placeLat = cmd.placeLat();
         r.placeLng = cmd.placeLng();
-        r.createdAt = LocalDateTime.now();
+        r.createdAt = LocalDateTime.now(clock);
         r.expiresAt = r.createdAt.plusHours(48);
         return r;
     }
@@ -74,6 +75,12 @@ public class CurationRequest {
         return r;
     }
 
+    public void validateAcceptingProposals() {
+        if (status != RequestStatus.OPEN) {
+            throw new BusinessException(ErrorCode.REQUEST_NOT_OPEN);
+        }
+    }
+
     public void confirm() {
         if (status != RequestStatus.OPEN) {
             throw new BusinessException(ErrorCode.REQUEST_NOT_OPEN);
@@ -88,8 +95,8 @@ public class CurationRequest {
         this.status = RequestStatus.EXPIRED;
     }
 
-    public boolean isExpired() {
+    public boolean isExpired(Clock clock) {
         return status == RequestStatus.EXPIRED
-            || (status == RequestStatus.OPEN && LocalDateTime.now().isAfter(expiresAt));
+            || (status == RequestStatus.OPEN && LocalDateTime.now(clock).isAfter(expiresAt));
     }
 }

@@ -285,7 +285,19 @@ repository.findById(id)
 
 ---
 
-## 8. 테스트 전략
+## 8. 테스트 GREEN 기준
+
+| Docker 상태 | GREEN 기준 | /ship 허용 |
+|---|---|---|
+| Docker 실행 중 | `./gradlew test` 전체 통과 (단위 + 슬라이스 + Cucumber) | ✅ |
+| Docker 미실행 | 단위 테스트 + `@WebMvcTest` 슬라이스 테스트 GREEN | ✅ (Cucumber 실패는 허용) |
+
+> Docker 미실행 시 Testcontainers 기반 인수 테스트(Cucumber)는 실패할 수 있다.
+> 이 경우 단위 + 슬라이스 테스트만 GREEN이면 /ship을 진행할 수 있다.
+
+---
+
+## 9. 테스트 전략
 
 | 종류 | 위치 | 도구 |
 |---|---|---|
@@ -303,7 +315,7 @@ repository.findById(id)
 
 ---
 
-## 9. ⚡ 기능 완료 시 — Claude Code 자동 실행 절차
+## 10. ⚡ 기능 완료 시 — Claude Code 자동 실행 절차
 
 > 사용자가 "완료", "done", "커밋해줘", "PR 만들어줘" 라고 하면
 > 아래를 순서대로 **직접 실행**한다.
@@ -360,7 +372,7 @@ gh pr create --base develop --title "{커밋 메시지}" --body-file .github/pr-
 
 ---
 
-## 10. 세션 시작 시 — 컨텍스트 복원
+## 11. 세션 시작 시 — 컨텍스트 복원
 
 새 세션이 시작되면 가장 먼저 아래를 순서대로 실행한다.
 
@@ -374,7 +386,7 @@ git branch --show-current   # 현재 도메인 확인
 
 ---
 
-## 11. 작업 시작 전 체크리스트
+## 12. 작업 시작 전 체크리스트
 
 ```
 [ ] biz-rules.md 에서 비즈니스 규칙 확인

@@ -61,4 +61,137 @@ public class TestAdapter {
                 new HttpEntity<>(headers),
                 String.class);
     }
+
+    public ResponseEntity<String> getProposalList(String token, Long requestId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/buyer/requests/" + requestId + "/proposals",
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                String.class);
+    }
+
+    public ResponseEntity<String> getProposalDetail(String token, Long proposalId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/buyer/proposals/" + proposalId,
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                String.class);
+    }
+
+    // ─── Seller Proposal APIs ───
+
+    public ResponseEntity<String> startProposal(String token, Long requestId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/seller/requests/" + requestId + "/proposals",
+                HttpMethod.POST,
+                new HttpEntity<>("{}", headers),
+                String.class);
+    }
+
+    public ResponseEntity<String> saveProposal(String token, Long proposalId, String body) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/seller/proposals/" + proposalId,
+                HttpMethod.PATCH,
+                new HttpEntity<>(body, headers),
+                String.class);
+    }
+
+    public ResponseEntity<String> submitProposal(String token, Long proposalId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/seller/proposals/" + proposalId + "/submit",
+                HttpMethod.POST,
+                new HttpEntity<>("{}", headers),
+                String.class);
+    }
+
+    public ResponseEntity<String> getSellerProposals(String token, int page, int size) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/seller/proposals?page=" + page + "&size=" + size,
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                String.class);
+    }
+
+    // ─── Reservation APIs ───
+
+    public ResponseEntity<String> selectProposal(String token, Long proposalId, String body) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/buyer/proposals/" + proposalId + "/select",
+                HttpMethod.POST,
+                new HttpEntity<>(body, headers),
+                String.class);
+    }
+
+    public ResponseEntity<String> getBuyerReservations(String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/buyer/reservations",
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                String.class);
+    }
+
+    public ResponseEntity<String> getBuyerReservationDetail(String token, Long reservationId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/buyer/reservations/" + reservationId,
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                String.class);
+    }
+
+    // ─── Notification APIs ───
+
+    public ResponseEntity<String> getNotifications(String token, int page, int size) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/notifications?page=" + page + "&size=" + size,
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                String.class);
+    }
+
+    public ResponseEntity<String> markNotificationAsRead(String token, Long notificationId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/notifications/" + notificationId + "/read",
+                HttpMethod.PATCH,
+                new HttpEntity<>(headers),
+                String.class);
+    }
+
+    // ─── Device APIs ───
+
+    public ResponseEntity<String> registerDevice(String token, String body) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + token);
+        return restTemplate.exchange(
+                "/api/v1/devices",
+                HttpMethod.POST,
+                new HttpEntity<>(body, headers),
+                String.class);
+    }
 }

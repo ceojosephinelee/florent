@@ -20,7 +20,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import com.florent.support.TestFixtures;
+
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -35,13 +38,15 @@ class BuyerRequestServiceTest {
     private FakeProposalCountPort proposalCountPort;
     private BuyerRequestService sut;
 
+    private final Clock fixedClock = TestFixtures.FIXED_CLOCK;
+
     @BeforeEach
     void setUp() {
         requestRepository = new FakeCurationRequestRepository();
         shopRepository = new FakeFlowerShopRepository();
         notificationPort = new FakeSaveNotificationPort();
         proposalCountPort = new FakeProposalCountPort();
-        sut = new BuyerRequestService(requestRepository, shopRepository, notificationPort, proposalCountPort);
+        sut = new BuyerRequestService(requestRepository, shopRepository, notificationPort, proposalCountPort, fixedClock);
     }
 
     private CreateRequestCommand defaultCommand() {
@@ -83,12 +88,12 @@ class BuyerRequestServiceTest {
         // given — 기준점: 37.498095, 127.027610
         // 약 1km 거리 꽃집
         FlowerShop nearbyShop = FlowerShop.reconstitute(
-                1L, 10L, "가까운꽃집", "서울시 강남구",
+                1L, 10L, "가까운꽃집", null, "서울시 강남구",
                 new BigDecimal("37.505"),
                 new BigDecimal("127.027"));
         // 약 10km 거리 꽃집
         FlowerShop farShop = FlowerShop.reconstitute(
-                2L, 20L, "먼꽃집", "서울시 마포구",
+                2L, 20L, "먼꽃집", null, "서울시 마포구",
                 new BigDecimal("37.560"),
                 new BigDecimal("126.920"));
         shopRepository.save(nearbyShop);
@@ -107,7 +112,7 @@ class BuyerRequestServiceTest {
     void 반경_밖_꽃집_알림_미발송() {
         // given — 모든 꽃집이 반경 밖
         FlowerShop farShop = FlowerShop.reconstitute(
-                1L, 10L, "먼꽃집", "서울시 마포구",
+                1L, 10L, "먼꽃집", null, "서울시 마포구",
                 new BigDecimal("37.560"),
                 new BigDecimal("126.920"));
         shopRepository.save(farShop);

@@ -193,7 +193,7 @@ public class TestDataFactory {
                 + "'TIER2', 'PICKUP', ?, ?, "
                 + "'서울시 강남구 테헤란로 1', 37.498095, 127.027610, now(), now() + INTERVAL '48' HOUR, now())",
                 buyerId,
-                LocalDate.now().plusDays(3).toString(),
+                java.sql.Date.valueOf(LocalDate.now().plusDays(3)),
                 timeSlotsJson);
         return jdbcTemplate.queryForObject(
                 "SELECT id FROM curation_request WHERE buyer_id = ? ORDER BY id DESC LIMIT 1",
@@ -210,6 +210,92 @@ public class TestDataFactory {
                 + "'PICKUP_30M', '14:00', 30000, "
                 + "now(), now() + INTERVAL '24' HOUR, now())",
                 requestId, flowerShopId, status);
+    }
+
+    public Long createProposalAndGetId(Long requestId, Long flowerShopId, String status) {
+        String expiresAtExpr = "EXPIRED".equals(status)
+                ? "now() - INTERVAL '1' HOUR"
+                : "now() + INTERVAL '24' HOUR";
+        jdbcTemplate.update(
+                "INSERT INTO proposal "
+                + "(request_id, flower_shop_id, status, concept_title, description, "
+                + "available_slot_kind, available_slot_value, price, "
+                + "created_at, expires_at, submitted_at, updated_at) "
+                + "VALUES (?, ?, ?, '테스트 컨셉', '테스트 제안 설명', "
+                + "'PICKUP_30M', '14:00', 35000, "
+                + "now() - INTERVAL '25' HOUR, " + expiresAtExpr + ", "
+                + "CASE WHEN ? = 'SUBMITTED' THEN now() ELSE NULL END, now())",
+                requestId, flowerShopId, status, status);
+        return jdbcTemplate.queryForObject(
+                "SELECT id FROM proposal WHERE request_id = ? AND flower_shop_id = ?",
+                Long.class, requestId, flowerShopId);
+    }
+
+    public String createSellerWithShopAndGetToken(String shopName, BigDecimal lat, BigDecimal lng) {
+        jdbcTemplate.update(
+                "INSERT INTO \"user\" (kakao_id, role, created_at, updated_at) "
+                + "VALUES (?, 'SELLER', now(), now())", "kakao_shoptoken_" + shopName);
+        Long userId = jdbcTemplate.queryForObject(
+                "SELECT id FROM \"user\" WHERE kakao_id = ?", Long.class, "kakao_shoptoken_" + shopName);
+
+        jdbcTemplate.update(
+                "INSERT INTO seller (user_id, created_at, updated_at) "
+                + "VALUES (?, now(), now())", userId);
+        Long sellerId = jdbcTemplate.queryForObject(
+                "SELECT id FROM seller WHERE user_id = ?", Long.class, userId);
+
+        jdbcTemplate.update(
+                "INSERT INTO flower_shop (seller_id, name, address_text, lat, lng, created_at, updated_at) "
+                + "VALUES (?, ?, '테스트 주소', ?, ?, now(), now())",
+                sellerId, shopName, lat, lng);
+
+        return TestTokenProvider.createSellerToken(userId, sellerId);
+    }
+
+    public String validSaveProposalBody() {
+        ObjectNode node = MAPPER.createObjectNode();
+        node.put("conceptTitle", "봄의 향기 컨셉");
+        node.set("moodColors", toArrayNode(new String[]{"PINK", "WHITE"}));
+        node.set("mainFlowers", toArrayNode(new String[]{"장미", "튤립"}));
+        node.set("wrappingStyle", toArrayNode(new String[]{"리본"}));
+        node.put("allergyNote", "없음");
+        node.put("careTips", "물을 자주 주세요");
+        node.put("description", "봄 느낌 가득한 꽃다발입니다.");
+        node.set("imageUrls", toArrayNode(new String[]{"https://example.com/img1.jpg"}));
+        ObjectNode slot = MAPPER.createObjectNode();
+        slot.put("kind", "PICKUP_30M");
+        slot.put("value", "14:00");
+        node.set("availableSlot", slot);
+        node.put("price", 35000);
+        return node.toString();
+    }
+
+    public Long createExpiredRequest(Long buyerId) {
+        String timeSlotsJson = "[{\"kind\":\"PICKUP_30M\",\"value\":\"14:00\"}]";
+        jdbcTemplate.update(
+                "INSERT INTO curation_request "
+                + "(buyer_id, status, purpose_tags_json, relation_tags_json, mood_tags_json, "
+                + "budget_tier, fulfillment_type, fulfillment_date, requested_time_slots_json, "
+                + "place_address_text, place_lat, place_lng, created_at, expires_at, updated_at) "
+                + "VALUES (?, 'EXPIRED', '[\"생일\"]', '[\"친구\"]', '[\"밝음\"]', "
+                + "'TIER2', 'PICKUP', ?, ?, "
+                + "'서울시 강남구 테헤란로 1', 37.498095, 127.027610, "
+                + "now() - INTERVAL '49' HOUR, now() - INTERVAL '1' HOUR, now())",
+                buyerId,
+                java.sql.Date.valueOf(LocalDate.now().plusDays(3)),
+                timeSlotsJson);
+        return jdbcTemplate.queryForObject(
+                "SELECT id FROM curation_request WHERE buyer_id = ? ORDER BY id DESC LIMIT 1",
+                Long.class, buyerId);
+    }
+
+    public Long getSellerIdFromToken(String token) {
+        try {
+            String json = new String(java.util.Base64.getDecoder().decode(token));
+            return MAPPER.readTree(json).get("sellerId").asLong();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Long getBuyerIdFromToken(String token) {

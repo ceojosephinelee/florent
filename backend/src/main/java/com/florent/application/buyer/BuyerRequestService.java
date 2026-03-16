@@ -3,7 +3,7 @@ package com.florent.application.buyer;
 import com.florent.common.exception.BusinessException;
 import com.florent.common.exception.ErrorCode;
 import com.florent.common.util.HaversineUtil;
-import com.florent.domain.notification.SaveNotificationPort;
+import com.florent.domain.notification.SaveNotificationUseCase;
 import com.florent.domain.proposal.ProposalCountPort;
 import com.florent.domain.proposal.ProposalStatus;
 import com.florent.domain.request.CreateRequestCommand;
@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -37,13 +38,14 @@ public class BuyerRequestService implements CreateRequestUseCase,
 
     private final CurationRequestRepository requestRepository;
     private final FlowerShopRepository shopRepository;
-    private final SaveNotificationPort saveNotificationPort;
+    private final SaveNotificationUseCase saveNotificationPort;
     private final ProposalCountPort proposalCountPort;
+    private final Clock clock;
 
     @Transactional
     @Override
     public CreateRequestResult create(CreateRequestCommand command) {
-        CurationRequest request = CurationRequest.create(command);
+        CurationRequest request = CurationRequest.create(command, clock);
         CurationRequest saved = requestRepository.save(request);
         notifyNearbyShops(command.placeLat(), command.placeLng(), saved.getId());
         return CreateRequestResult.from(saved);

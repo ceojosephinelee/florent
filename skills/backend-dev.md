@@ -50,6 +50,21 @@ Step 6. 완료 보고
 
 ---
 
+## 레이어별 생성 가능 파일 목록
+
+> **이 목록 밖의 파일을 생성해야 할 경우, 반드시 사용자에게 먼저 보고하고 승인을 받는다.**
+
+| Layer | 생성 가능 파일 | 패키지 위치 |
+|---|---|---|
+| Domain | 도메인 모델, Enum, Value Object, UseCase 인터페이스, Repository/Port 인터페이스 | `domain/{도메인명}/` |
+| Application | Service (UseCase 구현체), Command, Result | `application/{역할}/` |
+| Adapter/in | Controller, Request DTO, Response DTO | `adapter/in/{역할}/` |
+| Adapter/out | JpaEntity, RepositoryImpl, 외부서비스 Adapter | `adapter/out/persistence/{도메인명}/`, `adapter/out/{서비스명}/` |
+| Common | ErrorCode 항목 추가, 공통 유틸 | `common/` |
+| Test | 단위 테스트, Fake 구현체, Cucumber Step, Feature 파일 | `test/` 하위 대응 경로 |
+
+---
+
 ## 레이어별 구현 규칙
 
 ### Domain Layer

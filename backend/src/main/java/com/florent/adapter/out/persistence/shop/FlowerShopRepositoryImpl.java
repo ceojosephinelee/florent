@@ -26,4 +26,17 @@ public class FlowerShopRepositoryImpl implements FlowerShopRepository {
                 .map(FlowerShopJpaEntity::toDomain)
                 .toList();
     }
+
+    @Override
+    public List<FlowerShop> findAllByIds(List<Long> ids) {
+        return jpaRepository.findAllById(ids).stream()
+                .map(FlowerShopJpaEntity::toDomain)
+                .toList();
+    }
+
+    @Override
+    public Optional<FlowerShop> findBySellerId(Long sellerId) {
+        return jpaRepository.findBySellerId(sellerId)
+                .map(FlowerShopJpaEntity::toDomain);
+    }
 }
