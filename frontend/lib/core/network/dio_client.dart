@@ -2,21 +2,21 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../auth/auth_provider.dart';
+import '../models/auth_models.dart';
 import '../router/app_router.dart';
 
 /// Dio 인스턴스 Provider.
 /// - Authorization 헤더 자동 주입
 /// - 401 TOKEN_EXPIRED → reissue → 원래 요청 재시도
 /// - 401 REFRESH_TOKEN_EXPIRED → 토큰 삭제 + /login 리다이렉트
-///
-/// 현재 mock 모드에서는 사용되지 않음.
-/// 실제 API 연동 시 ApiAuthRepository 등에서 이 Provider를 주입받아 사용.
 final dioProvider = Provider<Dio>((ref) {
   final tokenStorage = ref.watch(tokenStorageProvider);
-  final authRepo = ref.watch(authRepositoryProvider);
 
   final dio = Dio(BaseOptions(
-    baseUrl: 'http://localhost:8080/api/v1',
+    baseUrl: const String.fromEnvironment(
+      'API_BASE_URL',
+      defaultValue: 'http://localhost:8080/api/v1',
+    ),
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
     headers: {'Content-Type': 'application/json'},
@@ -45,13 +45,19 @@ final dioProvider = Provider<Dio>((ref) {
           final refreshToken = await tokenStorage.getRefreshToken();
           if (refreshToken != null) {
             try {
-              // reissue는 별도 Dio 인스턴스로 호출 (인터셉터 무한 루프 방지)
-              final result = await authRepo.reissue(refreshToken);
+              // Use a plain Dio to avoid interceptor loop
+              final plainDio = Dio(BaseOptions(baseUrl: dio.options.baseUrl));
+              final res = await plainDio.post(
+                '/auth/reissue',
+                data: {'refreshToken': refreshToken},
+              );
+              final result = ReissueResult.fromJson(
+                res.data['data'] as Map<String, dynamic>,
+              );
               await tokenStorage.saveTokens(
                 accessToken: result.accessToken,
                 refreshToken: result.refreshToken,
               );
-              // 원래 요청 재시도
               final opts = error.requestOptions;
               opts.headers['Authorization'] = 'Bearer ${result.accessToken}';
               final response = await dio.fetch(opts);

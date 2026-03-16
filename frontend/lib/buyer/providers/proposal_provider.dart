@@ -1,70 +1,80 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/data/mock/mock_proposal_data.dart';
+import '../../core/data/api/api_notification_repository.dart';
 import '../../core/models/buyer_reservation.dart';
 import '../../core/models/proposal.dart';
+import '../../core/network/dio_client.dart';
+import 'buyer_request_provider.dart';
 
-final proposalsProvider = FutureProvider<List<ProposalSummary>>((ref) async {
-  await Future.delayed(const Duration(milliseconds: 300));
-  return mockProposals;
+// ── 제안 ──
+
+final proposalsProvider =
+    FutureProvider.family<List<ProposalSummary>, int>((ref, requestId) {
+  final repo = ref.watch(buyerRepositoryProvider);
+  return repo.getProposals(requestId);
 });
 
 final proposalDetailProvider =
-    FutureProvider.family<ProposalDetail, int>((ref, id) async {
-  await Future.delayed(const Duration(milliseconds: 300));
-  return mockProposalDetail;
-});
-
-final reservationDetailProvider =
-    FutureProvider.family<ReservationDetail, int>((ref, id) async {
-  await Future.delayed(const Duration(milliseconds: 300));
-  return mockReservation;
+    FutureProvider.family<ProposalDetail, int>((ref, id) {
+  final repo = ref.watch(buyerRepositoryProvider);
+  return repo.getProposalDetail(id);
 });
 
 // ── 구매자 예약 상세 ──
 
 final buyerReservationDetailProvider =
-    FutureProvider.family<BuyerReservationDetail, int>((ref, id) async {
-  await Future.delayed(const Duration(milliseconds: 300));
-  final detail = mockBuyerReservations[id];
-  if (detail == null) throw Exception('Reservation not found: $id');
-  return detail;
+    FutureProvider.family<BuyerReservationDetail, int>((ref, id) {
+  final repo = ref.watch(buyerRepositoryProvider);
+  return repo.getReservationDetail(id);
 });
 
 // ── 구매자 알림 ──
 
-class BuyerNotificationsNotifier extends StateNotifier<List<NotificationItem>> {
-  BuyerNotificationsNotifier() : super(mockNotifications);
+final _notificationRepoProvider = Provider<ApiNotificationRepository>(
+  (ref) => ApiNotificationRepository(ref.watch(dioProvider)),
+);
 
-  void markAsRead(int notificationId) {
-    state = [
-      for (final n in state)
-        if (n.notificationId == notificationId)
-          n.copyWith(isRead: true)
-        else
-          n,
-    ];
+class BuyerNotificationsNotifier extends StateNotifier<AsyncValue<List<NotificationItem>>> {
+  final ApiNotificationRepository _repo;
+
+  BuyerNotificationsNotifier(this._repo) : super(const AsyncValue.loading()) {
+    _load();
   }
+
+  Future<void> _load() async {
+    try {
+      final items = await _repo.getNotifications();
+      state = AsyncValue.data(items);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
+  Future<void> markAsRead(int notificationId) async {
+    await _repo.markAsRead(notificationId);
+    state.whenData((items) {
+      state = AsyncValue.data([
+        for (final n in items)
+          if (n.notificationId == notificationId)
+            n.copyWith(isRead: true)
+          else
+            n,
+      ]);
+    });
+  }
+
+  Future<void> refresh() => _load();
 }
 
 final buyerNotificationsProvider =
-    StateNotifierProvider<BuyerNotificationsNotifier, List<NotificationItem>>(
-  (ref) => BuyerNotificationsNotifier(),
+    StateNotifierProvider<BuyerNotificationsNotifier, AsyncValue<List<NotificationItem>>>(
+  (ref) => BuyerNotificationsNotifier(ref.watch(_notificationRepoProvider)),
 );
-
-// 하위 호환용 (알림 탭 등에서 기존 참조)
-final notificationsProvider =
-    FutureProvider<List<NotificationItem>>((ref) async {
-  await Future.delayed(const Duration(milliseconds: 300));
-  return mockNotifications;
-});
 
 // ── 구매자 예약 목록 ──
 
 final buyerReservationsListProvider =
-    FutureProvider<List<BuyerReservationDetail>>((ref) async {
-  await Future.delayed(const Duration(milliseconds: 300));
-  final list = mockBuyerReservations.values.toList();
-  list.sort((a, b) => b.fulfillmentDate.compareTo(a.fulfillmentDate));
-  return list;
+    FutureProvider<List<BuyerReservationDetail>>((ref) {
+  final repo = ref.watch(buyerRepositoryProvider);
+  return repo.getReservations();
 });

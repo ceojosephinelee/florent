@@ -14,7 +14,7 @@ class BuyerNotificationsTabScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final notifications = ref.watch(buyerNotificationsProvider);
+    final asyncNotifications = ref.watch(buyerNotificationsProvider);
 
     return Scaffold(
       backgroundColor: creamColor,
@@ -24,7 +24,10 @@ class BuyerNotificationsTabScreen extends ConsumerWidget {
           children: [
             const AppNavBar(title: '알림'),
             Expanded(
-              child: notifications.isEmpty
+              child: asyncNotifications.when(
+                loading: () => const Center(child: CircularProgressIndicator(color: roseColor)),
+                error: (e, _) => Center(child: Text('오류', style: AppTypography.body(color: ink60))),
+                data: (notifications) => notifications.isEmpty
                   ? Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -111,6 +114,7 @@ class BuyerNotificationsTabScreen extends ConsumerWidget {
                         );
                       },
                     ),
+              ),
             ),
           ],
         ),

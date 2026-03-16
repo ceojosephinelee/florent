@@ -10,7 +10,7 @@ import '../widgets/common/app_nav_bar.dart';
 import '../widgets/common/bottom_cta_button.dart';
 import '../widgets/common/step_progress_bar.dart';
 import '../widgets/request/fulfillment_toggle.dart';
-import '../widgets/request/mock_address_field.dart';
+import '../widgets/request/address_search_field.dart';
 import '../widgets/request/date_picker_field.dart';
 
 class RequestStep3DeliveryScreen extends ConsumerWidget {
@@ -53,11 +53,11 @@ class RequestStep3DeliveryScreen extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    MockAddressField(
+                    AddressSearchField(
                       value: form.placeAddressText,
                       placeholder: '주소를 검색해주세요',
-                      onSelected: (addr) {
-                        notifier.setPlace(addr, 37.5172, 127.0473);
+                      onSelected: (addr, lat, lng) {
+                        notifier.setPlace(addr, lat, lng);
                       },
                     ),
                     const SizedBox(height: 6),

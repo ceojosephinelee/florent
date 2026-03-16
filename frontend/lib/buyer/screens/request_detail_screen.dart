@@ -16,7 +16,7 @@ class RequestDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final asyncProposals = ref.watch(proposalsProvider);
+    final asyncProposals = ref.watch(proposalsProvider(requestId));
     final expiresAt = DateTime.now().add(const Duration(hours: 22, minutes: 14));
 
     return Scaffold(

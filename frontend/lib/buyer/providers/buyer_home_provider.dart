@@ -1,10 +1,22 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'buyer_request_provider.dart';
 import 'proposal_provider.dart';
 
-final buyerNameProvider = Provider<String>((_) => '지민');
+final buyerProfileProvider = FutureProvider<Map<String, dynamic>>((ref) {
+  final repo = ref.watch(buyerRepositoryProvider);
+  return repo.getProfile();
+});
+
+final buyerNameProvider = Provider<String>((ref) {
+  final asyncProfile = ref.watch(buyerProfileProvider);
+  return asyncProfile.whenOrNull(data: (p) => p['nickName'] as String?) ?? '';
+});
 
 final unreadNotificationCountProvider = Provider<int>((ref) {
-  final notifications = ref.watch(buyerNotificationsProvider);
-  return notifications.where((n) => !n.isRead).length;
+  final asyncNotifications = ref.watch(buyerNotificationsProvider);
+  return asyncNotifications.whenOrNull(
+        data: (items) => items.where((n) => !n.isRead).length,
+      ) ??
+      0;
 });

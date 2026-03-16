@@ -43,3 +43,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Kakao SDK 키 (실제 값 포함 — git 제외)
+ios/Flutter/Kakao.xcconfig

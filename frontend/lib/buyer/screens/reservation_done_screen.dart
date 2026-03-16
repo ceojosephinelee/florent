@@ -15,7 +15,7 @@ class ReservationDoneScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final asyncRes = ref.watch(reservationDetailProvider(reservationId));
+    final asyncRes = ref.watch(buyerReservationDetailProvider(reservationId));
 
     return Scaffold(
       backgroundColor: creamColor,

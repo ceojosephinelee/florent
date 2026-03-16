@@ -121,4 +121,8 @@ OutboxWorker (@Scheduled, 5초 간격)
 | 2026-03-17 | ExpiryScheduler 만료 주기 | 요청/제안 모두 60초(1분) 간격 폴링. biz-rules §14 "1~5분" 범위 내 | 1분이면 사용자 체감 지연 최소화. 5분은 만료 표시 지연이 눈에 띔 |
 | 2026-03-17 | 디바이스 없는 사용자 OutboxEvent 처리 | FCM 미발송이지만 SENT로 처리 | 디바이스 미등록 사용자에게 재시도해도 의미 없음. 인앱 알림은 별도 저장됨 |
 
+| 2026-03-17 | Flutter API 응답 중첩 객체 매핑 | Repository 레이어에서 중첩 JSON(shop, proposal, request, fulfillmentSlot) → 플랫 모델 수동 매핑. `fromApiJson()` 팩토리 도입 | 백엔드 응답은 정규화된 중첩 구조, 프론트엔드 모델은 플랫 구조. Freezed `fromJson`과 호환 안 되므로 수동 매핑 |
+| 2026-03-17 | setRole 시 토큰 갱신 | 서버가 `/auth/role` 응답에 새 토큰 반환 (role이 JWT에 포함). 프론트는 새 토큰 저장 필수 | role 변경 후 기존 토큰의 role claim이 무효화되므로 서버가 새 토큰 발급 |
+| 2026-03-17 | seller/home shopName 부재 | `/seller/home` 응답에 shopName 없음. `/seller/me`와 조합하여 해결 | 홈 API는 통계 집계 목적, 프로필 정보는 별도 API |
+
 > 구현 중 새 결정이 발생하면 이 표에 추가한다.
