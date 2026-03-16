@@ -242,4 +242,23 @@
 
 ---
 
+## [AD-027] S3 Presigned URL — MockStorageAdapter (MVP)
+
+- **결정일**: 2026-03-17
+- **결정 내용**: `StoragePort` outbound port 인터페이스 + `MockStorageAdapter` 구현. 실 S3 연동 없이 Mock URL 반환.
+- **이유**: MVP에서 AWS SDK 의존성 없이 API 계약만 확정. `StoragePort` 인터페이스로 추상화되어 있으므로 실 S3 어댑터 추가 시 Service 코드 변경 불필요. MockPaymentAdapter(AD-010)와 동일 전략.
+- **트레이드오프**: 실 S3 presigned URL은 만료 시간이 있으나 Mock은 없음. 프론트엔드 연동 시 S3 PUT 업로드는 불가.
+- **영향 파일**: `StoragePort.java`, `MockStorageAdapter.java`, `ImageService.java`, `ImageController.java`
+
+---
+
+## [AD-028] /images/presigned-url 접근 제어 — authenticated (role 무관)
+
+- **결정일**: 2026-03-17
+- **결정 내용**: `POST /api/v1/images/presigned-url`은 BUYER/SELLER 구분 없이 인증된 모든 사용자 접근 가능.
+- **이유**: api-spec.md §13에서 "공통" 역할로 정의. SecurityConfig의 `.anyRequest().authenticated()` 규칙에 자동 포함됨. 별도 role 제한 불필요.
+- **영향 파일**: `ImageController.java` (SecurityConfig 변경 없음)
+
+---
+
 > 새 결정이 발생하면 [AD-{N}] 형식으로 추가한다.

@@ -116,4 +116,6 @@ OutboxWorker (@Scheduled, 10초 간격)
 | 2026-03-16 | 판매자 요청 목록 반경 필터링 | findAll() 후 Haversine 서버 필터링 + 수동 페이지네이션. DEBT-001, DEBT-030과 동일 맥락 | MVP shop/request 수 소수 가정. 향후 Bounding Box SQL + PostGIS 전환 |
 | 2026-03-16 | 판매자 요청 상세 반경 밖 접근 제어 | 반경 2km 밖 요청은 REQUEST_NOT_FOUND(404)로 반환. FORBIDDEN(403) 대신 404 사용 | 보안 관점에서 리소스 존재 여부를 노출하지 않는 설계 |
 
+| 2026-03-17 | S3 Presigned URL Mock vs 실구현 | MockStorageAdapter로 Mock URL 반환. StoragePort 인터페이스로 추상화 | MVP 기간 AWS SDK 미포함. MockPaymentAdapter 패턴 따름 |
+
 > 구현 중 새 결정이 발생하면 이 표에 추가한다.
