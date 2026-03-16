@@ -2,14 +2,17 @@ package com.florent.fake;
 
 import com.florent.domain.proposal.Proposal;
 import com.florent.domain.proposal.ProposalRepository;
+import com.florent.domain.proposal.ProposalStatus;
 
 import com.florent.domain.proposal.ProposalPage;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class FakeProposalRepository implements ProposalRepository {
@@ -107,6 +110,15 @@ public class FakeProposalRepository implements ProposalRepository {
     public List<Proposal> findAllByFlowerShopId(Long flowerShopId) {
         return store.values().stream()
                 .filter(p -> p.getFlowerShopId().equals(flowerShopId))
+                .toList();
+    }
+
+    @Override
+    public List<Proposal> findExpirableBefore(LocalDateTime now) {
+        Set<ProposalStatus> expirableStatuses = Set.of(ProposalStatus.DRAFT, ProposalStatus.SUBMITTED);
+        return store.values().stream()
+                .filter(p -> expirableStatuses.contains(p.getStatus()))
+                .filter(p -> p.getExpiresAt().isBefore(now))
                 .toList();
     }
 }

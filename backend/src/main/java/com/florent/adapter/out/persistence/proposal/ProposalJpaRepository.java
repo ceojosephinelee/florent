@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,4 +30,8 @@ public interface ProposalJpaRepository extends JpaRepository<ProposalJpaEntity, 
     List<ProposalJpaEntity> findByRequestIdInAndFlowerShopId(List<Long> requestIds, Long flowerShopId);
 
     List<ProposalJpaEntity> findByFlowerShopId(Long flowerShopId);
+
+    @Query("SELECT p FROM ProposalJpaEntity p "
+            + "WHERE p.status IN ('DRAFT', 'SUBMITTED') AND p.expiresAt < :now")
+    List<ProposalJpaEntity> findExpirableBefore(@Param("now") LocalDateTime now);
 }

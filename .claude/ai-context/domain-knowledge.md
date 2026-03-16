@@ -73,7 +73,7 @@ Service.method()
   → OutboxEvent 생성 + save (PENDING)
   ↑ 트랜잭션 커밋
 
-OutboxWorker (@Scheduled, 10초 간격)
+OutboxWorker (@Scheduled, 5초 간격)
   → PENDING OutboxEvent 조회
   → UserDevice.fcm_token 조회
   → FCM 발송
@@ -117,5 +117,8 @@ OutboxWorker (@Scheduled, 10초 간격)
 | 2026-03-16 | 판매자 요청 상세 반경 밖 접근 제어 | 반경 2km 밖 요청은 REQUEST_NOT_FOUND(404)로 반환. FORBIDDEN(403) 대신 404 사용 | 보안 관점에서 리소스 존재 여부를 노출하지 않는 설계 |
 
 | 2026-03-17 | S3 Presigned URL Mock vs 실구현 | MockStorageAdapter로 Mock URL 반환. StoragePort 인터페이스로 추상화 | MVP 기간 AWS SDK 미포함. MockPaymentAdapter 패턴 따름 |
+
+| 2026-03-17 | ExpiryScheduler 만료 주기 | 요청/제안 모두 60초(1분) 간격 폴링. biz-rules §14 "1~5분" 범위 내 | 1분이면 사용자 체감 지연 최소화. 5분은 만료 표시 지연이 눈에 띔 |
+| 2026-03-17 | 디바이스 없는 사용자 OutboxEvent 처리 | FCM 미발송이지만 SENT로 처리 | 디바이스 미등록 사용자에게 재시도해도 의미 없음. 인앱 알림은 별도 저장됨 |
 
 > 구현 중 새 결정이 발생하면 이 표에 추가한다.
