@@ -178,4 +178,22 @@
 
 ---
 
+## [AD-020] seller-shop API를 auth/seller-info와 별도 구현
+
+- **결정일**: 2026-03-16
+- **결정 내용**: `POST /seller/shop`, `GET /seller/shop`, `PATCH /seller/shop`을 `SellerShopController` + `SellerShopService`로 독립 구현. 기존 `POST /auth/seller-info`는 온보딩 전용으로 유지.
+- **이유**: auth/seller-info는 최소 필드(name, address, lat, lng)만 받는 온보딩 플로우. seller/shop은 description, phone 포함한 전체 프로필 관리. 두 API 모두 `FlowerShopRepository.findBySellerId()` 중복 체크를 수행하므로 동일 seller가 두 경로 모두 호출 시 후순위 호출이 거부됨.
+- **영향 파일**: `SellerShopController.java`, `SellerShopService.java`, `RegisterShopUseCase.java`, `GetShopUseCase.java`, `UpdateShopUseCase.java`
+
+---
+
+## [AD-021] FlowerShop 도메인에 description 필드 추가
+
+- **결정일**: 2026-03-16
+- **결정 내용**: `FlowerShop` 도메인 모델에 `shopDescription` 필드 추가. `create()`, `reconstitute()` 시그니처 변경. 기존 호출부 16개 파일 일괄 수정.
+- **이유**: api-spec.md §12-1에서 description 필드를 요구. `FlowerShopJpaEntity`에는 이미 description 컬럼이 존재했으나 도메인 모델에서 누락되어 있었음. `toDomain()`에서 description을 null로 버리고 있었음.
+- **영향 파일**: `FlowerShop.java`, `FlowerShopJpaEntity.java`, 14개 테스트 파일
+
+---
+
 > 새 결정이 발생하면 [AD-{N}] 형식으로 추가한다.

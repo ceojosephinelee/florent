@@ -111,5 +111,7 @@ OutboxWorker (@Scheduled, 10초 간격)
 | 2026-03-16 | UserRole을 String vs enum으로 관리 | `UserRole` enum (BUYER, SELLER) 채택. SetRoleCommand, User.assignRole() 모두 enum 사용 | 타입 안전성 확보. 잘못된 문자열 입력 시 Jackson 역직렬화 단계에서 400 자동 반환 |
 | 2026-03-16 | KakaoOAuthPort 테스트 프로파일 빈 등록 | TestKakaoOAuthConfig에서 람다 기반 KakaoOAuthPort 빈 등록 | KakaoOAuthAdapter(@Profile("!local & !test")), MockKakaoOAuthAdapter(@Profile("local")) 모두 test에서 제외. TestNotificationConfig 패턴 따름 |
 | 2026-03-16 | /auth/seller-info 접근 제어 | hasRole("SELLER") 적용. BUYER/미인증 사용자 403 | 판매자 정보 등록은 SELLER 역할 확인 필수. SecurityConfig + TestSecurityConfig 동기화 |
+| 2026-03-16 | FlowerShop.update() PATCH 시맨틱 | null 필드는 기존 값 유지, non-null만 갱신 | PATCH 요청에서 클라이언트가 보내지 않은 필드(null)는 변경하지 않아야 함 |
+| 2026-03-16 | /auth/seller-info와 /seller/shop 중복 등록 방지 | 두 API 모두 findBySellerId() 중복 체크 수행. 선행 API로 등록 완료 시 후행 API는 거부됨 | 온보딩(auth) vs 프로필 관리(shop) 분리 설계 |
 
 > 구현 중 새 결정이 발생하면 이 표에 추가한다.

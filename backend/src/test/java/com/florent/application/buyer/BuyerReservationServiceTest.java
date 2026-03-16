@@ -87,7 +87,7 @@ class BuyerReservationServiceTest {
 
     private void setupShop() {
         shopRepository.save(FlowerShop.reconstitute(
-                SHOP_ID, SELLER_ID, "테스트꽃집", "010-1234-5678",
+                SHOP_ID, SELLER_ID, "테스트꽃집", null, "010-1234-5678",
                 "서울시 강남구", new BigDecimal("37.498095"), new BigDecimal("127.027610")));
     }
 
@@ -135,7 +135,7 @@ class BuyerReservationServiceTest {
         setupShop();
         Long otherShopId = 200L;
         shopRepository.save(FlowerShop.reconstitute(
-                otherShopId, 20L, "다른꽃집", null, "서울시 마포구",
+                otherShopId, 20L, "다른꽃집", null, null, "서울시 마포구",
                 new BigDecimal("37.55"), new BigDecimal("126.92")));
 
         CurationRequest request = createOpenRequest(BUYER_ID);
@@ -226,7 +226,7 @@ class BuyerReservationServiceTest {
 
         Long otherShopId = 200L;
         shopRepository.save(FlowerShop.reconstitute(
-                otherShopId, 20L, "다른꽃집", null, "서울시 마포구",
+                otherShopId, 20L, "다른꽃집", null, null, "서울시 마포구",
                 new BigDecimal("37.55"), new BigDecimal("126.92")));
         Proposal proposal2 = createSubmittedProposal(request.getId(), otherShopId);
 
