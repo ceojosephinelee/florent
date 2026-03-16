@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import com.florent.domain.seller.Seller;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,4 +23,15 @@ public class SellerJpaEntity {
 
     @Column(nullable = false, unique = true)
     private Long userId;
+
+    public static SellerJpaEntity from(Seller domain) {
+        SellerJpaEntity entity = new SellerJpaEntity();
+        entity.id = domain.getId();
+        entity.userId = domain.getUserId();
+        return entity;
+    }
+
+    public Seller toDomain() {
+        return Seller.reconstitute(id, userId);
+    }
 }

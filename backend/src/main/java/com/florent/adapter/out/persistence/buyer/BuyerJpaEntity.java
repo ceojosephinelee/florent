@@ -26,6 +26,14 @@ public class BuyerJpaEntity {
 
     private String nickName;
 
+    public static BuyerJpaEntity from(Buyer domain) {
+        BuyerJpaEntity entity = new BuyerJpaEntity();
+        entity.id = domain.getId();
+        entity.userId = domain.getUserId();
+        entity.nickName = domain.getNickName();
+        return entity;
+    }
+
     public Buyer toDomain() {
         return Buyer.reconstitute(id, userId, nickName);
     }

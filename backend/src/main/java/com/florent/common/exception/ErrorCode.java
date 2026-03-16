@@ -37,6 +37,13 @@ public enum ErrorCode {
     NOTIFICATION_NOT_FOUND(404, "알림을 찾을 수 없습니다."),
     NOTIFICATION_ALREADY_READ(422, "이미 읽은 알림입니다."),
 
+    // Auth
+    KAKAO_AUTH_FAILED(401, "카카오 인증에 실패했습니다."),
+    USER_NOT_FOUND(404, "사용자를 찾을 수 없습니다."),
+    INVALID_ROLE(400, "유효하지 않은 역할입니다. BUYER 또는 SELLER만 가능합니다."),
+    ROLE_ALREADY_SET(422, "이미 역할이 설정되어 있습니다."),
+    SELLER_ALREADY_REGISTERED(409, "이미 판매자 정보가 등록되어 있습니다."),
+
     // Shop
     SHOP_NOT_FOUND(404, "꽃집을 찾을 수 없습니다."),
     SHOP_ALREADY_EXISTS(422, "이미 꽃집이 등록되어 있습니다.");
