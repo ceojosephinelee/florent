@@ -102,4 +102,11 @@ public class FakeProposalRepository implements ProposalRepository {
                         && p.getFlowerShopId().equals(flowerShopId))
                 .toList();
     }
+
+    @Override
+    public List<Proposal> findAllByFlowerShopId(Long flowerShopId) {
+        return store.values().stream()
+                .filter(p -> p.getFlowerShopId().equals(flowerShopId))
+                .toList();
+    }
 }

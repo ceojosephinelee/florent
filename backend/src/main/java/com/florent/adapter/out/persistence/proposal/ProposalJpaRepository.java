@@ -27,4 +27,6 @@ public interface ProposalJpaRepository extends JpaRepository<ProposalJpaEntity, 
     Optional<ProposalJpaEntity> findByRequestIdAndFlowerShopId(Long requestId, Long flowerShopId);
 
     List<ProposalJpaEntity> findByRequestIdInAndFlowerShopId(List<Long> requestIds, Long flowerShopId);
+
+    List<ProposalJpaEntity> findByFlowerShopId(Long flowerShopId);
 }
