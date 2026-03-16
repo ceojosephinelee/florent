@@ -219,7 +219,7 @@ class AuthServiceTest {
         // given
         Seller seller = sellerRepository.save(Seller.create(1L));
         flowerShopRepository.save(FlowerShop.create(
-                seller.getId(), "기존가게", null, "서울시",
+                seller.getId(), "기존가게", null, null, "서울시",
                 new BigDecimal("37.498"), new BigDecimal("127.027")));
 
         // when & then

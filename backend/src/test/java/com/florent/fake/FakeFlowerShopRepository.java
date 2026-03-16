@@ -22,8 +22,8 @@ public class FakeFlowerShopRepository implements FlowerShopRepository {
             id = idGenerator.getAndIncrement();
         }
         FlowerShop persisted = FlowerShop.reconstitute(
-                id, shop.getSellerId(), shop.getShopName(), shop.getShopPhone(),
-                shop.getShopAddress(), shop.getShopLat(), shop.getShopLng());
+                id, shop.getSellerId(), shop.getShopName(), shop.getShopDescription(),
+                shop.getShopPhone(), shop.getShopAddress(), shop.getShopLat(), shop.getShopLng());
         store.put(id, persisted);
         return persisted;
     }

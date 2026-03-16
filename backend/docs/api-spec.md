@@ -575,7 +575,14 @@ Request:
 ```json
 { "name": "string", "description": "string", "phone": "string", "addressText": "string", "lat": 37.123456, "lng": 127.123456 }
 ```
-Response 201: `{ "shopId": 1, "name": "string" }`
+- `name`, `addressText`, `lat`, `lng`: 필수
+- `description`, `phone`: 선택
+
+Response 201:
+```json
+{ "shopId": 1, "name": "string" }
+```
+- 이미 등록된 경우: `SHOP_ALREADY_EXISTS` (422)
 
 ---
 
@@ -583,6 +590,11 @@ Response 201: `{ "shopId": 1, "name": "string" }`
 ```
 GET /api/v1/seller/shop
 ```
+Response 200:
+```json
+{ "shopId": 1, "name": "string", "description": "string", "phone": "string", "addressText": "string", "lat": 37.123456, "lng": 127.123456 }
+```
+- 미등록 시: `SHOP_NOT_FOUND` (404)
 
 ---
 
@@ -590,7 +602,13 @@ GET /api/v1/seller/shop
 ```
 PATCH /api/v1/seller/shop
 ```
-Request: 12-1과 동일 구조 (변경할 필드만 포함)
+Request: 12-1과 동일 구조 (변경할 필드만 포함, 미포함 필드는 기존 값 유지)
+
+Response 200:
+```json
+{ "shopId": 1, "name": "string", "description": "string", "phone": "string", "addressText": "string", "lat": 37.123456, "lng": 127.123456 }
+```
+- 미등록 시: `SHOP_NOT_FOUND` (404)
 
 ---
 
