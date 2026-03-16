@@ -15,6 +15,12 @@ public class FlowerShopRepositoryImpl implements FlowerShopRepository {
     private final FlowerShopJpaRepository jpaRepository;
 
     @Override
+    public FlowerShop save(FlowerShop shop) {
+        FlowerShopJpaEntity entity = FlowerShopJpaEntity.from(shop);
+        return jpaRepository.save(entity).toDomain();
+    }
+
+    @Override
     public Optional<FlowerShop> findById(Long id) {
         return jpaRepository.findById(id)
                 .map(FlowerShopJpaEntity::toDomain);

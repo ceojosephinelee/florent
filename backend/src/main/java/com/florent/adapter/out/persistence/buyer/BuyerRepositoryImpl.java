@@ -15,8 +15,20 @@ public class BuyerRepositoryImpl implements BuyerRepository {
     private final BuyerJpaRepository jpaRepository;
 
     @Override
+    public Buyer save(Buyer buyer) {
+        BuyerJpaEntity entity = BuyerJpaEntity.from(buyer);
+        return jpaRepository.save(entity).toDomain();
+    }
+
+    @Override
     public Optional<Buyer> findById(Long id) {
         return jpaRepository.findById(id)
+                .map(BuyerJpaEntity::toDomain);
+    }
+
+    @Override
+    public Optional<Buyer> findByUserId(Long userId) {
+        return jpaRepository.findByUserId(userId)
                 .map(BuyerJpaEntity::toDomain);
     }
 

@@ -10,6 +10,13 @@ public class Buyer {
 
     private Buyer() {}
 
+    public static Buyer create(Long userId, String nickName) {
+        Buyer b = new Buyer();
+        b.userId = userId;
+        b.nickName = nickName;
+        return b;
+    }
+
     public static Buyer reconstitute(Long id, Long userId, String nickName) {
         Buyer b = new Buyer();
         b.id = id;

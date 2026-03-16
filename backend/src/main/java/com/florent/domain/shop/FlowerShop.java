@@ -16,6 +16,18 @@ public class FlowerShop {
 
     private FlowerShop() {}
 
+    public static FlowerShop create(Long sellerId, String shopName, String shopPhone,
+                                    String shopAddress, BigDecimal shopLat, BigDecimal shopLng) {
+        FlowerShop shop = new FlowerShop();
+        shop.sellerId = sellerId;
+        shop.shopName = shopName;
+        shop.shopPhone = shopPhone;
+        shop.shopAddress = shopAddress;
+        shop.shopLat = shopLat;
+        shop.shopLng = shopLng;
+        return shop;
+    }
+
     public static FlowerShop reconstitute(
             Long id, Long sellerId, String shopName, String shopPhone,
             String shopAddress, BigDecimal shopLat, BigDecimal shopLng) {

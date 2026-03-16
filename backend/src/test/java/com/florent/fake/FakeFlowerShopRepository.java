@@ -8,13 +8,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class FakeFlowerShopRepository implements FlowerShopRepository {
 
     private final Map<Long, FlowerShop> store = new HashMap<>();
+    private final AtomicLong idGenerator = new AtomicLong(1);
 
-    public void save(FlowerShop shop) {
-        store.put(shop.getId(), shop);
+    @Override
+    public FlowerShop save(FlowerShop shop) {
+        Long id = shop.getId();
+        if (id == null) {
+            id = idGenerator.getAndIncrement();
+        }
+        FlowerShop persisted = FlowerShop.reconstitute(
+                id, shop.getSellerId(), shop.getShopName(), shop.getShopPhone(),
+                shop.getShopAddress(), shop.getShopLat(), shop.getShopLng());
+        store.put(id, persisted);
+        return persisted;
     }
 
     @Override

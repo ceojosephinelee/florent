@@ -108,4 +108,8 @@ OutboxWorker (@Scheduled, 10초 간격)
 | 2026-03-16 | OutboxEvent 재시도 전략 | 최대 3회 시도, 실패 시 FAILED. 재시도 간격 = attemptCount * 30초 (선형 백오프) | 지수 백오프는 MVP에서 과도. 선형 백오프로 단순화 |
 | 2026-03-16 | E2E 시나리오에서 동일 사용자 재등장 | ScenarioContext에 buyerTokens/sellerTokens 맵 도입, 이름 기반 토큰 재사용 | Cucumber 단일 시나리오 내 여러 Phase에서 같은 사용자가 반복 등장 시 DB 중복 키 방지 |
 
+| 2026-03-16 | UserRole을 String vs enum으로 관리 | `UserRole` enum (BUYER, SELLER) 채택. SetRoleCommand, User.assignRole() 모두 enum 사용 | 타입 안전성 확보. 잘못된 문자열 입력 시 Jackson 역직렬화 단계에서 400 자동 반환 |
+| 2026-03-16 | KakaoOAuthPort 테스트 프로파일 빈 등록 | TestKakaoOAuthConfig에서 람다 기반 KakaoOAuthPort 빈 등록 | KakaoOAuthAdapter(@Profile("!local & !test")), MockKakaoOAuthAdapter(@Profile("local")) 모두 test에서 제외. TestNotificationConfig 패턴 따름 |
+| 2026-03-16 | /auth/seller-info 접근 제어 | hasRole("SELLER") 적용. BUYER/미인증 사용자 403 | 판매자 정보 등록은 SELLER 역할 확인 필수. SecurityConfig + TestSecurityConfig 동기화 |
+
 > 구현 중 새 결정이 발생하면 이 표에 추가한다.
