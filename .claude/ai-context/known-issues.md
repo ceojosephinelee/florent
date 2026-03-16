@@ -230,6 +230,16 @@
 
 ---
 
+### [DEBT-030] 판매자 요청 목록 전체 요청 테이블 스캔
+
+- **유형**: 기술 부채 (성능)
+- **위치**: `SellerRequestService.filterNearbyRequests()`
+- **내용**: `requestRepository.findAll()`로 전체 요청을 메모리 로드 후 Haversine 필터링. DEBT-001과 동일 맥락. 요청 수 증가 시 Bounding Box SQL 사전 필터링(`WHERE place_lat BETWEEN ? AND ? AND place_lng BETWEEN ? AND ?`) 추가 필요.
+- **심각도**: Low (MVP 기간 내 무시)
+- **상태**: OPEN
+
+---
+
 ### [DEBT-029] SHOP_ALREADY_EXISTS HTTP 상태코드 422 vs 409 불일치
 
 - **유형**: 컨벤션 검토

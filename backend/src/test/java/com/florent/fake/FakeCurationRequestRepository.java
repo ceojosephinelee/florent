@@ -57,6 +57,11 @@ public class FakeCurationRequestRepository implements CurationRequestRepository 
     }
 
     @Override
+    public List<CurationRequest> findAll() {
+        return new java.util.ArrayList<>(store.values());
+    }
+
+    @Override
     public RequestPage findByBuyerId(Long buyerId, int page, int size) {
         List<CurationRequest> filtered = store.values().stream()
                 .filter(r -> r.getBuyerId().equals(buyerId))

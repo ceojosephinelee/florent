@@ -196,4 +196,32 @@
 
 ---
 
+## [AD-022] 판매자 요청 목록 — 전체 요청 로드 후 서버 반경 필터링 + 수동 페이지네이션
+
+- **결정일**: 2026-03-16
+- **결정 내용**: `SellerRequestService.getSellerRequests()`에서 `findAll()` → Haversine 필터 → Java 수동 페이지네이션 방식 채택.
+- **이유**: MVP에서 요청 수가 소수이므로 전체 로드 허용. DB 레벨 Bounding Box + Spring Data Page 방식은 PostGIS 없이 구현 복잡도가 높음. `BuyerRequestService.notifyNearbyShops()`와 동일 패턴.
+- **트레이드오프**: 요청 수 증가 시 성능 저하. DEBT-030 기록.
+- **영향 파일**: `SellerRequestService.java`, `CurationRequestRepository.java`(findAll 추가)
+
+---
+
+## [AD-023] 판매자 요청 상세 — 반경 밖 접근 시 404 반환 (403 아님)
+
+- **결정일**: 2026-03-16
+- **결정 내용**: 판매자가 반경 2km 밖 요청 상세를 조회하면 `REQUEST_NOT_FOUND(404)` 반환.
+- **이유**: 보안 관점에서 리소스 존재 여부를 노출하지 않는 설계. 403을 반환하면 "요청이 존재하지만 접근 권한이 없다"는 정보가 누출됨.
+- **영향 파일**: `SellerRequestService.java`
+
+---
+
+## [AD-024] ProposalRepository에 findByRequestIdsAndFlowerShopId 배치 조회 추가
+
+- **결정일**: 2026-03-16
+- **결정 내용**: 판매자 요청 목록에서 `myProposalStatus` 필드를 채우기 위해 `findByRequestIdsAndFlowerShopId(List<Long>, Long)` 배치 조회 메서드 추가.
+- **이유**: 루프 내에서 개별 조회하면 N+1 발생. 페이지 내 요청 ID 목록으로 한 번에 조회하여 Map으로 변환 후 O(1) 매핑.
+- **영향 파일**: `ProposalRepository.java`, `ProposalRepositoryImpl.java`, `ProposalJpaRepository.java`, `FakeProposalRepository.java`
+
+---
+
 > 새 결정이 발생하면 [AD-{N}] 형식으로 추가한다.

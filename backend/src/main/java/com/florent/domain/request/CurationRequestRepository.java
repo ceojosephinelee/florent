@@ -7,5 +7,6 @@ public interface CurationRequestRepository {
     CurationRequest save(CurationRequest request);
     Optional<CurationRequest> findById(Long id);
     List<CurationRequest> findAllByIds(List<Long> ids);
+    List<CurationRequest> findAll();
     RequestPage findByBuyerId(Long buyerId, int page, int size);
 }
