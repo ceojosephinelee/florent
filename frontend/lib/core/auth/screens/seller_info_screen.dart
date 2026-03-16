@@ -6,6 +6,7 @@ import '../../theme/colors.dart';
 import '../../theme/radius.dart';
 import '../../theme/typography.dart';
 import '../auth_provider.dart';
+import '../../../buyer/widgets/request/address_search_field.dart';
 
 const _sage = Color(0xFF5A7A68);
 
@@ -19,9 +20,12 @@ class SellerInfoScreen extends ConsumerStatefulWidget {
 class _SellerInfoScreenState extends ConsumerState<SellerInfoScreen> {
   final _shopNameController = TextEditingController();
   final _businessNumberController = TextEditingController();
-  String? _address = '서울 강남구 역삼동 123-45'; // mock 기본값
+  String? _address;
+  double _lat = 0;
+  double _lng = 0;
 
-  bool get _isValid => _shopNameController.text.trim().isNotEmpty;
+  bool get _isValid =>
+      _shopNameController.text.trim().isNotEmpty && _address != null;
 
   @override
   void dispose() {
@@ -76,34 +80,16 @@ class _SellerInfoScreenState extends ConsumerState<SellerInfoScreen> {
                     // 가게 주소
                     _label('📍 가게 주소 *'),
                     const SizedBox(height: 6),
-                    GestureDetector(
-                      onTap: () {
-                        // Mock: 카카오 주소 검색 API 연동 예정
-                        setState(() => _address = '서울 강남구 역삼동 123-45');
+                    AddressSearchField(
+                      value: _address,
+                      placeholder: '주소를 검색해주세요',
+                      onSelected: (addr, lat, lng) {
+                        setState(() {
+                          _address = addr;
+                          _lat = lat;
+                          _lng = lng;
+                        });
                       },
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: whiteColor,
-                          borderRadius: kBorderRadiusSm,
-                          border: Border.all(color: borderColor, width: 1.5),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                _address ?? '주소를 검색해주세요',
-                                style: AppTypography.body(
-                                  fontSize: 13,
-                                  color: _address != null ? inkColor : ink30,
-                                ),
-                              ),
-                            ),
-                            Icon(Icons.search, size: 18, color: ink30),
-                          ],
-                        ),
-                      ),
                     ),
                     const SizedBox(height: 6),
 
@@ -161,8 +147,8 @@ class _SellerInfoScreenState extends ConsumerState<SellerInfoScreen> {
                         ? () => ref.read(authProvider.notifier).registerSellerInfo(
                               shopName: _shopNameController.text.trim(),
                               shopAddress: _address ?? '',
-                              shopLat: 37.501286,
-                              shopLng: 127.039583,
+                              shopLat: _lat,
+                              shopLng: _lng,
                               businessNumber: _businessNumberController.text.trim().isEmpty
                                   ? null
                                   : _businessNumberController.text.trim(),

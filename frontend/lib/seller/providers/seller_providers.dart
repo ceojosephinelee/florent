@@ -1,8 +1,20 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/data/mock/mock_seller_data.dart';
+import '../../core/data/api/api_notification_repository.dart';
+import '../../core/data/api/api_seller_repository.dart';
 import '../../core/models/proposal.dart';
 import '../../core/models/seller_models.dart';
+import '../../core/network/dio_client.dart';
+
+// ── Repository Provider ──
+
+final sellerRepositoryProvider = Provider<ApiSellerRepository>(
+  (ref) => ApiSellerRepository(ref.watch(dioProvider)),
+);
+
+final _sellerNotificationRepoProvider = Provider<ApiNotificationRepository>(
+  (ref) => ApiNotificationRepository(ref.watch(dioProvider)),
+);
 
 // ── 요청 목록 필터 ──
 
@@ -36,63 +48,114 @@ final filteredSellerRequestsProvider =
   });
 });
 
-final sellerHomeProvider = FutureProvider<SellerHomeData>((ref) async {
-  await Future.delayed(const Duration(milliseconds: 300));
-  return mockSellerHome;
+// ── 홈 ──
+
+final _sellerHomeRawProvider = FutureProvider<Map<String, dynamic>>((ref) {
+  final repo = ref.watch(sellerRepositoryProvider);
+  return repo.getHome();
 });
 
-final sellerRequestsProvider =
+final sellerHomeProvider = FutureProvider<SellerHomeData>((ref) async {
+  final raw = await ref.watch(_sellerHomeRawProvider.future);
+  final repo = ref.watch(sellerRepositoryProvider);
+  final profile = await repo.getProfile();
+  return SellerHomeData(
+    openRequestCount: raw['openRequestCount'] as int? ?? 0,
+    draftProposalCount: raw['draftProposalCount'] as int? ?? 0,
+    confirmedReservationCount: raw['confirmedReservationCount'] as int? ?? 0,
+    shopName: profile['shopName'] as String? ?? '',
+  );
+});
+
+final sellerRecentRequestsProvider =
     FutureProvider<List<SellerRequestSummary>>((ref) async {
-  await Future.delayed(const Duration(milliseconds: 300));
-  return mockSellerRequests;
+  final raw = await ref.watch(_sellerHomeRawProvider.future);
+  final list = raw['recentRequests'] as List? ?? [];
+  return list
+      .map((e) => SellerRequestSummary.fromJson(e as Map<String, dynamic>))
+      .toList();
+});
+
+// ── 요청 ──
+
+final sellerRequestsProvider =
+    FutureProvider<List<SellerRequestSummary>>((ref) {
+  final repo = ref.watch(sellerRepositoryProvider);
+  return repo.getRequests();
 });
 
 final sellerRequestDetailProvider =
-    FutureProvider.family<SellerRequestDetail, int>((ref, id) async {
-  await Future.delayed(const Duration(milliseconds: 300));
-  return mockSellerRequestDetail;
+    FutureProvider.family<SellerRequestDetail, int>((ref, id) {
+  final repo = ref.watch(sellerRepositoryProvider);
+  return repo.getRequestDetail(id);
 });
 
-// ── 예약 상세 ──
+// ── 예약 ──
 
 final sellerReservationDetailProvider =
-    FutureProvider.family<SellerReservationDetail, int>((ref, id) async {
-  await Future.delayed(const Duration(milliseconds: 300));
-  final detail = mockSellerReservations[id];
-  if (detail == null) throw Exception('Reservation not found: $id');
-  return detail;
+    FutureProvider.family<SellerReservationDetail, int>((ref, id) {
+  final repo = ref.watch(sellerRepositoryProvider);
+  return repo.getReservationDetail(id);
 });
 
 final sellerReservationHistoryProvider =
-    FutureProvider<List<SellerReservationSummary>>((ref) async {
-  await Future.delayed(const Duration(milliseconds: 300));
-  return mockSellerReservationHistory;
+    FutureProvider<List<SellerReservationSummary>>((ref) {
+  final repo = ref.watch(sellerRepositoryProvider);
+  return repo.getReservations();
+});
+
+// ── 프로필 ──
+
+final sellerProfileProvider = FutureProvider<Map<String, dynamic>>((ref) {
+  final repo = ref.watch(sellerRepositoryProvider);
+  return repo.getProfile();
 });
 
 // ── 판매자 알림 ──
 
-class SellerNotificationsNotifier extends StateNotifier<List<NotificationItem>> {
-  SellerNotificationsNotifier() : super(mockSellerNotifications);
+class SellerNotificationsNotifier extends StateNotifier<AsyncValue<List<NotificationItem>>> {
+  final ApiNotificationRepository _repo;
 
-  void markAsRead(int notificationId) {
-    state = [
-      for (final n in state)
-        if (n.notificationId == notificationId)
-          n.copyWith(isRead: true)
-        else
-          n,
-    ];
+  SellerNotificationsNotifier(this._repo) : super(const AsyncValue.loading()) {
+    _load();
   }
+
+  Future<void> _load() async {
+    try {
+      final items = await _repo.getNotifications();
+      state = AsyncValue.data(items);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
+  Future<void> markAsRead(int notificationId) async {
+    await _repo.markAsRead(notificationId);
+    state.whenData((items) {
+      state = AsyncValue.data([
+        for (final n in items)
+          if (n.notificationId == notificationId)
+            n.copyWith(isRead: true)
+          else
+            n,
+      ]);
+    });
+  }
+
+  Future<void> refresh() => _load();
 }
 
 final sellerNotificationsProvider =
-    StateNotifierProvider<SellerNotificationsNotifier, List<NotificationItem>>(
-  (ref) => SellerNotificationsNotifier(),
+    StateNotifierProvider<SellerNotificationsNotifier, AsyncValue<List<NotificationItem>>>(
+  (ref) => SellerNotificationsNotifier(ref.watch(_sellerNotificationRepoProvider)),
 );
 
 final sellerUnreadCountProvider = Provider<int>((ref) {
-  final notifications = ref.watch(sellerNotificationsProvider);
-  return notifications.where((n) => !n.isRead).length;
+  final asyncNotifications = ref.watch(sellerNotificationsProvider);
+  return asyncNotifications.whenOrNull(
+        data: (items) => items.where((n) => !n.isRead).length,
+      ) ??
+      0;
 });
 
 // ── 제안서 폼 ──

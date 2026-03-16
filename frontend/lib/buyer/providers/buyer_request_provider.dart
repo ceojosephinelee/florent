@@ -1,17 +1,17 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/data/buyer_request_repository.dart';
-import '../../core/data/mock/mock_buyer_request_repository.dart';
+import '../../core/data/api/api_buyer_repository.dart';
 import '../../core/models/buyer_request.dart';
+import '../../core/network/dio_client.dart';
 
-final buyerRequestRepositoryProvider = Provider<BuyerRequestRepository>(
-  (ref) => MockBuyerRequestRepository(),
+final buyerRepositoryProvider = Provider<ApiBuyerRepository>(
+  (ref) => ApiBuyerRepository(ref.watch(dioProvider)),
 );
 
 final activeRequestsProvider =
     FutureProvider<List<BuyerRequestSummary>>((ref) {
-  final repo = ref.watch(buyerRequestRepositoryProvider);
-  return repo.getActiveRequests();
+  final repo = ref.watch(buyerRepositoryProvider);
+  return repo.getRequests();
 });
 
 // ── 필터 탭 ──

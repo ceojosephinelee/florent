@@ -5,6 +5,18 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// --dart-define 값을 파싱하여 Map으로 반환
+fun parseDartDefines(): Map<String, String> {
+    val encoded = project.findProperty("dart-defines") as String? ?: return emptyMap()
+    return encoded.split(",").mapNotNull { token ->
+        try {
+            val decoded = String(java.util.Base64.getDecoder().decode(token))
+            val parts = decoded.split("=", limit = 2)
+            if (parts.size == 2) parts[0] to parts[1] else null
+        } catch (_: Exception) { null }
+    }.toMap()
+}
+
 android {
     namespace = "com.florent.florent"
     compileSdk = flutter.compileSdkVersion
@@ -28,6 +40,10 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        // --dart-define=KAKAO_NATIVE_KEY=xxx → AndroidManifest에서 ${KAKAO_NATIVE_KEY}로 참조
+        val kakaoNativeKey = parseDartDefines()["KAKAO_NATIVE_KEY"] ?: ""
+        manifestPlaceholders["KAKAO_NATIVE_KEY"] = kakaoNativeKey
     }
 
     buildTypes {

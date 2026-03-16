@@ -261,4 +261,32 @@
 
 ---
 
+## [AD-029] Flutter Mock → Real API 전환 — Repository 패턴
+
+- **결정일**: 2026-03-17
+- **결정 내용**: Flutter 앱의 Mock 데이터를 실제 API 호출로 전면 교체. `ApiBuyerRepository`, `ApiSellerRepository`, `ApiNotificationRepository`, `ApiAuthRepository` 4개 클래스 신규 생성. Provider에서 Mock → Real 주입 교체.
+- **이유**: MVP 프론트엔드가 Mock 데이터로 UI만 구현된 상태. 백엔드 API 완성에 따라 실제 연동 필요.
+- **트레이드오프**: Mock 파일은 삭제하지 않고 유지 (테스트/오프라인 개발 시 재활용 가능). Provider에서 주입만 교체.
+- **영향 파일**: `lib/core/data/api/` 4개 파일 신규, `lib/core/auth/` 2개 파일 신규, Provider 4개 파일 수정, Screen 8개 파일 수정
+
+---
+
+## [AD-030] Dio interceptor 토큰 갱신 — 순환 의존 회피
+
+- **결정일**: 2026-03-17
+- **결정 내용**: `dioProvider` 내부 401 interceptor에서 토큰 갱신 시 `authRepositoryProvider`를 참조하지 않고 plain Dio로 직접 `/auth/reissue` 호출.
+- **이유**: `dioProvider` → `authRepositoryProvider` → `dioProvider` 순환 의존 발생. `ApiAuthRepository.reissue()`도 별도 Dio를 사용하지만, Provider 그래프 단계에서 이미 순환이 감지됨. interceptor에서 plain Dio로 직접 호출하여 순환 제거.
+- **영향 파일**: `dio_client.dart`
+
+---
+
+## [AD-031] 알림 Provider 상태 타입 — AsyncValue<List<T>> 채택
+
+- **결정일**: 2026-03-17
+- **결정 내용**: `BuyerNotificationsNotifier`, `SellerNotificationsNotifier`의 상태를 `List<NotificationItem>` → `AsyncValue<List<NotificationItem>>`으로 변경.
+- **이유**: 실제 API 호출은 비동기이므로 loading/error/data 3상태 표현 필요. 화면에서 `.when()` 패턴으로 로딩 스피너/에러/데이터 분기.
+- **영향 파일**: `proposal_provider.dart`, `seller_providers.dart`, `buyer_notifications_tab_screen.dart`, `seller_notifications_screen.dart`
+
+---
+
 > 새 결정이 발생하면 [AD-{N}] 형식으로 추가한다.

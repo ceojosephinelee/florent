@@ -1,4 +1,4 @@
-/// 구매자 예약 상세 모델 (mock용 — 추후 freezed 전환 가능)
+/// 구매자 예약 상세 모델
 class BuyerReservationDetail {
   final int reservationId;
   final String status;
@@ -18,6 +18,8 @@ class BuyerReservationDetail {
   final List<String> relationTags;
   final List<String> moodTags;
   final String? budgetTier;
+
+  String get slotLabel => '$fulfillmentDate $fulfillmentSlotValue';
 
   const BuyerReservationDetail({
     required this.reservationId,
@@ -39,4 +41,31 @@ class BuyerReservationDetail {
     this.moodTags = const [],
     this.budgetTier,
   });
+
+  factory BuyerReservationDetail.fromApiJson(Map<String, dynamic> json) {
+    final proposal = json['proposal'] as Map<String, dynamic>? ?? {};
+    final shop = json['shop'] as Map<String, dynamic>? ?? {};
+    final slot = json['fulfillmentSlot'] as Map<String, dynamic>? ?? {};
+    final request = json['request'] as Map<String, dynamic>? ?? {};
+
+    return BuyerReservationDetail(
+      reservationId: json['reservationId'] as int,
+      status: json['status'] as String,
+      shopName: shop['name'] as String? ?? '',
+      shopAddress: shop['addressText'] as String? ?? '',
+      conceptTitle: proposal['conceptTitle'] as String? ?? '',
+      description: proposal['description'] as String? ?? '',
+      price: proposal['price'] as int? ?? 0,
+      fulfillmentType: json['fulfillmentType'] as String,
+      fulfillmentDate: json['fulfillmentDate'] as String,
+      fulfillmentSlotKind: slot['kind'] as String? ?? '',
+      fulfillmentSlotValue: slot['value'] as String? ?? '',
+      placeAddressText: json['placeAddressText'] as String? ?? '',
+      imageUrls: List<String>.from(proposal['imageUrls'] ?? []),
+      purposeTags: List<String>.from(request['purposeTags'] ?? []),
+      relationTags: List<String>.from(request['relationTags'] ?? []),
+      moodTags: List<String>.from(request['moodTags'] ?? []),
+      budgetTier: request['budgetTier'] as String?,
+    );
+  }
 }

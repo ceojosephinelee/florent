@@ -1,24 +1,31 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../data/api/api_auth_repository.dart';
 import '../data/auth_repository.dart';
-import '../data/mock/mock_auth_repository.dart';
-import 'mock_token_storage.dart';
+import '../network/dio_client.dart';
+import 'kakao_login_service.dart';
+import 'secure_token_storage.dart';
 import 'token_storage.dart';
 
 // ── Providers ──
 
 final tokenStorageProvider = Provider<TokenStorage>(
-  (ref) => MockTokenStorage(),
+  (ref) => SecureTokenStorage(),
 );
 
 final authRepositoryProvider = Provider<AuthRepository>(
-  (ref) => MockAuthRepository(),
+  (ref) => ApiAuthRepository(ref.watch(dioProvider)),
+);
+
+final kakaoLoginServiceProvider = Provider<KakaoLoginService>(
+  (ref) => KakaoLoginService(),
 );
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final tokenStorage = ref.watch(tokenStorageProvider);
   final authRepository = ref.watch(authRepositoryProvider);
-  return AuthNotifier(tokenStorage, authRepository);
+  final kakaoLoginService = ref.watch(kakaoLoginServiceProvider);
+  return AuthNotifier(tokenStorage, authRepository, kakaoLoginService);
 });
 
 // ── State ──
@@ -56,8 +63,9 @@ class AuthState {
 class AuthNotifier extends StateNotifier<AuthState> {
   final TokenStorage _tokenStorage;
   final AuthRepository _authRepository;
+  final KakaoLoginService _kakaoLoginService;
 
-  AuthNotifier(this._tokenStorage, this._authRepository)
+  AuthNotifier(this._tokenStorage, this._authRepository, this._kakaoLoginService)
       : super(const AuthState());
 
   /// 스플래시에서 호출. 저장된 토큰 확인 → 상태 분기.
@@ -80,11 +88,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  /// 카카오 로그인. Mock에서는 항상 신규 유저 반환.
+  /// 카카오 SDK 로그인 → 카카오 Access Token 획득 → 서버 전달.
   Future<void> kakaoLogin() async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      final result = await _authRepository.kakaoLogin('mock_kakao_token');
+      final kakaoAccessToken = await _kakaoLoginService.login();
+      final result = await _authRepository.kakaoLogin(kakaoAccessToken);
       await _tokenStorage.saveTokens(
         accessToken: result.accessToken,
         refreshToken: result.refreshToken,
@@ -105,14 +114,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  /// 역할 설정 (BUYER / SELLER).
+  /// 역할 설정 (BUYER / SELLER). 서버에서 새 토큰 반환.
   Future<void> setRole(String role) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      await _authRepository.setRole(role);
-      await _tokenStorage.saveRole(role);
+      final result = await _authRepository.setRole(role);
+      await _tokenStorage.saveTokens(
+        accessToken: result['accessToken'] as String,
+        refreshToken: result['refreshToken'] as String,
+      );
+      final assignedRole = result['role'] as String? ?? role;
+      await _tokenStorage.saveRole(assignedRole);
 
-      if (role == 'BUYER') {
+      if (assignedRole == 'BUYER') {
         state = state.copyWith(status: AuthStatus.buyerAuthenticated, isLoading: false);
       } else {
         state = state.copyWith(status: AuthStatus.needsSellerInfo, isLoading: false);
