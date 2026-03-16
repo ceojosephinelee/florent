@@ -142,8 +142,7 @@ class BuyerRequestsTabScreen extends ConsumerWidget {
       case 'OPEN':
         context.push('/buyer/requests/$requestId');
       case 'CONFIRMED':
-        // CONFIRMED 요청의 reservationId = requestId + 3000 (mock 매핑)
-        context.push('/buyer/reservations/${requestId + 3000}');
+        context.push('/buyer/requests/$requestId');
       case 'EXPIRED':
         // 만료 카드는 이동 없음
         break;

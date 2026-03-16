@@ -15,9 +15,13 @@ class MockAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<String> setRole(String role) async {
+  Future<Map<String, dynamic>> setRole(String role) async {
     await Future.delayed(const Duration(milliseconds: 300));
-    return role;
+    return {
+      'accessToken': 'mock_new_access_token',
+      'refreshToken': 'mock_new_refresh_token',
+      'role': role,
+    };
   }
 
   @override

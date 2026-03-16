@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/data/mock/mock_seller_data.dart';
 import '../../core/theme/colors.dart';
 import '../../core/theme/radius.dart';
 import '../../core/theme/typography.dart';
@@ -17,13 +16,14 @@ class SellerHomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final asyncHome = ref.watch(sellerHomeProvider);
+    final asyncRecent = ref.watch(sellerRecentRequestsProvider);
 
     return Scaffold(
       backgroundColor: creamColor,
       body: SafeArea(
         child: asyncHome.when(
           loading: () => const Center(child: CircularProgressIndicator(color: _sage)),
-          error: (e, _) => Center(child: Text('오류')),
+          error: (e, _) => Center(child: Text('오류', style: AppTypography.body(color: ink60))),
           data: (home) => SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,40 +88,49 @@ class SellerHomeScreen extends ConsumerWidget {
                   padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
                   child: Text('새로 들어온 요청', style: AppTypography.body(fontSize: 15, fontWeight: FontWeight.w700)),
                 ),
-                ...mockSellerRequests.where((r) => r.myProposalStatus == null).map((r) {
-                  final tag = r.purposeTags.isNotEmpty ? r.purposeTags.first : '';
-                  final budget = r.budgetTier == 'TIER2' ? '기본형' : r.budgetTier == 'TIER1' ? '작은 꽃다발' : r.budgetTier == 'TIER3' ? '풍성한 꽃다발' : '프리미엄';
-                  final type = r.fulfillmentType == 'PICKUP' ? '픽업' : '배송';
-                  return GestureDetector(
-                    onTap: () => context.push('/seller/requests/${r.requestId}'),
-                    child: Container(
-                      margin: const EdgeInsets.fromLTRB(20, 0, 20, 10),
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(color: whiteColor, borderRadius: kBorderRadiusMd, border: Border.all(color: borderColor)),
-                      child: Row(
-                        children: [
-                          const Text('🎂', style: TextStyle(fontSize: 20)),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('$tag · $budget', style: AppTypography.body(fontSize: 13, fontWeight: FontWeight.w600)),
-                                const SizedBox(height: 3),
-                                Text('${r.moodTags.join(" · ")} · $type\n${r.fulfillmentDate} · ${r.distance}', style: AppTypography.body(fontSize: 11, color: ink60, height: 1.4)),
-                              ],
-                            ),
+                asyncRecent.when(
+                  loading: () => const Center(child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: CircularProgressIndicator(strokeWidth: 2, color: _sage),
+                  )),
+                  error: (_, __) => const SizedBox.shrink(),
+                  data: (requests) => Column(
+                    children: requests.where((r) => r.myProposalStatus == null).map((r) {
+                      final tag = r.purposeTags.isNotEmpty ? r.purposeTags.first : '';
+                      final budget = r.budgetTier == 'TIER2' ? '기본형' : r.budgetTier == 'TIER1' ? '작은 꽃다발' : r.budgetTier == 'TIER3' ? '풍성한 꽃다발' : '프리미엄';
+                      final type = r.fulfillmentType == 'PICKUP' ? '픽업' : '배송';
+                      return GestureDetector(
+                        onTap: () => context.push('/seller/requests/${r.requestId}'),
+                        child: Container(
+                          margin: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(color: whiteColor, borderRadius: kBorderRadiusMd, border: Border.all(color: borderColor)),
+                          child: Row(
+                            children: [
+                              const Text('🎂', style: TextStyle(fontSize: 20)),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('$tag · $budget', style: AppTypography.body(fontSize: 13, fontWeight: FontWeight.w600)),
+                                    const SizedBox(height: 3),
+                                    Text('${r.moodTags.join(" · ")} · $type\n${r.fulfillmentDate} · ${r.distance ?? ''}', style: AppTypography.body(fontSize: 11, color: ink60, height: 1.4)),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(color: _sageLt, borderRadius: BorderRadius.circular(4)),
+                                child: Text('NEW', style: AppTypography.mono(fontSize: 10, fontWeight: FontWeight.w500, color: _sage)),
+                              ),
+                            ],
                           ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(color: _sageLt, borderRadius: BorderRadius.circular(4)),
-                            child: Text('NEW', style: AppTypography.mono(fontSize: 10, fontWeight: FontWeight.w500, color: _sage)),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
                 const SizedBox(height: 24),
               ],
             ),

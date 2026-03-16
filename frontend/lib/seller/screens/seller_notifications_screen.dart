@@ -16,7 +16,7 @@ class SellerNotificationsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final notifications = ref.watch(sellerNotificationsProvider);
+    final asyncNotifications = ref.watch(sellerNotificationsProvider);
 
     return Scaffold(
       backgroundColor: creamColor,
@@ -25,7 +25,10 @@ class SellerNotificationsScreen extends ConsumerWidget {
           children: [
             const AppNavBar(title: '알림'),
             Expanded(
-              child: notifications.isEmpty
+              child: asyncNotifications.when(
+                loading: () => const Center(child: CircularProgressIndicator(color: _sage)),
+                error: (e, _) => Center(child: Text('오류', style: AppTypography.body(color: ink60))),
+                data: (notifications) => notifications.isEmpty
                   ? Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -113,6 +116,7 @@ class SellerNotificationsScreen extends ConsumerWidget {
                         );
                       },
                     ),
+              ),
             ),
           ],
         ),
