@@ -150,4 +150,32 @@
 
 ---
 
+## [AD-017] UserRole enum 도입 — String role 대체
+
+- **결정일**: 2026-03-16
+- **결정 내용**: `SetRoleCommand.role`을 `String` 대신 `UserRole` enum으로 변경. `SetRoleRequest.role`도 `@NotNull UserRole` 타입.
+- **이유**: 잘못된 role 문자열("ADMIN" 등) 입력 시 Jackson 역직렬화 단계에서 자동 400 반환. 도메인 계층에서 별도 문자열 검증 불필요. User.assignRole()에서 null 검증만 하면 됨.
+- **트레이드오프**: 향후 새 역할(ADMIN 등) 추가 시 enum 변경 필요하나, 새 역할은 별도 설계가 필요하므로 enum 변경은 적절한 강제.
+- **영향 파일**: `UserRole.java`, `SetRoleCommand.java`, `SetRoleRequest.java`, `User.java`, `AuthService.java`
+
+---
+
+## [AD-018] SecurityConfig /auth/seller-info에 hasRole("SELLER") 적용
+
+- **결정일**: 2026-03-16
+- **결정 내용**: `/api/v1/auth/seller-info`에 `.hasRole("SELLER")` 적용. 나머지 auth 경로(`/role`, `/logout`)는 `authenticated()`.
+- **이유**: 판매자 정보 등록은 SELLER 역할이 확정된 사용자만 가능. BUYER나 역할 미설정 사용자가 호출하면 403 Forbidden.
+- **영향 파일**: `SecurityConfig.java`, `TestSecurityConfig.java`
+
+---
+
+## [AD-019] KakaoOAuthPort 프로파일 전략 — 3계층 분리
+
+- **결정일**: 2026-03-16
+- **결정 내용**: KakaoOAuthAdapter(`@Profile("!local & !test")`), MockKakaoOAuthAdapter(`@Profile("local")`), TestKakaoOAuthConfig(test context 전용).
+- **이유**: prod는 실제 카카오 API 호출, local은 Mock 데이터 반환, test는 람다 기반 빈으로 각 환경 독립. `@WebMvcTest`에서는 `@MockBean`으로 오버라이드.
+- **영향 파일**: `KakaoOAuthAdapter.java`, `MockKakaoOAuthAdapter.java`, `TestKakaoOAuthConfig.java`
+
+---
+
 > 새 결정이 발생하면 [AD-{N}] 형식으로 추가한다.

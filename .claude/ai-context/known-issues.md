@@ -304,7 +304,7 @@
 - **위치**: auth 도메인
 - **내용**: `JwtProvider.generateRefreshToken()`은 구현되었으나, refreshToken을 DB에서 조회·검증하고 새 accessToken을 재발급하는 서비스 로직(`/api/v1/auth/reissue` 엔드포인트)이 미구현. auth 도메인 구현 시 함께 처리.
 - **심각도**: Medium
-- **상태**: OPEN
+- **상태**: RESOLVED — AuthService.reissue() 구현 완료. JWT에서 userId 추출 → DB refreshToken 검증 → 새 토큰 쌍 발급.
 
 ---
 

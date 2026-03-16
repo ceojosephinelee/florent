@@ -54,7 +54,14 @@ Response 200:
 POST /api/v1/auth/role
 ```
 Request: `{ "role": "BUYER | SELLER" }`
-Response 200: `{ "role": "BUYER" }`
+Response 200:
+```json
+{
+  "role": "BUYER",
+  "accessToken": "string",
+  "refreshToken": "string"
+}
+```
 
 ---
 

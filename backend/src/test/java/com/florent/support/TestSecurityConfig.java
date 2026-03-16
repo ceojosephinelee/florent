@@ -24,7 +24,9 @@ public class TestSecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/actuator/**").permitAll()
-                .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers("/api/v1/auth/kakao", "/api/v1/auth/reissue").permitAll()
+                .requestMatchers("/api/v1/auth/seller-info").hasRole("SELLER")
+                .requestMatchers("/api/v1/auth/**").authenticated()
                 .requestMatchers("/api/v1/buyer/**").hasRole("BUYER")
                 .requestMatchers("/api/v1/seller/**").hasRole("SELLER")
                 .anyRequest().authenticated())
