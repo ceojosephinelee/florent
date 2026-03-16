@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,6 +78,13 @@ public class ProposalRepositoryImpl implements ProposalRepository {
     @Override
     public List<Proposal> findAllByFlowerShopId(Long flowerShopId) {
         return jpaRepository.findByFlowerShopId(flowerShopId).stream()
+                .map(ProposalJpaEntity::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<Proposal> findExpirableBefore(LocalDateTime now) {
+        return jpaRepository.findExpirableBefore(now).stream()
                 .map(ProposalJpaEntity::toDomain)
                 .toList();
     }

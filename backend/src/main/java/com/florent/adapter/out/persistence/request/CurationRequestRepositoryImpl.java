@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,6 +41,13 @@ public class CurationRequestRepositoryImpl implements CurationRequestRepository 
     @Override
     public List<CurationRequest> findAll() {
         return jpaRepository.findAll().stream()
+                .map(CurationRequestJpaEntity::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<CurationRequest> findOpenExpiredBefore(LocalDateTime now) {
+        return jpaRepository.findOpenExpiredBefore(now).stream()
                 .map(CurationRequestJpaEntity::toDomain)
                 .toList();
     }
