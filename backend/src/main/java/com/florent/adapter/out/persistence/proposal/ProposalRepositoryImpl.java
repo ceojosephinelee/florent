@@ -60,4 +60,17 @@ public class ProposalRepositoryImpl implements ProposalRepository {
     public boolean existsByRequestIdAndFlowerShopId(Long requestId, Long flowerShopId) {
         return jpaRepository.existsByRequestIdAndFlowerShopId(requestId, flowerShopId);
     }
+
+    @Override
+    public Optional<Proposal> findByRequestIdAndFlowerShopId(Long requestId, Long flowerShopId) {
+        return jpaRepository.findByRequestIdAndFlowerShopId(requestId, flowerShopId)
+                .map(ProposalJpaEntity::toDomain);
+    }
+
+    @Override
+    public List<Proposal> findByRequestIdsAndFlowerShopId(List<Long> requestIds, Long flowerShopId) {
+        return jpaRepository.findByRequestIdInAndFlowerShopId(requestIds, flowerShopId).stream()
+                .map(ProposalJpaEntity::toDomain)
+                .toList();
+    }
 }
