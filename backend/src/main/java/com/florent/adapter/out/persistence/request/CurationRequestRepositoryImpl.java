@@ -38,6 +38,13 @@ public class CurationRequestRepositoryImpl implements CurationRequestRepository 
     }
 
     @Override
+    public List<CurationRequest> findAll() {
+        return jpaRepository.findAll().stream()
+                .map(CurationRequestJpaEntity::toDomain)
+                .toList();
+    }
+
+    @Override
     public RequestPage findByBuyerId(Long buyerId, int page, int size) {
         Page<CurationRequestJpaEntity> jpaPage =
                 jpaRepository.findByBuyerIdOrderByCreatedAtDesc(buyerId, PageRequest.of(page, size));

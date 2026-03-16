@@ -86,4 +86,20 @@ public class FakeProposalRepository implements ProposalRepository {
                 .anyMatch(p -> p.getRequestId().equals(requestId)
                         && p.getFlowerShopId().equals(flowerShopId));
     }
+
+    @Override
+    public Optional<Proposal> findByRequestIdAndFlowerShopId(Long requestId, Long flowerShopId) {
+        return store.values().stream()
+                .filter(p -> p.getRequestId().equals(requestId)
+                        && p.getFlowerShopId().equals(flowerShopId))
+                .findFirst();
+    }
+
+    @Override
+    public List<Proposal> findByRequestIdsAndFlowerShopId(List<Long> requestIds, Long flowerShopId) {
+        return store.values().stream()
+                .filter(p -> requestIds.contains(p.getRequestId())
+                        && p.getFlowerShopId().equals(flowerShopId))
+                .toList();
+    }
 }
