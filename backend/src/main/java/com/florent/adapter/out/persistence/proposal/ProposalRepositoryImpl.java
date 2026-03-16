@@ -73,4 +73,11 @@ public class ProposalRepositoryImpl implements ProposalRepository {
                 .map(ProposalJpaEntity::toDomain)
                 .toList();
     }
+
+    @Override
+    public List<Proposal> findAllByFlowerShopId(Long flowerShopId) {
+        return jpaRepository.findByFlowerShopId(flowerShopId).stream()
+                .map(ProposalJpaEntity::toDomain)
+                .toList();
+    }
 }

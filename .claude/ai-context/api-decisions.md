@@ -224,4 +224,22 @@
 
 ---
 
+## [AD-025] 판매자 프로필/홈/통계를 SellerProfileController에 통합
+
+- **결정일**: 2026-03-16
+- **결정 내용**: `/seller/me`, `/seller/home`, `/seller/stats` 3개 GET 엔드포인트를 단일 `SellerProfileController`에서 처리. 각각 별도 UseCase + Service로 분리.
+- **이유**: 3개 모두 판매자 자신에 관한 조회 전용 API이며 `/seller` prefix 공유. 하지만 Service는 관심사가 다르므로(프로필 조회, 대시보드 집계, 통계 집계) 별도 클래스로 분리하여 SRP 준수.
+- **영향 파일**: `SellerProfileController.java`, `SellerProfileService.java`, `SellerHomeService.java`, `SellerStatsService.java`
+
+---
+
+## [AD-026] 구매자 프로필 조회 시 User + Buyer 조합 조회
+
+- **결정일**: 2026-03-16
+- **결정 내용**: `GET /buyer/me` 응답에 email, createdAt은 User 테이블에서, nickName은 Buyer 테이블에서 각각 조회.
+- **이유**: api-spec.md §5-1에서 email, createdAt, nickName 모두 요구. 카카오 로그인 시 email은 User에, nickName은 Buyer에 저장되는 기존 설계 유지.
+- **영향 파일**: `BuyerProfileService.java`, `BuyerProfileResult.java`
+
+---
+
 > 새 결정이 발생하면 [AD-{N}] 형식으로 추가한다.

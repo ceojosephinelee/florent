@@ -328,6 +328,16 @@
 
 ---
 
+### [DEBT-031] 판매자 홈/통계 전체 테이블 스캔
+
+- **유형**: 기술 부채 (성능)
+- **위치**: `SellerHomeService.filterNearbyOpenRequests()`, `SellerStatsService.countMonthlyNearbyRequests()`
+- **내용**: `requestRepository.findAll()` + `proposalRepository.findAllByFlowerShopId()` + `reservationRepository.findAllBySellerId()`로 전체 로드 후 메모리 필터링. DEBT-001, DEBT-030과 동일 맥락.
+- **심각도**: Low (MVP 기간 내 무시)
+- **상태**: OPEN
+
+---
+
 ## 정합성 검증 이력
 
 ### [2026-03-12] 정합성 검증 — 백엔드 구현 전

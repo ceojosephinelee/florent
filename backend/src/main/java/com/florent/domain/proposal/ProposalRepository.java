@@ -12,4 +12,5 @@ public interface ProposalRepository {
     boolean existsByRequestIdAndFlowerShopId(Long requestId, Long flowerShopId);
     Optional<Proposal> findByRequestIdAndFlowerShopId(Long requestId, Long flowerShopId);
     List<Proposal> findByRequestIdsAndFlowerShopId(List<Long> requestIds, Long flowerShopId);
+    List<Proposal> findAllByFlowerShopId(Long flowerShopId);
 }
