@@ -174,7 +174,7 @@ public class AuthService implements KakaoLoginUseCase, SetRoleUseCase,
         }
 
         FlowerShop shop = FlowerShop.create(
-                sellerId, command.shopName(), null,
+                sellerId, command.shopName(), null, null,
                 command.shopAddress(), command.shopLat(), command.shopLng());
         FlowerShop saved = flowerShopRepository.save(shop);
 

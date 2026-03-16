@@ -66,7 +66,7 @@ public class FlowerShopJpaEntity {
         entity.id = domain.getId();
         entity.sellerId = domain.getSellerId();
         entity.name = domain.getShopName();
-        entity.description = null;
+        entity.description = domain.getShopDescription();
         entity.phone = domain.getShopPhone();
         entity.addressText = domain.getShopAddress();
         entity.lat = domain.getShopLat();
@@ -76,7 +76,7 @@ public class FlowerShopJpaEntity {
 
     public FlowerShop toDomain() {
         return FlowerShop.reconstitute(
-                id, sellerId, name, phone, addressText, lat, lng
+                id, sellerId, name, description, phone, addressText, lat, lng
         );
     }
 }

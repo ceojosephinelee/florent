@@ -76,7 +76,7 @@ class BuyerProposalServiceTest {
 
     private void setupShop(Long shopId, String name) {
         shopRepository.save(FlowerShop.reconstitute(
-                shopId, 10L, name, "010-1234-5678", "서울시 강남구",
+                shopId, 10L, name, null, "010-1234-5678", "서울시 강남구",
                 new BigDecimal("37.498095"), new BigDecimal("127.027610")));
     }
 

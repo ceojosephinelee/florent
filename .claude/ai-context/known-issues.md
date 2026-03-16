@@ -230,6 +230,16 @@
 
 ---
 
+### [DEBT-029] SHOP_ALREADY_EXISTS HTTP 상태코드 422 vs 409 불일치
+
+- **유형**: 컨벤션 검토
+- **위치**: `common/exception/ErrorCode.java` — `SHOP_ALREADY_EXISTS(422, ...)`
+- **내용**: `SELLER_ALREADY_REGISTERED`는 409(Conflict)인데 `SHOP_ALREADY_EXISTS`는 422(Unprocessable Entity). 두 에러 모두 "이미 등록됨" 시맨틱이므로 HTTP 상태코드를 통일할지 검토 필요.
+- **심각도**: Low
+- **상태**: OPEN
+
+---
+
 ## 버그 목록
 
 > 버그 발견 시 아래 형식으로 추가

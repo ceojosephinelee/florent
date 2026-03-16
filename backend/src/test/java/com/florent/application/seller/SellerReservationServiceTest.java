@@ -96,7 +96,7 @@ class SellerReservationServiceTest {
 
     private void setupShopAndBuyer() {
         shopRepository.save(FlowerShop.reconstitute(
-                SHOP_ID, SELLER_ID, "테스트꽃집", "010-1234-5678",
+                SHOP_ID, SELLER_ID, "테스트꽃집", null, "010-1234-5678",
                 "서울시 강남구", new BigDecimal("37.498095"), new BigDecimal("127.027610")));
         buyerRepository.save(Buyer.reconstitute(BUYER_ID, 1L, "구매자닉네임"));
     }
@@ -185,7 +185,7 @@ class SellerReservationServiceTest {
 
         Long otherSellerId = 20L;
         shopRepository.save(FlowerShop.reconstitute(
-                200L, otherSellerId, "다른꽃집", null, "서울시 마포구",
+                200L, otherSellerId, "다른꽃집", null, null, "서울시 마포구",
                 new BigDecimal("37.55"), new BigDecimal("126.92")));
 
         // when & then
