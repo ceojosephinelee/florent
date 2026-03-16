@@ -213,10 +213,10 @@
 ### [DEBT-027] OutboxWorker 미구현 (@Scheduled FCM 발송)
 
 - **유형**: 기능 미완성
-- **위치**: `application/notification/` (미작성)
+- **위치**: `application/notification/OutboxWorker.java`
 - **내용**: OutboxEvent를 주기적으로 폴링하여 FCM 푸시를 발송하는 `OutboxWorker` 스케줄러가 미구현. 현재 OutboxEvent는 PENDING 상태로만 저장됨. PushNotificationPort + UserDeviceRepository를 사용하여 구현 필요.
 - **심각도**: Medium
-- **상태**: OPEN
+- **상태**: RESOLVED — OutboxWorker(@Scheduled 5초 간격) + ExpiryScheduler(@Scheduled 60초 간격) 구현 완료. MockFcmPushAdapter 기존 활용.
 
 ---
 
@@ -344,6 +344,16 @@
 - Critical: 10건 (모두 RESOLVED — api-spec.md, erd.md 수정 완료)
 - Warning: 13건 (OPEN)
 - 주요 내용: API 엔드포인트 3개 누락(buyer/me, seller/me, seller/stats), 예약 상세 Response에 요청 원문·이미지 필드 누락, NOTIFICATION 테이블 body 컬럼 누락. Critical 항목은 api-spec.md 및 erd.md에 반영 완료. Warning 항목(Mock↔API 구조 불일치, HTTP Method 불일치, DRAFT 제안 CONFIRMED 후 처리 미명시 등)은 백엔드 구현 중 순차 해결 필요.
+
+---
+
+### [DEBT-032] ExpiryScheduler 개별 save N+1 write
+
+- **유형**: 기술 부채 (성능)
+- **위치**: `application/scheduler/ExpiryScheduler.java`
+- **내용**: 만료 건마다 개별 `save()` 호출. MVP 데이터 규모에서는 문제 없음. `saveAll()` 배치 메서드 또는 bulk update 쿼리로 전환 검토.
+- **심각도**: Low
+- **상태**: OPEN
 
 ---
 

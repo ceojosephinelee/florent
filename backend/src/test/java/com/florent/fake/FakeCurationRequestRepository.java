@@ -4,6 +4,7 @@ import com.florent.domain.request.CurationRequest;
 import com.florent.domain.request.CurationRequestRepository;
 import com.florent.domain.request.RequestPage;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -76,5 +77,13 @@ public class FakeCurationRequestRepository implements CurationRequestRepository 
         boolean last = (page + 1) >= totalPages;
 
         return new RequestPage(content, totalElements, totalPages, last);
+    }
+
+    @Override
+    public List<CurationRequest> findOpenExpiredBefore(LocalDateTime now) {
+        return store.values().stream()
+                .filter(r -> r.getStatus() == com.florent.domain.request.RequestStatus.OPEN)
+                .filter(r -> r.getExpiresAt().isBefore(now))
+                .toList();
     }
 }
