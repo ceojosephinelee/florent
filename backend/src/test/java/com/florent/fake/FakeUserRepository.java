@@ -20,9 +20,9 @@ public class FakeUserRepository implements UserRepository {
             id = idGenerator.getAndIncrement();
         }
         User persisted = User.reconstitute(
-                id, user.getKakaoId(), user.getEmail(), user.getRole(),
-                user.getRefreshToken(), user.getRefreshTokenExpiresAt(),
-                user.getCreatedAt());
+                id, user.getKakaoId(), user.getEmail(), user.getNickname(),
+                user.getRole(), user.getRefreshToken(),
+                user.getRefreshTokenExpiresAt(), user.getCreatedAt());
         store.put(id, persisted);
         return persisted;
     }

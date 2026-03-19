@@ -38,7 +38,7 @@ class SellerProfileServiceTest {
     @DisplayName("판매자 프로필 조회 성공")
     void 프로필_조회_성공() {
         // given
-        User user = userRepository.save(User.createFromKakao("kakao1", "seller@test.com"));
+        User user = userRepository.save(User.createFromKakao("kakao1", "seller@test.com", "판매자"));
         user.assignRole(UserRole.SELLER);
         user = userRepository.save(user);
         Seller seller = sellerRepository.save(Seller.create(user.getId()));
@@ -60,7 +60,7 @@ class SellerProfileServiceTest {
     @DisplayName("꽃집 미등록 판매자 프로필 조회 시 예외")
     void 꽃집_미등록_예외() {
         // given
-        User user = userRepository.save(User.createFromKakao("kakao1", null));
+        User user = userRepository.save(User.createFromKakao("kakao1", null, null));
         user.assignRole(UserRole.SELLER);
         user = userRepository.save(user);
         Seller seller = sellerRepository.save(Seller.create(user.getId()));

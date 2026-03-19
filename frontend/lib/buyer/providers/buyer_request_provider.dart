@@ -8,6 +8,12 @@ final buyerRepositoryProvider = Provider<ApiBuyerRepository>(
   (ref) => ApiBuyerRepository(ref.watch(dioProvider)),
 );
 
+final buyerRequestDetailProvider =
+    FutureProvider.family<Map<String, dynamic>, int>((ref, requestId) {
+  final repo = ref.watch(buyerRepositoryProvider);
+  return repo.getRequestDetail(requestId);
+});
+
 final activeRequestsProvider =
     FutureProvider<List<BuyerRequestSummary>>((ref) {
   final repo = ref.watch(buyerRepositoryProvider);

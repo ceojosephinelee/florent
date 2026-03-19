@@ -90,6 +90,11 @@ public class NotificationService implements SaveNotificationUseCase,
     private void saveNotificationWithOutbox(
             Long userId, NotificationType type,
             ReferenceType referenceType, Long referenceId) {
+        String dedupKey = type.name() + ":" + referenceType.name() + ":" + referenceId;
+        if (outboxEventRepository.existsByDedupKey(dedupKey)) {
+            return;
+        }
+
         Notification notification = Notification.create(
                 userId, type, referenceType, referenceId,
                 NotificationMessages.title(type),
@@ -97,7 +102,6 @@ public class NotificationService implements SaveNotificationUseCase,
                 clock);
         Notification saved = notificationRepository.save(notification);
 
-        String dedupKey = type.name() + ":" + referenceType.name() + ":" + referenceId;
         OutboxEvent outbox = OutboxEvent.create(saved.getId(), dedupKey, clock);
         outboxEventRepository.save(outbox);
     }

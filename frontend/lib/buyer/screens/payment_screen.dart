@@ -2,22 +2,59 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../core/theme/colors.dart';
 import '../../core/theme/radius.dart';
 import '../../core/theme/typography.dart';
+import '../providers/buyer_request_provider.dart';
 import '../providers/proposal_provider.dart';
 import '../widgets/common/app_nav_bar.dart';
 import '../widgets/common/bottom_cta_button.dart';
 
-class PaymentScreen extends ConsumerWidget {
+class PaymentScreen extends ConsumerStatefulWidget {
   const PaymentScreen({super.key, required this.proposalId});
 
   final int proposalId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final asyncDetail = ref.watch(proposalDetailProvider(proposalId));
+  ConsumerState<PaymentScreen> createState() => _PaymentScreenState();
+}
+
+class _PaymentScreenState extends ConsumerState<PaymentScreen> {
+  bool _isSubmitting = false;
+
+  Future<void> _handlePayment() async {
+    if (_isSubmitting) return;
+    setState(() => _isSubmitting = true);
+
+    try {
+      final repo = ref.read(buyerRepositoryProvider);
+      final idempotencyKey = const Uuid().v4();
+      final result = await repo.selectProposal(widget.proposalId, idempotencyKey);
+      final reservationId = result['reservationId'] as int;
+
+      if (!mounted) return;
+
+      // 예약 목록 캐시 갱신
+      ref.invalidate(buyerReservationsListProvider);
+
+      context.go('/buyer/reservations/$reservationId/done');
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isSubmitting = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('결제에 실패했어요. 다시 시도해주세요.'),
+          backgroundColor: roseColor,
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final asyncDetail = ref.watch(proposalDetailProvider(widget.proposalId));
 
     return Scaffold(
       backgroundColor: creamColor,
@@ -108,8 +145,9 @@ class PaymentScreen extends ConsumerWidget {
                   ),
                 ),
                 BottomCtaButton(
-                  label: '$priceFormatted원 결제하기',
-                  onPressed: () => context.go('/buyer/reservations/1/done'),
+                  label: _isSubmitting ? '처리 중...' : '$priceFormatted원 결제하기',
+                  onPressed: _handlePayment,
+                  enabled: !_isSubmitting,
                 ),
               ],
             ),

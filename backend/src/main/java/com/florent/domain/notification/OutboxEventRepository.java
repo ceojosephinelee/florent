@@ -5,5 +5,6 @@ import java.util.List;
 
 public interface OutboxEventRepository {
     OutboxEvent save(OutboxEvent event);
+    boolean existsByDedupKey(String dedupKey);
     List<OutboxEvent> findPendingBefore(LocalDateTime now, int limit);
 }

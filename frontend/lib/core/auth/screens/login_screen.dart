@@ -54,6 +54,24 @@ class LoginScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               const Text('🌸', style: TextStyle(fontSize: 48)),
+              if (auth.error != null) ...[
+                const SizedBox(height: 16),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFDEDED),
+                    borderRadius: kBorderRadiusSm,
+                    border: Border.all(color: const Color(0xFFF5C6C6)),
+                  ),
+                  child: Text(
+                    auth.error!,
+                    style: AppTypography.body(fontSize: 12, color: const Color(0xFFC62828)),
+                    maxLines: 5,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
               const Spacer(flex: 4),
               SizedBox(
                 width: double.infinity,

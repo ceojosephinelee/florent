@@ -103,6 +103,8 @@ class SellerProposalForm with _$SellerProposalForm {
   const SellerProposalForm._();
 
   const factory SellerProposalForm({
+    int? requestId,
+    int? proposalId,
     @Default('') String conceptTitle,
     @Default('') String mainFlowers,
     @Default('') String subFlowers,
@@ -112,6 +114,7 @@ class SellerProposalForm with _$SellerProposalForm {
     @Default(0) int price,
     String? selectedSlotKind,
     String? selectedSlotValue,
+    String? expiresAt,
   }) = _SellerProposalForm;
 
   bool get isStep1Valid =>

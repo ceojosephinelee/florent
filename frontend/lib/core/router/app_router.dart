@@ -128,7 +128,12 @@ final appRouter = GoRouter(
       path: '/seller/requests/:id',
       builder: (_, state) => SellerRequestDetailScreen(requestId: int.parse(state.pathParameters['id']!)),
     ),
-    GoRoute(path: '/seller/proposals/new/step1', builder: (_, __) => const SellerProposalStep1Screen()),
+    GoRoute(
+      path: '/seller/proposals/new/step1',
+      builder: (_, state) => SellerProposalStep1Screen(
+        requestId: int.parse(state.uri.queryParameters['requestId']!),
+      ),
+    ),
     GoRoute(path: '/seller/proposals/new/step2/pickup', builder: (_, __) => const SellerProposalStep2PickupScreen()),
     GoRoute(path: '/seller/proposals/done', builder: (_, __) => const SellerProposalDoneScreen()),
     GoRoute(path: '/seller/notifications', builder: (_, __) => const SellerNotificationsScreen()),

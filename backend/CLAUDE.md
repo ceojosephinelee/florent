@@ -157,6 +157,19 @@ POST /auth/seller-info { shopName, shopAddress, shopLat, shopLng }
   → USER.flower_shop_id 연결
 ```
 
+### 백엔드 실행 방법
+
+> ⚠️ `./gradlew bootRun` 단독 실행 금지 — DataSource 설정 오류 발생.
+> 반드시 `local` 프로파일을 지정해야 한다.
+
+```bash
+# 권장 (Makefile 사용)
+make run
+
+# 직접 실행 시
+./gradlew bootRun --args='--spring.profiles.active=local'
+```
+
 ### 환경 프로파일
 
 | 프로파일 | DB | FCM | PG |

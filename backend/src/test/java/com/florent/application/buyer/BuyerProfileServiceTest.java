@@ -32,7 +32,7 @@ class BuyerProfileServiceTest {
     @DisplayName("구매자 프로필 조회 성공")
     void 프로필_조회_성공() {
         // given
-        User user = userRepository.save(User.createFromKakao("kakao1", "buyer@test.com"));
+        User user = userRepository.save(User.createFromKakao("kakao1", "buyer@test.com", "구매자닉네임"));
         user.assignRole(UserRole.BUYER);
         user = userRepository.save(user);
         Buyer buyer = buyerRepository.save(Buyer.create(user.getId(), "구매자닉네임"));
@@ -51,7 +51,7 @@ class BuyerProfileServiceTest {
     @DisplayName("존재하지 않는 구매자 조회 시 예외")
     void 존재하지_않는_구매자_예외() {
         // given
-        User user = userRepository.save(User.createFromKakao("kakao1", null));
+        User user = userRepository.save(User.createFromKakao("kakao1", null, null));
 
         // when & then
         assertThatThrownBy(() -> service.getProfile(999L, user.getId()))

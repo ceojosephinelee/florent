@@ -25,6 +25,11 @@ class ApiBuyerRepository {
         .toList();
   }
 
+  Future<Map<String, dynamic>> getRequestDetail(int requestId) async {
+    final response = await _dio.get('/buyer/requests/$requestId');
+    return response.data['data'] as Map<String, dynamic>;
+  }
+
   Future<Map<String, dynamic>> createRequest(Map<String, dynamic> data) async {
     final response = await _dio.post('/buyer/requests', data: data);
     return response.data['data'] as Map<String, dynamic>;

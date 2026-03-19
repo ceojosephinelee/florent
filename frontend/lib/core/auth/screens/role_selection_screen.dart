@@ -1,3 +1,5 @@
+import 'dart:developer' as dev;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,11 +9,35 @@ import '../../theme/radius.dart';
 import '../../theme/typography.dart';
 import '../auth_provider.dart';
 
-class RoleSelectionScreen extends ConsumerWidget {
+class RoleSelectionScreen extends ConsumerStatefulWidget {
   const RoleSelectionScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<RoleSelectionScreen> createState() => _RoleSelectionScreenState();
+}
+
+class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _debugTokenState();
+  }
+
+  Future<void> _debugTokenState() async {
+    final tokenStorage = ref.read(tokenStorageProvider);
+    final accessToken = await tokenStorage.getAccessToken();
+    final refreshToken = await tokenStorage.getRefreshToken();
+    final role = await tokenStorage.getRole();
+    dev.log('[ROLE_SCREEN] 화면 진입 시 토큰 상태:');
+    dev.log('[ROLE_SCREEN]   accessToken: ${accessToken != null ? "${accessToken.substring(0, 10)}... (len=${accessToken.length})" : "null"}');
+    dev.log('[ROLE_SCREEN]   refreshToken: ${refreshToken != null ? "있음 (len=${refreshToken.length})" : "null"}');
+    dev.log('[ROLE_SCREEN]   role: $role');
+    dev.log('[ROLE_SCREEN]   auth.status: ${ref.read(authProvider).status}');
+    dev.log('[ROLE_SCREEN]   auth.error: ${ref.read(authProvider).error}');
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final auth = ref.watch(authProvider);
 
     ref.listen<AuthState>(authProvider, (prev, next) {
@@ -44,6 +70,24 @@ class RoleSelectionScreen extends ConsumerWidget {
                 '어떤 서비스를 이용하시겠어요?',
                 style: AppTypography.body(fontSize: 14, color: ink60),
               ),
+              if (auth.error != null) ...[
+                const SizedBox(height: 16),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFDEDED),
+                    borderRadius: kBorderRadiusSm,
+                    border: Border.all(color: const Color(0xFFF5C6C6)),
+                  ),
+                  child: Text(
+                    auth.error!,
+                    style: AppTypography.body(fontSize: 12, color: const Color(0xFFC62828)),
+                    maxLines: 5,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
               const SizedBox(height: 32),
               _RoleCard(
                 emoji: '🌸',
@@ -94,6 +138,7 @@ class _RoleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: isLoading ? null : onTap,
       child: Container(
         width: double.infinity,

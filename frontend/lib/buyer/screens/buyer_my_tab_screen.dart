@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../core/auth/auth_provider.dart';
 import '../../core/theme/colors.dart';
 import '../../core/theme/typography.dart';
+import '../providers/buyer_home_provider.dart';
 
-class BuyerMyTabScreen extends StatelessWidget {
+class BuyerMyTabScreen extends ConsumerWidget {
   const BuyerMyTabScreen({super.key});
 
   static const _menuItems = [
@@ -15,7 +19,15 @@ class BuyerMyTabScreen extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final asyncProfile = ref.watch(buyerProfileProvider);
+    final nickName = asyncProfile.whenOrNull(
+          data: (p) => p['nickName'] as String?,
+        ) ?? '';
+    final email = asyncProfile.whenOrNull(
+          data: (p) => p['email'] as String?,
+        ) ?? '';
+
     return Scaffold(
       backgroundColor: creamColor,
       body: SafeArea(
@@ -35,9 +47,15 @@ class BuyerMyTabScreen extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('이지수', style: AppTypography.body(fontSize: 15, fontWeight: FontWeight.w700)),
+                    Text(
+                      nickName.isNotEmpty ? nickName : '-',
+                      style: AppTypography.body(fontSize: 15, fontWeight: FontWeight.w700),
+                    ),
                     const SizedBox(height: 2),
-                    Text('ji.soo@email.com', style: AppTypography.body(fontSize: 11, color: ink60)),
+                    Text(
+                      email.isNotEmpty ? email : '-',
+                      style: AppTypography.body(fontSize: 11, color: ink60),
+                    ),
                   ],
                 ),
               ],
@@ -46,6 +64,33 @@ class BuyerMyTabScreen extends StatelessWidget {
             Divider(color: borderColor, height: 1),
             const SizedBox(height: 8),
             ..._menuItems.map((item) => _MenuItem(emoji: item.$1, label: item.$2)),
+            const SizedBox(height: 24),
+            Divider(color: borderColor, height: 1),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: OutlinedButton(
+                onPressed: () async {
+                  await ref.read(authProvider.notifier).logout();
+                  if (context.mounted) {
+                    context.go('/login');
+                  }
+                },
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: ink60,
+                  side: BorderSide(color: borderColor),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text(
+                  '로그아웃',
+                  style: AppTypography.body(fontSize: 14, color: ink60),
+                ),
+              ),
+            ),
+            const SizedBox(height: 32),
           ],
         ),
       ),

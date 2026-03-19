@@ -58,9 +58,13 @@ public class AuthService implements KakaoLoginUseCase, SetRoleUseCase,
         User user = userRepository.findByKakaoId(kakaoUserInfo.kakaoId()).orElse(null);
 
         if (user == null) {
-            user = User.createFromKakao(kakaoUserInfo.kakaoId(), kakaoUserInfo.email());
+            user = User.createFromKakao(
+                    kakaoUserInfo.kakaoId(), kakaoUserInfo.email(), kakaoUserInfo.nickname());
             user = userRepository.save(user);
             isNewUser = true;
+        } else {
+            user.updateNickname(kakaoUserInfo.nickname());
+            userRepository.save(user);
         }
 
         Long buyerId = findBuyerId(user);
@@ -91,7 +95,7 @@ public class AuthService implements KakaoLoginUseCase, SetRoleUseCase,
         Long sellerId = null;
 
         if (command.role() == UserRole.BUYER) {
-            Buyer buyer = Buyer.create(userId, null);
+            Buyer buyer = Buyer.create(userId, user.getNickname());
             buyer = buyerRepository.save(buyer);
             buyerId = buyer.getId();
         } else if (command.role() == UserRole.SELLER) {

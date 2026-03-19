@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -39,6 +40,7 @@ public class SecurityConfig {
                 .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/api/v1/auth/kakao", "/api/v1/auth/reissue").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/addresses/search").permitAll()
                 .requestMatchers("/api/v1/auth/seller-info").hasRole("SELLER")
                 .requestMatchers("/api/v1/buyer/**").hasRole("BUYER")
                 .requestMatchers("/api/v1/seller/**").hasRole("SELLER")

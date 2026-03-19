@@ -20,7 +20,7 @@ class UserTest {
         String email = "test@kakao.com";
 
         // when
-        User user = User.createFromKakao(kakaoId, email);
+        User user = User.createFromKakao(kakaoId, email, "테스트유저");
 
         // then
         assertThat(user.getKakaoId()).isEqualTo(kakaoId);
@@ -33,7 +33,7 @@ class UserTest {
     @DisplayName("assignRole — 역할이 null인 유저에게 역할이 설정된다")
     void assignRole_성공() {
         // given
-        User user = User.createFromKakao("kakao123", "test@kakao.com");
+        User user = User.createFromKakao("kakao123", "test@kakao.com", "테스트유저");
 
         // when
         user.assignRole(UserRole.BUYER);
@@ -46,7 +46,7 @@ class UserTest {
     @DisplayName("assignRole — 이미 역할이 설정된 유저는 ROLE_ALREADY_SET 예외가 발생한다")
     void assignRole_중복_설정_예외() {
         // given
-        User user = User.createFromKakao("kakao123", "test@kakao.com");
+        User user = User.createFromKakao("kakao123", "test@kakao.com", "테스트유저");
         user.assignRole(UserRole.BUYER);
 
         // when & then
@@ -60,7 +60,7 @@ class UserTest {
     @DisplayName("assignRole — null 역할 입력 시 INVALID_ROLE 예외가 발생한다")
     void assignRole_null_역할_예외() {
         // given
-        User user = User.createFromKakao("kakao123", "test@kakao.com");
+        User user = User.createFromKakao("kakao123", "test@kakao.com", "테스트유저");
 
         // when & then
         assertThatThrownBy(() -> user.assignRole(null))
@@ -73,7 +73,7 @@ class UserTest {
     @DisplayName("updateRefreshToken — 리프레시 토큰과 만료시각이 저장된다")
     void updateRefreshToken_저장() {
         // given
-        User user = User.createFromKakao("kakao123", "test@kakao.com");
+        User user = User.createFromKakao("kakao123", "test@kakao.com", "테스트유저");
         LocalDateTime expiresAt = LocalDateTime.of(2026, 4, 15, 10, 0);
 
         // when
@@ -88,7 +88,7 @@ class UserTest {
     @DisplayName("clearRefreshToken — 리프레시 토큰이 제거된다")
     void clearRefreshToken_제거() {
         // given
-        User user = User.createFromKakao("kakao123", "test@kakao.com");
+        User user = User.createFromKakao("kakao123", "test@kakao.com", "테스트유저");
         user.updateRefreshToken("refresh-token-123", LocalDateTime.of(2026, 4, 15, 10, 0));
 
         // when
@@ -103,7 +103,7 @@ class UserTest {
     @DisplayName("isRefreshTokenValid — 유효한 토큰이면 true를 반환한다")
     void isRefreshTokenValid_유효() {
         // given
-        User user = User.createFromKakao("kakao123", "test@kakao.com");
+        User user = User.createFromKakao("kakao123", "test@kakao.com", "테스트유저");
         user.updateRefreshToken("token", LocalDateTime.of(2026, 4, 15, 10, 0));
 
         // when
@@ -117,7 +117,7 @@ class UserTest {
     @DisplayName("isRefreshTokenValid — 만료된 토큰이면 false를 반환한다")
     void isRefreshTokenValid_만료() {
         // given
-        User user = User.createFromKakao("kakao123", "test@kakao.com");
+        User user = User.createFromKakao("kakao123", "test@kakao.com", "테스트유저");
         user.updateRefreshToken("token", LocalDateTime.of(2026, 3, 14, 10, 0));
 
         // when
@@ -131,7 +131,7 @@ class UserTest {
     @DisplayName("isRefreshTokenValid — 토큰이 null이면 false를 반환한다")
     void isRefreshTokenValid_토큰_없음() {
         // given
-        User user = User.createFromKakao("kakao123", "test@kakao.com");
+        User user = User.createFromKakao("kakao123", "test@kakao.com", "테스트유저");
 
         // when
         boolean valid = user.isRefreshTokenValid(LocalDateTime.of(2026, 3, 15, 10, 0));
@@ -145,8 +145,9 @@ class UserTest {
     void reconstitute_DB_재구성() {
         // given & when
         User user = User.reconstitute(
-                1L, "kakao123", "test@kakao.com", UserRole.BUYER,
-                "refresh-token", LocalDateTime.of(2026, 4, 15, 10, 0),
+                1L, "kakao123", "test@kakao.com", "테스트유저",
+                UserRole.BUYER, "refresh-token",
+                LocalDateTime.of(2026, 4, 15, 10, 0),
                 LocalDateTime.of(2026, 3, 15, 10, 0));
 
         // then

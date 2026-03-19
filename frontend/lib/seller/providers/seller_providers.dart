@@ -163,6 +163,8 @@ final sellerUnreadCountProvider = Provider<int>((ref) {
 class SellerProposalFormNotifier extends StateNotifier<SellerProposalForm> {
   SellerProposalFormNotifier() : super(const SellerProposalForm());
 
+  void setRequestId(int v) => state = state.copyWith(requestId: v);
+  void setProposalId(int v) => state = state.copyWith(proposalId: v);
   void setConceptTitle(String v) => state = state.copyWith(conceptTitle: v);
   void setMainFlowers(String v) => state = state.copyWith(mainFlowers: v);
   void setSubFlowers(String v) => state = state.copyWith(subFlowers: v);
@@ -171,6 +173,7 @@ class SellerProposalFormNotifier extends StateNotifier<SellerProposalForm> {
   void setRecommendation(String v) => state = state.copyWith(recommendation: v);
   void setPrice(int v) => state = state.copyWith(price: v);
 
+  void setExpiresAt(String v) => state = state.copyWith(expiresAt: v);
   void setSlot(String kind, String value) => state = state.copyWith(
         selectedSlotKind: kind,
         selectedSlotValue: value,

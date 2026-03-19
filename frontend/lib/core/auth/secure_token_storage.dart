@@ -9,21 +9,37 @@ class SecureTokenStorage implements TokenStorage {
   static const _roleKey = 'role';
 
   @override
-  Future<String?> getAccessToken() => _storage.read(key: _accessTokenKey);
+  Future<String?> getAccessToken() async {
+    final value = await _storage.read(key: _accessTokenKey);
+    print('[STORAGE] getAccessToken: ${value != null ? "len=${value.length}" : "null"}');
+    return value;
+  }
 
   @override
-  Future<String?> getRefreshToken() => _storage.read(key: _refreshTokenKey);
+  Future<String?> getRefreshToken() async {
+    final value = await _storage.read(key: _refreshTokenKey);
+    print('[STORAGE] getRefreshToken: ${value != null ? "len=${value.length}" : "null"}');
+    return value;
+  }
 
   @override
-  Future<String?> getRole() => _storage.read(key: _roleKey);
+  Future<String?> getRole() async {
+    final value = await _storage.read(key: _roleKey);
+    print('[STORAGE] getRole: $value');
+    return value;
+  }
 
   @override
   Future<void> saveTokens({
     required String accessToken,
     required String refreshToken,
   }) async {
+    print('[STORAGE] saveTokens — accessToken.len=${accessToken.length}, refreshToken.len=${refreshToken.length}');
     await _storage.write(key: _accessTokenKey, value: accessToken);
     await _storage.write(key: _refreshTokenKey, value: refreshToken);
+    // 저장 직후 재읽기 검증
+    final readBack = await _storage.read(key: _accessTokenKey);
+    print('[STORAGE] saveTokens 검증 — 재읽기 len=${readBack?.length}, 일치=${readBack == accessToken}');
   }
 
   @override
@@ -31,5 +47,8 @@ class SecureTokenStorage implements TokenStorage {
       _storage.write(key: _roleKey, value: role);
 
   @override
-  Future<void> clearAll() => _storage.deleteAll();
+  Future<void> clearAll() {
+    print('[STORAGE] clearAll 호출됨');
+    return _storage.deleteAll();
+  }
 }

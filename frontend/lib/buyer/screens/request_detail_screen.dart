@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/models/enums.dart';
 import '../../core/theme/colors.dart';
 import '../../core/theme/radius.dart';
 import '../../core/theme/typography.dart';
+import '../providers/buyer_request_provider.dart';
 import '../providers/proposal_provider.dart';
 import '../widgets/common/app_nav_bar.dart';
 import '../widgets/common/expiry_timer.dart';
@@ -16,75 +18,149 @@ class RequestDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final asyncDetail = ref.watch(buyerRequestDetailProvider(requestId));
     final asyncProposals = ref.watch(proposalsProvider(requestId));
-    final expiresAt = DateTime.now().add(const Duration(hours: 22, minutes: 14));
 
     return Scaffold(
       backgroundColor: creamColor,
       body: SafeArea(
         child: Column(
           children: [
-            AppNavBar(title: '요청 상세'),
+            const AppNavBar(title: '요청 상세'),
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(18, 0, 18, 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+              child: asyncDetail.when(
+                loading: () => const Center(
+                    child: CircularProgressIndicator(color: roseColor)),
+                error: (e, _) => Center(
+                    child: Text('요청 정보를 불러올 수 없어요',
+                        style: AppTypography.body(color: ink60))),
+                data: (detail) {
+                  final expiresAt =
+                      DateTime.parse(detail['expiresAt'] as String);
+                  final purposeTags =
+                      List<String>.from(detail['purposeTags'] ?? []);
+                  final relationTags =
+                      List<String>.from(detail['relationTags'] ?? []);
+                  final moodTags =
+                      List<String>.from(detail['moodTags'] ?? []);
+                  final budget = BudgetTier.values
+                      .where((t) => t.value == detail['budgetTier'])
+                      .firstOrNull;
+                  final fulfillmentType =
+                      detail['fulfillmentType'] as String? ?? '';
+                  final fulfillmentDate =
+                      detail['fulfillmentDate'] as String? ?? '';
+                  final slots = detail['requestedTimeSlots'] as List? ?? [];
+                  final slotLabel = slots.isNotEmpty
+                      ? (slots.first as Map)['value'] as String? ?? ''
+                      : '';
+                  final draftCount =
+                      detail['draftProposalCount'] as int? ?? 0;
+                  final submittedCount =
+                      detail['submittedProposalCount'] as int? ?? 0;
+
+                  final typeLabel =
+                      fulfillmentType == 'PICKUP' ? '픽업' : '배송';
+
+                  return SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(18, 0, 18, 24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('⏱ 요청 만료까지 ', style: AppTypography.body(fontSize: 12, color: ink60)),
-                        ExpiryTimer(expiresAt: expiresAt),
+                        Row(
+                          children: [
+                            Text('⏱ 요청 만료까지 ',
+                                style: AppTypography.body(
+                                    fontSize: 12, color: ink60)),
+                            ExpiryTimer(expiresAt: expiresAt),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: creamColor,
+                            borderRadius: kBorderRadiusMd,
+                            border: Border.all(color: borderColor),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (purposeTags.isNotEmpty)
+                                _infoLine('목적',
+                                    purposeTags.join(' · ')),
+                              if (relationTags.isNotEmpty)
+                                _infoLine('관계',
+                                    relationTags.join(' · ')),
+                              if (moodTags.isNotEmpty)
+                                _infoLine('분위기',
+                                    moodTags.join(' · ')),
+                              if (budget != null)
+                                _infoLine('예산',
+                                    '${budget.label} (${budget.priceRange})'),
+                              _infoLine('수령',
+                                  '$typeLabel · $fulfillmentDate ${slotLabel.isNotEmpty ? slotLabel : ''}'),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        if (draftCount > 0)
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: roseLt,
+                              borderRadius: kBorderRadiusSm,
+                            ),
+                            child: Text(
+                              '$draftCount명의 플로리스트가 제안서를 작성 중이에요',
+                              style: AppTypography.body(
+                                  fontSize: 12, color: roseColor),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        const SizedBox(height: 20),
+                        asyncProposals.when(
+                          loading: () => const Center(
+                              child: CircularProgressIndicator(
+                                  color: roseColor)),
+                          error: (e, _) => Text('제안 목록을 불러올 수 없어요',
+                              style: AppTypography.body(color: ink60)),
+                          data: (proposals) => Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '도착한 제안 ($submittedCount)',
+                                style: AppTypography.body(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700),
+                              ),
+                              const SizedBox(height: 12),
+                              if (proposals.isEmpty)
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(24),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    '아직 도착한 제안이 없어요',
+                                    style: AppTypography.body(
+                                        fontSize: 13, color: ink60),
+                                  ),
+                                )
+                              else
+                                ...proposals.map((p) => _ProposalListItem(
+                                      proposal: p,
+                                      onTap: () => context.push(
+                                          '/buyer/proposals/${p.proposalId}'),
+                                    )),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 12),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: creamColor,
-                        borderRadius: kBorderRadiusMd,
-                        border: Border.all(color: borderColor),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _infoLine('목적', '🎂 생일 · 부모님'),
-                          _infoLine('분위기', '로맨틱 · 자연스러운'),
-                          _infoLine('예산', '기본형 (6~8만원)'),
-                          _infoLine('수령', '픽업 · 3/15 14:00'),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: roseLt,
-                        borderRadius: kBorderRadiusSm,
-                      ),
-                      child: Text(
-                        '1명의 플로리스트가 제안서를 작성 중이에요',
-                        style: AppTypography.body(fontSize: 12, color: roseColor),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Text('도착한 제안 (2)', style: AppTypography.body(fontSize: 15, fontWeight: FontWeight.w700)),
-                    const SizedBox(height: 12),
-                    asyncProposals.when(
-                      loading: () => const Center(child: CircularProgressIndicator(color: roseColor)),
-                      error: (e, _) => Text('오류', style: AppTypography.body(color: ink60)),
-                      data: (proposals) => Column(
-                        children: proposals.map((p) => _ProposalListItem(
-                          proposal: p,
-                          onTap: () => context.push('/buyer/proposals/${p.proposalId}'),
-                        )).toList(),
-                      ),
-                    ),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
           ],
@@ -100,9 +176,14 @@ class RequestDetailScreen extends ConsumerWidget {
         children: [
           SizedBox(
             width: 50,
-            child: Text(label, style: AppTypography.body(fontSize: 11, fontWeight: FontWeight.w600, color: ink60)),
+            child: Text(label,
+                style: AppTypography.body(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: ink60)),
           ),
-          Expanded(child: Text(value, style: AppTypography.body(fontSize: 11))),
+          Expanded(
+              child: Text(value, style: AppTypography.body(fontSize: 11))),
         ],
       ),
     );
@@ -132,22 +213,37 @@ class _ProposalListItem extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text(proposal.shopEmoji ?? '🌸', style: const TextStyle(fontSize: 18)),
+                Text(proposal.shopEmoji ?? '🌸',
+                    style: const TextStyle(fontSize: 18)),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     proposal.conceptTitle,
-                    style: AppTypography.body(fontSize: 13, fontWeight: FontWeight.w600),
+                    style: AppTypography.body(
+                        fontSize: 13, fontWeight: FontWeight.w600),
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(color: roseLt, borderRadius: BorderRadius.circular(4)),
-                  child: Text(
-                    '⏱ ${Duration(milliseconds: DateTime.parse(proposal.expiresAt).difference(DateTime.now()).inMilliseconds).inHours}h',
-                    style: AppTypography.mono(fontSize: 10, color: roseColor),
-                  ),
-                ),
+                Builder(builder: (_) {
+                  try {
+                    final expires = DateTime.parse(proposal.expiresAt);
+                    final hours =
+                        expires.difference(DateTime.now()).inHours;
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                          color: roseLt,
+                          borderRadius: BorderRadius.circular(4)),
+                      child: Text(
+                        '⏱ ${hours}h',
+                        style: AppTypography.mono(
+                            fontSize: 10, color: roseColor),
+                      ),
+                    );
+                  } catch (_) {
+                    return const SizedBox.shrink();
+                  }
+                }),
               ],
             ),
             const SizedBox(height: 6),

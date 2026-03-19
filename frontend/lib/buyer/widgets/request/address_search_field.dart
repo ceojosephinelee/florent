@@ -55,6 +55,7 @@ class AddressSearchField extends StatelessWidget {
   }
 
   Future<void> _openSearch(BuildContext context) async {
+    print('[AddressSearch] 시트 열기 시도');
     final result = await showModalBottomSheet<_AddressResult>(
       context: context,
       isScrollControlled: true,
@@ -64,6 +65,7 @@ class AddressSearchField extends StatelessWidget {
       ),
       builder: (_) => const _AddressSearchSheet(),
     );
+    print('[AddressSearch] 시트 닫힘, result=$result');
     if (result != null) {
       onSelected(result.address, result.lat, result.lng);
     }
@@ -87,13 +89,17 @@ class _AddressSearchSheet extends StatefulWidget {
 
 class _AddressSearchSheetState extends State<_AddressSearchSheet> {
   final _controller = TextEditingController();
-  final _dio = Dio();
+  final _dio = Dio(BaseOptions(
+    baseUrl: const String.fromEnvironment(
+      'API_BASE_URL',
+      defaultValue: 'http://localhost:8080/api/v1',
+    ),
+    connectTimeout: const Duration(seconds: 10),
+    receiveTimeout: const Duration(seconds: 10),
+  ));
   Timer? _debounce;
   List<_AddressResult> _results = [];
   bool _loading = false;
-
-  static const _restKey =
-      String.fromEnvironment('KAKAO_REST_KEY');
 
   @override
   void dispose() {
@@ -109,35 +115,31 @@ class _AddressSearchSheetState extends State<_AddressSearchSheet> {
       setState(() => _results = []);
       return;
     }
-    _debounce = Timer(const Duration(milliseconds: 400), () {
-      _search(query.trim());
+    _debounce = Timer(const Duration(milliseconds: 600), () {
+      // 타이머 발화 시점의 controller 값 사용 (한글 IME 조합 완료 보장)
+      final current = _controller.text.trim();
+      if (current.isEmpty) return;
+      print('[AddressSearch] 검색 실행: "$current"');
+      _search(current);
     });
   }
 
   Future<void> _search(String query) async {
-    if (_restKey.isEmpty) {
-      // REST 키 미설정 시 입력한 주소를 그대로 사용 (좌표 0,0)
-      setState(() {
-        _results = [_AddressResult(query, 0, 0)];
-        _loading = false;
-      });
-      return;
-    }
-
     setState(() => _loading = true);
     try {
+      print('[AddressSearch] 검색 요청: query=$query, baseUrl=${_dio.options.baseUrl}');
       final response = await _dio.get(
-        'https://dapi.kakao.com/v2/local/search/address',
-        queryParameters: {'query': query, 'size': 5},
-        options: Options(headers: {'Authorization': 'KakaoAK $_restKey'}),
+        '/addresses/search',
+        queryParameters: {'query': query},
       );
-      final docs = response.data['documents'] as List? ?? [];
+      print('[AddressSearch] 응답: ${response.statusCode} data=${response.data}');
+      final data = response.data['data'] as List? ?? [];
       setState(() {
-        _results = docs.map((doc) {
+        _results = data.map((item) {
           return _AddressResult(
-            doc['address_name'] as String? ?? query,
-            double.tryParse('${doc['y']}') ?? 0,
-            double.tryParse('${doc['x']}') ?? 0,
+            item['addressName'] as String? ?? query,
+            (item['lat'] as num?)?.toDouble() ?? 0,
+            (item['lng'] as num?)?.toDouble() ?? 0,
           );
         }).toList();
         if (_results.isEmpty) {
@@ -145,7 +147,8 @@ class _AddressSearchSheetState extends State<_AddressSearchSheet> {
         }
         _loading = false;
       });
-    } catch (_) {
+    } catch (e) {
+      print('[AddressSearch] 에러: $e');
       setState(() {
         _results = [_AddressResult(query, 0, 0)];
         _loading = false;

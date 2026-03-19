@@ -22,15 +22,29 @@ final dioProvider = Provider<Dio>((ref) {
     headers: {'Content-Type': 'application/json'},
   ));
 
+  print('[DIO] Dio 인스턴스 생성 — baseUrl: ${dio.options.baseUrl}');
+
   dio.interceptors.add(InterceptorsWrapper(
     onRequest: (options, handler) async {
       final token = await tokenStorage.getAccessToken();
       if (token != null) {
         options.headers['Authorization'] = 'Bearer $token';
+        print('[DIO] → ${options.method} ${options.uri} (token: ${token.substring(0, 20)}...)');
+      } else {
+        print('[DIO] → ${options.method} ${options.uri} (token: NULL — 헤더 미주입)');
       }
       handler.next(options);
     },
+    onResponse: (response, handler) {
+      print('[DIO] ← ${response.statusCode} ${response.requestOptions.method} ${response.requestOptions.uri}');
+      handler.next(response);
+    },
     onError: (error, handler) async {
+      print('[DIO] ← ERROR ${error.response?.statusCode} '
+          '${error.requestOptions.method} ${error.requestOptions.uri}');
+      print('[DIO]   type=${error.type} message=${error.message}');
+      print('[DIO]   response.data=${error.response?.data}');
+
       if (error.response?.statusCode == 401) {
         final data = error.response?.data;
         String? errorCode;
@@ -40,12 +54,13 @@ final dioProvider = Provider<Dio>((ref) {
             errorCode = errorMap['code'] as String?;
           }
         }
+        print('[DIO]   401 errorCode=$errorCode');
 
         if (errorCode == 'TOKEN_EXPIRED') {
           final refreshToken = await tokenStorage.getRefreshToken();
           if (refreshToken != null) {
             try {
-              // Use a plain Dio to avoid interceptor loop
+              print('[DIO]   토큰 재발급 시도...');
               final plainDio = Dio(BaseOptions(baseUrl: dio.options.baseUrl));
               final res = await plainDio.post(
                 '/auth/reissue',
@@ -58,11 +73,13 @@ final dioProvider = Provider<Dio>((ref) {
                 accessToken: result.accessToken,
                 refreshToken: result.refreshToken,
               );
+              print('[DIO]   토큰 재발급 성공 → 원래 요청 재시도');
               final opts = error.requestOptions;
               opts.headers['Authorization'] = 'Bearer ${result.accessToken}';
               final response = await dio.fetch(opts);
               return handler.resolve(response);
-            } catch (_) {
+            } catch (e) {
+              print('[DIO]   토큰 재발급 실패: $e → /login');
               await tokenStorage.clearAll();
               appRouter.go('/login');
               return handler.next(error);
@@ -71,8 +88,10 @@ final dioProvider = Provider<Dio>((ref) {
         }
 
         if (errorCode == 'REFRESH_TOKEN_EXPIRED') {
+          print('[DIO]   refreshToken 만료 → /login');
           await tokenStorage.clearAll();
           appRouter.go('/login');
+          return handler.next(error);
         }
       }
       handler.next(error);

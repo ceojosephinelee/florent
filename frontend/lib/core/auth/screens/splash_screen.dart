@@ -17,13 +17,21 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    print('[SPLASH] initState 호출됨');
     _checkAuth();
   }
 
   Future<void> _checkAuth() async {
+    print('[SPLASH] _checkAuth 시작 — 1.5초 대기');
     await Future.delayed(const Duration(milliseconds: 1500));
-    if (!mounted) return;
+    if (!mounted) {
+      print('[SPLASH] mounted=false → checkAuthStatus 건너뜀');
+      return;
+    }
+
+    print('[SPLASH] checkAuthStatus 호출 직전');
     await ref.read(authProvider.notifier).checkAuthStatus();
+    print('[SPLASH] checkAuthStatus 완료 — status: ${ref.read(authProvider).status}');
   }
 
   @override

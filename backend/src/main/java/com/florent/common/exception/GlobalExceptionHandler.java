@@ -7,6 +7,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @RestControllerAdvice
@@ -39,6 +40,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleIllegalArgumentException(IllegalArgumentException e) {
         return ResponseEntity.badRequest()
                 .body(ApiResponse.error("BAD_REQUEST", "잘못된 입력값입니다."));
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ApiResponse<Void>> handleResponseStatusException(ResponseStatusException e) {
+        log.error("외부 API 오류: status={}, reason={}", e.getStatusCode(), e.getReason());
+        return ResponseEntity.status(e.getStatusCode())
+                .body(ApiResponse.error(String.valueOf(e.getStatusCode().value()), e.getReason()));
     }
 
     @ExceptionHandler(Exception.class)

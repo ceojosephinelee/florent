@@ -35,6 +35,11 @@ public class FakeOutboxEventRepository implements OutboxEventRepository {
     }
 
     @Override
+    public boolean existsByDedupKey(String dedupKey) {
+        return store.stream().anyMatch(e -> e.getDedupKey().equals(dedupKey));
+    }
+
+    @Override
     public List<OutboxEvent> findPendingBefore(LocalDateTime now, int limit) {
         return store.stream()
                 .filter(e -> e.getStatus() == OutboxStatus.PENDING)

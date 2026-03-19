@@ -11,6 +11,7 @@ public class User {
     private Long id;
     private String kakaoId;
     private String email;
+    private String nickname;
     private UserRole role;
     private String refreshToken;
     private LocalDateTime refreshTokenExpiresAt;
@@ -18,22 +19,25 @@ public class User {
 
     private User() {}
 
-    public static User createFromKakao(String kakaoId, String email) {
+    public static User createFromKakao(String kakaoId, String email, String nickname) {
         User user = new User();
         user.kakaoId = kakaoId;
         user.email = email;
+        user.nickname = nickname;
         user.role = null;
         user.createdAt = LocalDateTime.now();
         return user;
     }
 
-    public static User reconstitute(Long id, String kakaoId, String email, UserRole role,
-                                    String refreshToken, LocalDateTime refreshTokenExpiresAt,
+    public static User reconstitute(Long id, String kakaoId, String email, String nickname,
+                                    UserRole role, String refreshToken,
+                                    LocalDateTime refreshTokenExpiresAt,
                                     LocalDateTime createdAt) {
         User user = new User();
         user.id = id;
         user.kakaoId = kakaoId;
         user.email = email;
+        user.nickname = nickname;
         user.role = role;
         user.refreshToken = refreshToken;
         user.refreshTokenExpiresAt = refreshTokenExpiresAt;
@@ -49,6 +53,10 @@ public class User {
             throw new BusinessException(ErrorCode.INVALID_ROLE);
         }
         this.role = role;
+    }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public void updateRefreshToken(String token, LocalDateTime expiresAt) {

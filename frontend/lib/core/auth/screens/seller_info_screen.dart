@@ -42,6 +42,14 @@ class _SellerInfoScreenState extends ConsumerState<SellerInfoScreen> {
       if (!next.isLoading && next.status == AuthStatus.sellerAuthenticated) {
         context.go('/seller/home');
       }
+      if (!next.isLoading && next.error != null && prev?.error != next.error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('가게 등록에 실패했어요. 다시 시도해주세요.'),
+            backgroundColor: roseColor,
+          ),
+        );
+      }
     });
 
     return Scaffold(

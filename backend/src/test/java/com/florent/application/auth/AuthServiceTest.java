@@ -101,7 +101,7 @@ class AuthServiceTest {
     @DisplayName("BUYER 역할 설정 — Buyer 엔티티가 생성된다")
     void BUYER_역할_설정_성공() {
         // given
-        User user = userRepository.save(User.createFromKakao("kakao123", "test@kakao.com"));
+        User user = userRepository.save(User.createFromKakao("kakao123", "test@kakao.com", "테스트유저"));
 
         // when
         SetRoleResult result = sut.setRole(user.getId(), new SetRoleCommand(UserRole.BUYER));
@@ -117,7 +117,7 @@ class AuthServiceTest {
     @DisplayName("SELLER 역할 설정 — Seller 엔티티가 생성된다")
     void SELLER_역할_설정_성공() {
         // given
-        User user = userRepository.save(User.createFromKakao("kakao123", "test@kakao.com"));
+        User user = userRepository.save(User.createFromKakao("kakao123", "test@kakao.com", "테스트유저"));
 
         // when
         SetRoleResult result = sut.setRole(user.getId(), new SetRoleCommand(UserRole.SELLER));
@@ -131,7 +131,7 @@ class AuthServiceTest {
     @DisplayName("이미 역할이 설정된 유저 — ROLE_ALREADY_SET 예외")
     void 역할_중복_설정_예외() {
         // given
-        User user = userRepository.save(User.createFromKakao("kakao123", "test@kakao.com"));
+        User user = userRepository.save(User.createFromKakao("kakao123", "test@kakao.com", "테스트유저"));
         sut.setRole(user.getId(), new SetRoleCommand(UserRole.BUYER));
 
         // when & then

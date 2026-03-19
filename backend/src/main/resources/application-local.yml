@@ -5,3 +5,15 @@ spring:
     password: florent
   jpa:
     show-sql: true
+
+kakao:
+  local:
+    base-url: https://dapi.kakao.com
+  rest-key: ${KAKAO_REST_KEY}
+
+logging:
+  level:
+    com.florent: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

@@ -23,6 +23,11 @@ public class OutboxEventRepositoryImpl implements OutboxEventRepository {
     }
 
     @Override
+    public boolean existsByDedupKey(String dedupKey) {
+        return jpaRepository.existsByDedupKey(dedupKey);
+    }
+
+    @Override
     public List<OutboxEvent> findPendingBefore(LocalDateTime now, int limit) {
         return jpaRepository.findPendingBefore(now, PageRequest.of(0, limit))
                 .stream()

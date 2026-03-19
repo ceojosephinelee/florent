@@ -1,4 +1,7 @@
+import 'dart:developer' as dev;
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 import '../data/api/api_auth_repository.dart';
 import '../data/auth_repository.dart';
@@ -68,23 +71,86 @@ class AuthNotifier extends StateNotifier<AuthState> {
   AuthNotifier(this._tokenStorage, this._authRepository, this._kakaoLoginService)
       : super(const AuthState());
 
-  /// 스플래시에서 호출. 저장된 토큰 확인 → 상태 분기.
+  /// 스플래시에서 호출. 저장된 토큰 확인 → 만료 검증 → 상태 분기.
   Future<void> checkAuthStatus() async {
+    print('[AUTH] checkAuthStatus 호출됨');
     state = state.copyWith(isLoading: true);
 
-    final accessToken = await _tokenStorage.getAccessToken();
-    if (accessToken == null) {
-      state = state.copyWith(status: AuthStatus.unauthenticated, isLoading: false);
-      return;
-    }
+    try {
+      final accessToken = await _tokenStorage.getAccessToken();
+      print('[AUTH] 저장된 accessToken: ${accessToken != null ? "있음(len=${accessToken.length})" : "null"}');
 
-    final role = await _tokenStorage.getRole();
-    if (role == 'BUYER') {
-      state = state.copyWith(status: AuthStatus.buyerAuthenticated, isLoading: false);
-    } else if (role == 'SELLER') {
-      state = state.copyWith(status: AuthStatus.sellerAuthenticated, isLoading: false);
-    } else {
-      state = state.copyWith(status: AuthStatus.needsRole, isLoading: false);
+      if (accessToken == null) {
+        print('[AUTH] → unauthenticated (토큰 없음)');
+        state = state.copyWith(status: AuthStatus.unauthenticated, isLoading: false);
+        return;
+      }
+
+      // accessToken 만료 여부를 로컬에서 확인
+      bool accessExpired;
+      try {
+        accessExpired = JwtDecoder.isExpired(accessToken);
+        print('[AUTH] accessToken 만료 여부: $accessExpired');
+      } catch (e) {
+        print('[AUTH] accessToken JWT 디코딩 실패: $e → unauthenticated');
+        await _tokenStorage.clearAll();
+        state = state.copyWith(status: AuthStatus.unauthenticated, isLoading: false);
+        return;
+      }
+
+      if (accessExpired) {
+        print('[AUTH] accessToken 만료 → refreshToken 확인');
+        final refreshToken = await _tokenStorage.getRefreshToken();
+
+        bool refreshExpired;
+        if (refreshToken == null) {
+          refreshExpired = true;
+        } else {
+          try {
+            refreshExpired = JwtDecoder.isExpired(refreshToken);
+          } catch (e) {
+            print('[AUTH] refreshToken JWT 디코딩 실패: $e');
+            refreshExpired = true;
+          }
+        }
+
+        if (refreshExpired) {
+          print('[AUTH] → unauthenticated (refreshToken 없거나 만료)');
+          await _tokenStorage.clearAll();
+          state = state.copyWith(status: AuthStatus.unauthenticated, isLoading: false);
+          return;
+        }
+
+        try {
+          print('[AUTH] POST /auth/reissue 호출');
+          final result = await _authRepository.reissue(refreshToken!);
+          await _tokenStorage.saveTokens(
+            accessToken: result.accessToken,
+            refreshToken: result.refreshToken,
+          );
+          print('[AUTH] 토큰 재발급 성공');
+        } catch (e) {
+          print('[AUTH] 토큰 재발급 실패: $e → unauthenticated');
+          await _tokenStorage.clearAll();
+          state = state.copyWith(status: AuthStatus.unauthenticated, isLoading: false);
+          return;
+        }
+      }
+
+      final role = await _tokenStorage.getRole();
+      print('[AUTH] role=$role → 상태 전환');
+      if (role == 'BUYER') {
+        state = state.copyWith(status: AuthStatus.buyerAuthenticated, isLoading: false);
+      } else if (role == 'SELLER') {
+        state = state.copyWith(status: AuthStatus.sellerAuthenticated, isLoading: false);
+      } else {
+        state = state.copyWith(status: AuthStatus.needsRole, isLoading: false);
+      }
+    } catch (e, st) {
+      print('[AUTH] checkAuthStatus 예외: $e');
+      dev.log('[AUTH] checkAuthStatus 예외', error: e, stackTrace: st);
+      await _tokenStorage.clearAll();
+      state = state.copyWith(status: AuthStatus.unauthenticated, isLoading: false);
     }
   }
 
@@ -92,8 +158,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> kakaoLogin() async {
     state = state.copyWith(isLoading: true, error: null);
     try {
+      print('[AUTH] 1) 카카오 SDK 로그인 시작');
       final kakaoAccessToken = await _kakaoLoginService.login();
+      print('[AUTH] 2) 카카오 토큰 획득 성공: ${kakaoAccessToken.substring(0, 10)}...');
+
+      print('[AUTH] 3) POST /auth/kakao 호출');
       final result = await _authRepository.kakaoLogin(kakaoAccessToken);
+      print('[AUTH] 4) 서버 응답 — isNewUser: ${result.isNewUser}, role: ${result.role}');
+
       await _tokenStorage.saveTokens(
         accessToken: result.accessToken,
         refreshToken: result.refreshToken,
@@ -101,24 +173,34 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (result.role != null) {
         await _tokenStorage.saveRole(result.role!);
       }
+      // 저장 직후 재읽기 검증
+      final savedToken = await _tokenStorage.getAccessToken();
+      print('[AUTH] 5) 토큰 저장 완료 — 재읽기: ${savedToken != null ? "${savedToken.substring(0, 20)}... (len=${savedToken.length})" : "null ← 저장 실패!"}');
 
       if (result.isNewUser || result.role == null) {
+        print('[AUTH] 6) → needsRole');
         state = state.copyWith(status: AuthStatus.needsRole, isLoading: false);
       } else if (result.role == 'BUYER') {
+        print('[AUTH] 6) → buyerAuthenticated');
         state = state.copyWith(status: AuthStatus.buyerAuthenticated, isLoading: false);
       } else {
+        print('[AUTH] 6) → sellerAuthenticated');
         state = state.copyWith(status: AuthStatus.sellerAuthenticated, isLoading: false);
       }
-    } catch (e) {
+    } catch (e, st) {
+      print('[AUTH] kakaoLogin ERROR: $e\n$st');
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
 
   /// 역할 설정 (BUYER / SELLER). 서버에서 새 토큰 반환.
   Future<void> setRole(String role) async {
+    print('[AUTH] setRole($role) 시작');
     state = state.copyWith(isLoading: true, error: null);
     try {
+      print('[AUTH] POST /auth/role 호출');
       final result = await _authRepository.setRole(role);
+      print('[AUTH] 서버 응답: $result');
       await _tokenStorage.saveTokens(
         accessToken: result['accessToken'] as String,
         refreshToken: result['refreshToken'] as String,
@@ -127,11 +209,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await _tokenStorage.saveRole(assignedRole);
 
       if (assignedRole == 'BUYER') {
+        print('[AUTH] → buyerAuthenticated');
         state = state.copyWith(status: AuthStatus.buyerAuthenticated, isLoading: false);
       } else {
+        print('[AUTH] → needsSellerInfo');
         state = state.copyWith(status: AuthStatus.needsSellerInfo, isLoading: false);
       }
-    } catch (e) {
+    } catch (e, st) {
+      print('[AUTH] setRole ERROR: $e\n$st');
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }

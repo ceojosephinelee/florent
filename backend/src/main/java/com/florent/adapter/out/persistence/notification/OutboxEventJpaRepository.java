@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface OutboxEventJpaRepository extends JpaRepository<OutboxEventJpaEntity, Long> {
 
+    boolean existsByDedupKey(String dedupKey);
+
     @Query("SELECT e FROM OutboxEventJpaEntity e "
             + "WHERE e.status = 'PENDING' AND e.availableAt <= :now "
             + "ORDER BY e.createdAt ASC")

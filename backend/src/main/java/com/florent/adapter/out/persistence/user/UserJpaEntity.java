@@ -31,6 +31,8 @@ public class UserJpaEntity {
 
     private String email;
 
+    private String nickname;
+
     private String role;
 
     @Column(length = 512)
@@ -59,6 +61,7 @@ public class UserJpaEntity {
         entity.id = domain.getId();
         entity.kakaoId = domain.getKakaoId();
         entity.email = domain.getEmail();
+        entity.nickname = domain.getNickname();
         entity.role = domain.getRole() != null ? domain.getRole().name() : null;
         entity.refreshToken = domain.getRefreshToken();
         entity.refreshTokenExpiresAt = domain.getRefreshTokenExpiresAt();
@@ -68,7 +71,7 @@ public class UserJpaEntity {
 
     public User toDomain() {
         return User.reconstitute(
-                id, kakaoId, email,
+                id, kakaoId, email, nickname,
                 role != null ? UserRole.valueOf(role) : null,
                 refreshToken, refreshTokenExpiresAt, createdAt);
     }

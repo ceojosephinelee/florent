@@ -1967,6 +1967,8 @@ abstract class _SellerReservationSummary implements SellerReservationSummary {
 
 /// @nodoc
 mixin _$SellerProposalForm {
+  int? get requestId => throw _privateConstructorUsedError;
+  int? get proposalId => throw _privateConstructorUsedError;
   String get conceptTitle => throw _privateConstructorUsedError;
   String get mainFlowers => throw _privateConstructorUsedError;
   String get subFlowers => throw _privateConstructorUsedError;
@@ -1976,6 +1978,7 @@ mixin _$SellerProposalForm {
   int get price => throw _privateConstructorUsedError;
   String? get selectedSlotKind => throw _privateConstructorUsedError;
   String? get selectedSlotValue => throw _privateConstructorUsedError;
+  String? get expiresAt => throw _privateConstructorUsedError;
 
   /// Create a copy of SellerProposalForm
   /// with the given fields replaced by the non-null parameter values.
@@ -1992,6 +1995,8 @@ abstract class $SellerProposalFormCopyWith<$Res> {
   ) = _$SellerProposalFormCopyWithImpl<$Res, SellerProposalForm>;
   @useResult
   $Res call({
+    int? requestId,
+    int? proposalId,
     String conceptTitle,
     String mainFlowers,
     String subFlowers,
@@ -2001,6 +2006,7 @@ abstract class $SellerProposalFormCopyWith<$Res> {
     int price,
     String? selectedSlotKind,
     String? selectedSlotValue,
+    String? expiresAt,
   });
 }
 
@@ -2019,6 +2025,8 @@ class _$SellerProposalFormCopyWithImpl<$Res, $Val extends SellerProposalForm>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? requestId = freezed,
+    Object? proposalId = freezed,
     Object? conceptTitle = null,
     Object? mainFlowers = null,
     Object? subFlowers = null,
@@ -2028,9 +2036,18 @@ class _$SellerProposalFormCopyWithImpl<$Res, $Val extends SellerProposalForm>
     Object? price = null,
     Object? selectedSlotKind = freezed,
     Object? selectedSlotValue = freezed,
+    Object? expiresAt = freezed,
   }) {
     return _then(
       _value.copyWith(
+            requestId: freezed == requestId
+                ? _value.requestId
+                : requestId // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            proposalId: freezed == proposalId
+                ? _value.proposalId
+                : proposalId // ignore: cast_nullable_to_non_nullable
+                      as int?,
             conceptTitle: null == conceptTitle
                 ? _value.conceptTitle
                 : conceptTitle // ignore: cast_nullable_to_non_nullable
@@ -2067,6 +2084,10 @@ class _$SellerProposalFormCopyWithImpl<$Res, $Val extends SellerProposalForm>
                 ? _value.selectedSlotValue
                 : selectedSlotValue // ignore: cast_nullable_to_non_nullable
                       as String?,
+            expiresAt: freezed == expiresAt
+                ? _value.expiresAt
+                : expiresAt // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -2083,6 +2104,8 @@ abstract class _$$SellerProposalFormImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
+    int? requestId,
+    int? proposalId,
     String conceptTitle,
     String mainFlowers,
     String subFlowers,
@@ -2092,6 +2115,7 @@ abstract class _$$SellerProposalFormImplCopyWith<$Res>
     int price,
     String? selectedSlotKind,
     String? selectedSlotValue,
+    String? expiresAt,
   });
 }
 
@@ -2109,6 +2133,8 @@ class __$$SellerProposalFormImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? requestId = freezed,
+    Object? proposalId = freezed,
     Object? conceptTitle = null,
     Object? mainFlowers = null,
     Object? subFlowers = null,
@@ -2118,9 +2144,18 @@ class __$$SellerProposalFormImplCopyWithImpl<$Res>
     Object? price = null,
     Object? selectedSlotKind = freezed,
     Object? selectedSlotValue = freezed,
+    Object? expiresAt = freezed,
   }) {
     return _then(
       _$SellerProposalFormImpl(
+        requestId: freezed == requestId
+            ? _value.requestId
+            : requestId // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        proposalId: freezed == proposalId
+            ? _value.proposalId
+            : proposalId // ignore: cast_nullable_to_non_nullable
+                  as int?,
         conceptTitle: null == conceptTitle
             ? _value.conceptTitle
             : conceptTitle // ignore: cast_nullable_to_non_nullable
@@ -2157,6 +2192,10 @@ class __$$SellerProposalFormImplCopyWithImpl<$Res>
             ? _value.selectedSlotValue
             : selectedSlotValue // ignore: cast_nullable_to_non_nullable
                   as String?,
+        expiresAt: freezed == expiresAt
+            ? _value.expiresAt
+            : expiresAt // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -2166,6 +2205,8 @@ class __$$SellerProposalFormImplCopyWithImpl<$Res>
 
 class _$SellerProposalFormImpl extends _SellerProposalForm {
   const _$SellerProposalFormImpl({
+    this.requestId,
+    this.proposalId,
     this.conceptTitle = '',
     this.mainFlowers = '',
     this.subFlowers = '',
@@ -2175,8 +2216,13 @@ class _$SellerProposalFormImpl extends _SellerProposalForm {
     this.price = 0,
     this.selectedSlotKind,
     this.selectedSlotValue,
+    this.expiresAt,
   }) : super._();
 
+  @override
+  final int? requestId;
+  @override
+  final int? proposalId;
   @override
   @JsonKey()
   final String conceptTitle;
@@ -2202,10 +2248,12 @@ class _$SellerProposalFormImpl extends _SellerProposalForm {
   final String? selectedSlotKind;
   @override
   final String? selectedSlotValue;
+  @override
+  final String? expiresAt;
 
   @override
   String toString() {
-    return 'SellerProposalForm(conceptTitle: $conceptTitle, mainFlowers: $mainFlowers, subFlowers: $subFlowers, concept: $concept, wrapping: $wrapping, recommendation: $recommendation, price: $price, selectedSlotKind: $selectedSlotKind, selectedSlotValue: $selectedSlotValue)';
+    return 'SellerProposalForm(requestId: $requestId, proposalId: $proposalId, conceptTitle: $conceptTitle, mainFlowers: $mainFlowers, subFlowers: $subFlowers, concept: $concept, wrapping: $wrapping, recommendation: $recommendation, price: $price, selectedSlotKind: $selectedSlotKind, selectedSlotValue: $selectedSlotValue, expiresAt: $expiresAt)';
   }
 
   @override
@@ -2213,6 +2261,10 @@ class _$SellerProposalFormImpl extends _SellerProposalForm {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SellerProposalFormImpl &&
+            (identical(other.requestId, requestId) ||
+                other.requestId == requestId) &&
+            (identical(other.proposalId, proposalId) ||
+                other.proposalId == proposalId) &&
             (identical(other.conceptTitle, conceptTitle) ||
                 other.conceptTitle == conceptTitle) &&
             (identical(other.mainFlowers, mainFlowers) ||
@@ -2228,12 +2280,16 @@ class _$SellerProposalFormImpl extends _SellerProposalForm {
             (identical(other.selectedSlotKind, selectedSlotKind) ||
                 other.selectedSlotKind == selectedSlotKind) &&
             (identical(other.selectedSlotValue, selectedSlotValue) ||
-                other.selectedSlotValue == selectedSlotValue));
+                other.selectedSlotValue == selectedSlotValue) &&
+            (identical(other.expiresAt, expiresAt) ||
+                other.expiresAt == expiresAt));
   }
 
   @override
   int get hashCode => Object.hash(
     runtimeType,
+    requestId,
+    proposalId,
     conceptTitle,
     mainFlowers,
     subFlowers,
@@ -2243,6 +2299,7 @@ class _$SellerProposalFormImpl extends _SellerProposalForm {
     price,
     selectedSlotKind,
     selectedSlotValue,
+    expiresAt,
   );
 
   /// Create a copy of SellerProposalForm
@@ -2259,6 +2316,8 @@ class _$SellerProposalFormImpl extends _SellerProposalForm {
 
 abstract class _SellerProposalForm extends SellerProposalForm {
   const factory _SellerProposalForm({
+    final int? requestId,
+    final int? proposalId,
     final String conceptTitle,
     final String mainFlowers,
     final String subFlowers,
@@ -2268,9 +2327,14 @@ abstract class _SellerProposalForm extends SellerProposalForm {
     final int price,
     final String? selectedSlotKind,
     final String? selectedSlotValue,
+    final String? expiresAt,
   }) = _$SellerProposalFormImpl;
   const _SellerProposalForm._() : super._();
 
+  @override
+  int? get requestId;
+  @override
+  int? get proposalId;
   @override
   String get conceptTitle;
   @override
@@ -2289,6 +2353,8 @@ abstract class _SellerProposalForm extends SellerProposalForm {
   String? get selectedSlotKind;
   @override
   String? get selectedSlotValue;
+  @override
+  String? get expiresAt;
 
   /// Create a copy of SellerProposalForm
   /// with the given fields replaced by the non-null parameter values.

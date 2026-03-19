@@ -61,35 +61,30 @@ class RequestStep3DeliveryScreen extends ConsumerWidget {
                       },
                     ),
                     const SizedBox(height: 6),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 13,
-                      ),
-                      decoration: BoxDecoration(
-                        color: creamColor,
-                        borderRadius: kBorderRadiusSm,
-                        border: Border.all(color: borderColor, width: 1.5),
-                      ),
-                      child: Text(
-                        '상세 주소 (동·호수 등)',
-                        style: AppTypography.body(fontSize: 12, color: ink30),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: creamColor,
-                        borderRadius: kBorderRadiusSm,
-                        border: Border.all(color: borderColor),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        '📍 지도 미리보기',
-                        style: AppTypography.body(fontSize: 12, color: ink30),
+                    TextField(
+                      style: AppTypography.body(fontSize: 13),
+                      decoration: InputDecoration(
+                        hintText: '상세 주소 (동·호수 등)',
+                        hintStyle:
+                            AppTypography.body(fontSize: 13, color: ink30),
+                        filled: true,
+                        fillColor: creamColor,
+                        border: OutlineInputBorder(
+                          borderRadius: kBorderRadiusSm,
+                          borderSide:
+                              BorderSide(color: borderColor, width: 1.5),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: kBorderRadiusSm,
+                          borderSide:
+                              BorderSide(color: borderColor, width: 1.5),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: kBorderRadiusSm,
+                          borderSide: BorderSide(color: ink30, width: 1.5),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 13),
                       ),
                     ),
                     const SizedBox(height: 20),

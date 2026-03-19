@@ -14,9 +14,9 @@ class ApiAuthRepository implements AuthRepository {
       '/auth/kakao',
       data: {'kakaoAccessToken': kakaoAccessToken},
     );
-    return KakaoLoginResult.fromJson(
-      response.data['data'] as Map<String, dynamic>,
-    );
+    final data = response.data['data'] as Map<String, dynamic>;
+    print('[API] kakaoLogin — accessToken.len=${(data['accessToken'] as String).length}');
+    return KakaoLoginResult.fromJson(data);
   }
 
   @override
