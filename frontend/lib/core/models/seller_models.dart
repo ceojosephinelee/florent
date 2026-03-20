@@ -116,6 +116,7 @@ class SellerProposalForm with _$SellerProposalForm {
     String? selectedSlotKind,
     String? selectedSlotValue,
     String? expiresAt,
+    String? fulfillmentType,
   }) = _SellerProposalForm;
 
   bool get isStep1Valid =>

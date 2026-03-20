@@ -27,6 +27,26 @@ class _SellerProposalStep1ScreenState
   bool _isCreatingDraft = true;
   String? _draftError;
 
+  final _conceptTitleCtrl = TextEditingController();
+  final _mainFlowersCtrl = TextEditingController();
+  final _subFlowersCtrl = TextEditingController();
+  final _conceptCtrl = TextEditingController();
+  final _wrappingCtrl = TextEditingController();
+  final _recommendationCtrl = TextEditingController();
+  final _priceCtrl = TextEditingController();
+
+  @override
+  void dispose() {
+    _conceptTitleCtrl.dispose();
+    _mainFlowersCtrl.dispose();
+    _subFlowersCtrl.dispose();
+    _conceptCtrl.dispose();
+    _wrappingCtrl.dispose();
+    _recommendationCtrl.dispose();
+    _priceCtrl.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -39,11 +59,72 @@ class _SellerProposalStep1ScreenState
       notifier.reset();
       notifier.setRequestId(widget.requestId);
 
-      // 기존 DRAFT가 있으면 재사용
+      // 요청 정보 로딩 + fulfillmentType 세팅
       final detail = await ref.read(sellerRequestDetailProvider(widget.requestId).future);
+      notifier.setFulfillmentType(detail.fulfillmentType);
+
+      // 기존 DRAFT가 있으면 재사용 + 기존 데이터 로드
       if (detail.myProposalId != null) {
         if (!mounted) return;
         notifier.setProposalId(detail.myProposalId!);
+
+        try {
+          final repo = ref.read(sellerRepositoryProvider);
+          final proposalData = await repo.getProposalDetail(detail.myProposalId!);
+          if (!mounted) return;
+
+          final conceptTitle = proposalData['conceptTitle'] as String? ?? '';
+          if (conceptTitle.isNotEmpty) notifier.setConceptTitle(conceptTitle);
+
+          final price = proposalData['price'] as num?;
+          if (price != null && price > 0) notifier.setPrice(price.toInt());
+
+          // description 파싱: "메인 꽃: ...\n서브 꽃·그린: ..." 형식
+          final desc = proposalData['description'] as String? ?? '';
+          for (final line in desc.split('\n')) {
+            if (line.startsWith('메인 꽃: ')) {
+              notifier.setMainFlowers(line.substring('메인 꽃: '.length));
+            } else if (line.startsWith('서브 꽃·그린: ')) {
+              notifier.setSubFlowers(line.substring('서브 꽃·그린: '.length));
+            } else if (line.startsWith('컨셉·색감: ')) {
+              notifier.setConcept(line.substring('컨셉·색감: '.length));
+            } else if (line.startsWith('포장·마무리: ')) {
+              notifier.setWrapping(line.substring('포장·마무리: '.length));
+            } else if (line.startsWith('추천 이유: ')) {
+              notifier.setRecommendation(line.substring('추천 이유: '.length));
+            }
+          }
+
+          // 슬롯 로드
+          final slot = proposalData['availableSlot'] as Map<String, dynamic>?;
+          if (slot != null) {
+            final kind = slot['kind'] as String?;
+            final value = slot['value'] as String?;
+            if (kind != null && value != null) notifier.setSlot(kind, value);
+          }
+
+          final expiresAt = proposalData['expiresAt'] as String?;
+          if (expiresAt != null) notifier.setExpiresAt(expiresAt);
+          // 컨트롤러에 값 반영
+          _conceptTitleCtrl.text = conceptTitle;
+          if (price != null && price > 0) _priceCtrl.text = price.toInt().toString();
+          for (final line in desc.split('\n')) {
+            if (line.startsWith('메인 꽃: ')) {
+              _mainFlowersCtrl.text = line.substring('메인 꽃: '.length);
+            } else if (line.startsWith('서브 꽃·그린: ')) {
+              _subFlowersCtrl.text = line.substring('서브 꽃·그린: '.length);
+            } else if (line.startsWith('컨셉·색감: ')) {
+              _conceptCtrl.text = line.substring('컨셉·색감: '.length);
+            } else if (line.startsWith('포장·마무리: ')) {
+              _wrappingCtrl.text = line.substring('포장·마무리: '.length);
+            } else if (line.startsWith('추천 이유: ')) {
+              _recommendationCtrl.text = line.substring('추천 이유: '.length);
+            }
+          }
+        } catch (_) {
+          // 제안 상세 로드 실패해도 폼 작성은 가능
+        }
+
         setState(() => _isCreatingDraft = false);
         return;
       }
@@ -178,6 +259,7 @@ class _SellerProposalStep1ScreenState
                         const SizedBox(height: 6),
                         _textField(
                           hint: '예) 핑크 작약으로 물든 봄날의 꽃다발',
+                          controller: _conceptTitleCtrl,
                           onChanged: notifier.setConceptTitle,
                         ),
                         Text('구매자 목록에 이 이름이 노출돼요',
@@ -187,21 +269,22 @@ class _SellerProposalStep1ScreenState
                         _label('📝 꽃 구성 설명 *'),
                         const SizedBox(height: 6),
                         _qaBlock('🌹 메인 꽃', '핑크 장미 5송이, 작약 3송이',
-                            notifier.setMainFlowers),
+                            notifier.setMainFlowers, _mainFlowersCtrl),
                         _qaBlock('🌿 서브 꽃·그린', '유칼립투스, 스타티스',
-                            notifier.setSubFlowers),
+                            notifier.setSubFlowers, _subFlowersCtrl),
                         _qaBlock('🎨 전체 컨셉·색감', '따뜻한 봄 핑크톤, 로맨틱하고 풍성한 느낌',
-                            notifier.setConcept),
+                            notifier.setConcept, _conceptCtrl),
                         _qaBlock('🎀 포장·마무리', '크림색 새틴 리본, 크라프트지 포장',
-                            notifier.setWrapping),
+                            notifier.setWrapping, _wrappingCtrl),
                         _qaBlock('💌 추천 이유', '어머니께 드리기 딱 좋은 따뜻한 컬러예요.',
-                            notifier.setRecommendation),
+                            notifier.setRecommendation, _recommendationCtrl),
                         const SizedBox(height: 20),
                         _label('💰 제안 가격 *'),
                         const SizedBox(height: 6),
                         _textField(
                           hint: '직접 입력 (원)',
                           keyboardType: TextInputType.number,
+                          controller: _priceCtrl,
                           onChanged: (v) => notifier.setPrice(
                               int.tryParse(v.replaceAll(',', '')) ?? 0),
                         ),
@@ -256,8 +339,12 @@ class _SellerProposalStep1ScreenState
                   height: 52,
                   child: ElevatedButton(
                     onPressed: form.isStep1Valid
-                        ? () =>
-                            context.push('/seller/proposals/new/step2/pickup')
+                        ? () {
+                            final route = form.fulfillmentType == 'DELIVERY'
+                                ? '/seller/proposals/new/step2/delivery'
+                                : '/seller/proposals/new/step2/pickup';
+                            context.push(route);
+                          }
                         : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _sage,
@@ -288,6 +375,7 @@ class _SellerProposalStep1ScreenState
   Widget _textField({
     required String hint,
     TextInputType? keyboardType,
+    TextEditingController? controller,
     required ValueChanged<String> onChanged,
   }) {
     return Container(
@@ -297,6 +385,7 @@ class _SellerProposalStep1ScreenState
         border: Border.all(color: borderColor, width: 1.5),
       ),
       child: TextField(
+        controller: controller,
         keyboardType: keyboardType,
         style: AppTypography.body(fontSize: 13),
         decoration: InputDecoration(
@@ -312,7 +401,8 @@ class _SellerProposalStep1ScreenState
   }
 
   Widget _qaBlock(
-      String question, String hint, ValueChanged<String> onChanged) {
+      String question, String hint, ValueChanged<String> onChanged,
+      [TextEditingController? controller]) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Container(
@@ -333,6 +423,7 @@ class _SellerProposalStep1ScreenState
                     color: ink60)),
             const SizedBox(height: 4),
             TextField(
+              controller: controller,
               style: AppTypography.body(fontSize: 12),
               decoration: InputDecoration(
                 hintText: hint,

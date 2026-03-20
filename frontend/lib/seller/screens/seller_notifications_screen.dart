@@ -132,12 +132,16 @@ class SellerNotificationsScreen extends ConsumerWidget {
       };
 
   String _relativeTime(String isoString) {
-    final dt = DateTime.parse(isoString);
-    final diff = DateTime.now().difference(dt);
-    if (diff.inMinutes < 1) return '방금 전';
-    if (diff.inMinutes < 60) return '${diff.inMinutes}분 전';
-    if (diff.inHours < 24) return '${diff.inHours}시간 전';
-    if (diff.inDays == 1) return '어제';
-    return '${diff.inDays}일 전';
+    try {
+      final dt = DateTime.parse(isoString);
+      final diff = DateTime.now().difference(dt);
+      if (diff.inMinutes < 1) return '방금 전';
+      if (diff.inMinutes < 60) return '${diff.inMinutes}분 전';
+      if (diff.inHours < 24) return '${diff.inHours}시간 전';
+      if (diff.inDays == 1) return '어제';
+      return '${diff.inDays}일 전';
+    } catch (_) {
+      return isoString;
+    }
   }
 }

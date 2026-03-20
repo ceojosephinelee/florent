@@ -60,6 +60,11 @@ class ApiSellerRepository {
     return response.data['data'] as Map<String, dynamic>;
   }
 
+  Future<Map<String, dynamic>> getProposalDetail(int proposalId) async {
+    final response = await _dio.get('/seller/proposals/$proposalId');
+    return response.data['data'] as Map<String, dynamic>;
+  }
+
   // ── 예약 ──
 
   Future<List<SellerReservationSummary>> getReservations() async {

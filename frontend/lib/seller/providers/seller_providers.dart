@@ -169,6 +169,7 @@ class SellerProposalFormNotifier extends StateNotifier<SellerProposalForm> {
   void setRecommendation(String v) => state = state.copyWith(recommendation: v);
   void setPrice(int v) => state = state.copyWith(price: v);
 
+  void setFulfillmentType(String v) => state = state.copyWith(fulfillmentType: v);
   void setExpiresAt(String v) => state = state.copyWith(expiresAt: v);
   void setSlot(String kind, String value) => state = state.copyWith(
         selectedSlotKind: kind,

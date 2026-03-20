@@ -26,6 +26,7 @@ import '../../seller/screens/seller_home_screen.dart';
 import '../../seller/screens/seller_my_tab_screen.dart';
 import '../../seller/screens/seller_proposal_done_screen.dart';
 import '../../seller/screens/seller_proposal_step1_screen.dart';
+import '../../seller/screens/seller_proposal_step2_delivery_screen.dart';
 import '../../seller/screens/seller_proposal_step2_pickup_screen.dart';
 import '../../seller/screens/seller_request_detail_screen.dart';
 import '../../seller/screens/seller_requests_tab_screen.dart';
@@ -135,6 +136,7 @@ final appRouter = GoRouter(
       ),
     ),
     GoRoute(path: '/seller/proposals/new/step2/pickup', builder: (_, __) => const SellerProposalStep2PickupScreen()),
+    GoRoute(path: '/seller/proposals/new/step2/delivery', builder: (_, __) => const SellerProposalStep2DeliveryScreen()),
     GoRoute(path: '/seller/proposals/done', builder: (_, __) => const SellerProposalDoneScreen()),
     GoRoute(path: '/seller/notifications', builder: (_, __) => const SellerNotificationsScreen()),
     GoRoute(

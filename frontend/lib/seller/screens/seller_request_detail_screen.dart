@@ -140,6 +140,22 @@ class SellerRequestDetailScreen extends ConsumerWidget {
                       ),
                     ),
                   )
+                else if (detail.myProposalStatus == 'DRAFT' && detail.status == 'OPEN')
+                  SafeArea(
+                    top: false,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(18, 8, 18, 12),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: ElevatedButton(
+                          onPressed: () => context.push('/seller/proposals/new/step1?requestId=$requestId'),
+                          style: ElevatedButton.styleFrom(backgroundColor: _sage, foregroundColor: whiteColor, shape: RoundedRectangleBorder(borderRadius: kBorderRadiusMd), elevation: 0),
+                          child: Text('이어서 작성하기 ✍️', style: AppTypography.body(fontSize: 15, fontWeight: FontWeight.w600, color: whiteColor)),
+                        ),
+                      ),
+                    ),
+                  )
                 else if (detail.myProposalStatus == 'SUBMITTED')
                   SafeArea(
                     top: false,

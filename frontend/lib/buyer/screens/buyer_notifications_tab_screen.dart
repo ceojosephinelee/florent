@@ -123,16 +123,14 @@ class BuyerNotificationsTabScreen extends ConsumerWidget {
   }
 
   void _navigateByType(BuildContext context, NotificationItem n) {
+    if (n.referenceId == null) return;
     switch (n.type) {
       case 'PROPOSAL_ARRIVED':
-        if (n.referenceId != null) {
-          context.push('/buyer/proposals/${n.referenceId}');
-        }
+        context.push('/buyer/proposals/${n.referenceId}');
       case 'RESERVATION_CONFIRMED':
-        if (n.referenceId != null) {
-          context.push('/buyer/reservations/${n.referenceId}');
-        }
+        context.push('/buyer/reservations/${n.referenceId}');
       default:
+        // 알 수 없는 알림 타입은 무시
         break;
     }
   }

@@ -2001,6 +2001,7 @@ mixin _$SellerProposalForm {
   String? get selectedSlotKind => throw _privateConstructorUsedError;
   String? get selectedSlotValue => throw _privateConstructorUsedError;
   String? get expiresAt => throw _privateConstructorUsedError;
+  String? get fulfillmentType => throw _privateConstructorUsedError;
 
   /// Create a copy of SellerProposalForm
   /// with the given fields replaced by the non-null parameter values.
@@ -2029,6 +2030,7 @@ abstract class $SellerProposalFormCopyWith<$Res> {
     String? selectedSlotKind,
     String? selectedSlotValue,
     String? expiresAt,
+    String? fulfillmentType,
   });
 }
 
@@ -2059,6 +2061,7 @@ class _$SellerProposalFormCopyWithImpl<$Res, $Val extends SellerProposalForm>
     Object? selectedSlotKind = freezed,
     Object? selectedSlotValue = freezed,
     Object? expiresAt = freezed,
+    Object? fulfillmentType = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -2110,6 +2113,10 @@ class _$SellerProposalFormCopyWithImpl<$Res, $Val extends SellerProposalForm>
                 ? _value.expiresAt
                 : expiresAt // ignore: cast_nullable_to_non_nullable
                       as String?,
+            fulfillmentType: freezed == fulfillmentType
+                ? _value.fulfillmentType
+                : fulfillmentType // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -2138,6 +2145,7 @@ abstract class _$$SellerProposalFormImplCopyWith<$Res>
     String? selectedSlotKind,
     String? selectedSlotValue,
     String? expiresAt,
+    String? fulfillmentType,
   });
 }
 
@@ -2167,6 +2175,7 @@ class __$$SellerProposalFormImplCopyWithImpl<$Res>
     Object? selectedSlotKind = freezed,
     Object? selectedSlotValue = freezed,
     Object? expiresAt = freezed,
+    Object? fulfillmentType = freezed,
   }) {
     return _then(
       _$SellerProposalFormImpl(
@@ -2218,6 +2227,10 @@ class __$$SellerProposalFormImplCopyWithImpl<$Res>
             ? _value.expiresAt
             : expiresAt // ignore: cast_nullable_to_non_nullable
                   as String?,
+        fulfillmentType: freezed == fulfillmentType
+            ? _value.fulfillmentType
+            : fulfillmentType // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -2239,6 +2252,7 @@ class _$SellerProposalFormImpl extends _SellerProposalForm {
     this.selectedSlotKind,
     this.selectedSlotValue,
     this.expiresAt,
+    this.fulfillmentType,
   }) : super._();
 
   @override
@@ -2272,10 +2286,12 @@ class _$SellerProposalFormImpl extends _SellerProposalForm {
   final String? selectedSlotValue;
   @override
   final String? expiresAt;
+  @override
+  final String? fulfillmentType;
 
   @override
   String toString() {
-    return 'SellerProposalForm(requestId: $requestId, proposalId: $proposalId, conceptTitle: $conceptTitle, mainFlowers: $mainFlowers, subFlowers: $subFlowers, concept: $concept, wrapping: $wrapping, recommendation: $recommendation, price: $price, selectedSlotKind: $selectedSlotKind, selectedSlotValue: $selectedSlotValue, expiresAt: $expiresAt)';
+    return 'SellerProposalForm(requestId: $requestId, proposalId: $proposalId, conceptTitle: $conceptTitle, mainFlowers: $mainFlowers, subFlowers: $subFlowers, concept: $concept, wrapping: $wrapping, recommendation: $recommendation, price: $price, selectedSlotKind: $selectedSlotKind, selectedSlotValue: $selectedSlotValue, expiresAt: $expiresAt, fulfillmentType: $fulfillmentType)';
   }
 
   @override
@@ -2304,7 +2320,9 @@ class _$SellerProposalFormImpl extends _SellerProposalForm {
             (identical(other.selectedSlotValue, selectedSlotValue) ||
                 other.selectedSlotValue == selectedSlotValue) &&
             (identical(other.expiresAt, expiresAt) ||
-                other.expiresAt == expiresAt));
+                other.expiresAt == expiresAt) &&
+            (identical(other.fulfillmentType, fulfillmentType) ||
+                other.fulfillmentType == fulfillmentType));
   }
 
   @override
@@ -2322,6 +2340,7 @@ class _$SellerProposalFormImpl extends _SellerProposalForm {
     selectedSlotKind,
     selectedSlotValue,
     expiresAt,
+    fulfillmentType,
   );
 
   /// Create a copy of SellerProposalForm
@@ -2350,6 +2369,7 @@ abstract class _SellerProposalForm extends SellerProposalForm {
     final String? selectedSlotKind,
     final String? selectedSlotValue,
     final String? expiresAt,
+    final String? fulfillmentType,
   }) = _$SellerProposalFormImpl;
   const _SellerProposalForm._() : super._();
 
@@ -2377,6 +2397,8 @@ abstract class _SellerProposalForm extends SellerProposalForm {
   String? get selectedSlotValue;
   @override
   String? get expiresAt;
+  @override
+  String? get fulfillmentType;
 
   /// Create a copy of SellerProposalForm
   /// with the given fields replaced by the non-null parameter values.
