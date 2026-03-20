@@ -250,7 +250,41 @@
 
 ---
 
+### [DEBT-033] 프론트 진단 로그 제거 필요
+
+- **유형**: 기술 부채 (코드 정리)
+- **위치**: `proposal_provider.dart`, `seller_providers.dart`의 `_load()` 메서드
+- **내용**: `[NOTIFICATION-BUYER]`, `[NOTIFICATION-SELLER]` print 문이 진단용으로 추가됨. 디버깅 완료 후 제거 필요.
+- **심각도**: Low
+- **상태**: OPEN
+
+---
+
 ## 버그 목록
+
+### [BUG-001] 제안서 상세 화면 가게 정보 "null" 표시
+
+- **발견일**: 2026-03-20
+- **발견자**: 수동 QA
+- **기대값**: "🌸 플로랑 꽃집 · 서울특별시 강남구..."
+- **실제값**: "null 플로랑 꽃집 · 서울특별시 강남구... null"
+- **원인**: `proposal_detail_screen.dart` line 62에서 nullable 필드(`shopEmoji`, `shopDistance`)를 `${}` 보간에 직접 사용
+- **해결 방법**: `shopEmoji ?? '🌸'` null 처리, 미제공 `shopDistance` 제거
+- **상태**: RESOLVED
+
+---
+
+### [BUG-002] 알림이 서버 재시작 없이 안 보이는 문제
+
+- **발견일**: 2026-03-20
+- **발견자**: 수동 QA
+- **기대값**: 알림 탭 진입 시 최신 알림 즉시 표시
+- **실제값**: 앱 최초 실행 시 빈 목록 캐시 → 이후 계속 빈 목록 표시
+- **원인**: `buyerNotificationsProvider`, `sellerNotificationsProvider`가 `autoDispose` 없이 선언
+- **해결 방법**: `StateNotifierProvider` → `StateNotifierProvider.autoDispose`로 변경
+- **상태**: RESOLVED
+
+---
 
 > 버그 발견 시 아래 형식으로 추가
 

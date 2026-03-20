@@ -16,12 +16,14 @@ import com.florent.domain.notification.OutboxEventRepository;
 import com.florent.domain.notification.ReferenceType;
 import com.florent.domain.notification.SaveNotificationUseCase;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -96,6 +98,8 @@ public class NotificationService implements SaveNotificationUseCase,
                 NotificationMessages.body(type),
                 clock);
         Notification saved = notificationRepository.save(notification);
+
+        log.info("알림 저장 완료: userId={}, type={}, notificationId={}", userId, type, saved.getId());
 
         String dedupKey = type.name() + ":" + referenceType.name() + ":" + referenceId;
         OutboxEvent outbox = OutboxEvent.create(saved.getId(), dedupKey, clock);

@@ -9,6 +9,7 @@ import com.florent.domain.notification.MarkNotificationReadResult;
 import com.florent.domain.notification.MarkNotificationReadUseCase;
 import com.florent.domain.notification.NotificationPageResult;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/notifications")
 @RequiredArgsConstructor
@@ -34,6 +36,8 @@ public class NotificationController {
     ) {
         NotificationPageResult result = getNotificationsUseCase.getNotifications(
                 principal.getUserId(), page, size);
+        log.debug("알림 조회: userId={}, page={}, size={}, 결과={}건",
+                principal.getUserId(), page, size, result.notifications().size());
         return ResponseEntity.ok(ApiResponse.success(NotificationListResponse.from(result)));
     }
 
