@@ -15,7 +15,6 @@ class SellerMyTabScreen extends ConsumerWidget {
 
   static const _menuItems = [
     ('🏪', '가게 정보 관리'),
-    ('🕐', '영업시간 설정'),
     ('🔔', '알림 설정'),
     ('❓', '고객센터'),
     ('📄', '이용약관'),

@@ -15,6 +15,7 @@ class BuyerRequestSummary with _$BuyerRequestSummary {
     required int draftProposalCount,
     required int submittedProposalCount,
     @Default([]) List<String> purposeTags,
+    @Default([]) List<String> relationTags,
   }) = _BuyerRequestSummary;
 
   factory BuyerRequestSummary.fromJson(Map<String, dynamic> json) =>

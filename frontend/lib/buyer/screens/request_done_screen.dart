@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/models/enums.dart';
+import '../../core/models/request_form_state.dart';
 import '../../core/theme/colors.dart';
 import '../../core/theme/radius.dart';
 import '../../core/theme/typography.dart';
@@ -21,6 +22,7 @@ class _RequestDoneScreenState extends ConsumerState<RequestDoneScreen> {
   bool _isLoading = true;
   String? _error;
   DateTime? _expiresAt;
+  RequestFormState? _submittedForm;
 
   @override
   void initState() {
@@ -55,8 +57,12 @@ class _RequestDoneScreenState extends ConsumerState<RequestDoneScreen> {
 
       if (!mounted) return;
 
+      // 성공 화면 표시용 데이터를 로컬에 캡처한 뒤 폼 리셋
+      _submittedForm = form;
+      ref.read(requestFormProvider.notifier).reset();
+
       // 요청 목록 캐시 갱신
-      ref.invalidate(activeRequestsProvider);
+      ref.invalidate(allBuyerRequestsProvider);
 
       setState(() {
         _isLoading = false;
@@ -156,7 +162,7 @@ class _RequestDoneScreenState extends ConsumerState<RequestDoneScreen> {
     }
 
     // 성공
-    final form = ref.watch(requestFormProvider);
+    final form = _submittedForm!;
 
     final budgetTier = BudgetTier.values
         .where((t) => t.value == form.budgetTier)
@@ -291,10 +297,7 @@ class _RequestDoneScreenState extends ConsumerState<RequestDoneScreen> {
                 width: double.infinity,
                 height: 48,
                 child: ElevatedButton(
-                  onPressed: () {
-                    ref.read(requestFormProvider.notifier).reset();
-                    context.go('/buyer/home');
-                  },
+                  onPressed: () => context.go('/buyer/home'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: roseColor,
                     foregroundColor: whiteColor,

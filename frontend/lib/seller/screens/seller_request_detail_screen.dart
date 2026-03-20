@@ -24,7 +24,32 @@ class SellerRequestDetailScreen extends ConsumerWidget {
       backgroundColor: creamColor,
       body: asyncDetail.when(
         loading: () => const Center(child: CircularProgressIndicator(color: _sage)),
-        error: (e, _) => Center(child: Text('오류')),
+        error: (e, _) => SafeArea(
+          child: Column(
+            children: [
+              const AppNavBar(title: '요청서 상세'),
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('😢', style: TextStyle(fontSize: 36)),
+                      const SizedBox(height: 12),
+                      Text('요청 정보를 불러올 수 없어요',
+                          style: AppTypography.body(fontSize: 14, color: ink60)),
+                      const SizedBox(height: 16),
+                      GestureDetector(
+                        onTap: () => ref.invalidate(sellerRequestDetailProvider(requestId)),
+                        child: Text('다시 시도',
+                            style: AppTypography.body(fontSize: 13, fontWeight: FontWeight.w600, color: _sage)),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
         data: (detail) {
           final expiresAt = DateTime.parse(detail.expiresAt);
           final budget = BudgetTier.values.where((t) => t.value == detail.budgetTier).firstOrNull;
@@ -45,8 +70,20 @@ class SellerRequestDetailScreen extends ConsumerWidget {
                           children: [
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                              decoration: BoxDecoration(color: const Color(0xFFE8F0EC), borderRadius: BorderRadius.circular(4)),
-                              child: Text('미제안', style: AppTypography.mono(fontSize: 10, fontWeight: FontWeight.w500, color: _sage)),
+                              decoration: BoxDecoration(
+                                color: detail.myProposalStatus == 'SUBMITTED' ? roseLt : const Color(0xFFE8F0EC),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                detail.myProposalStatus == 'SUBMITTED' ? '제출 완료'
+                                    : detail.myProposalStatus == 'DRAFT' ? '작성 중'
+                                    : '미제안',
+                                style: AppTypography.mono(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500,
+                                  color: detail.myProposalStatus == 'SUBMITTED' ? roseColor : _sage,
+                                ),
+                              ),
                             ),
                             const SizedBox(width: 8),
                             Text('⏱ 요청 만료까지 ', style: AppTypography.body(fontSize: 11, color: ink60)),
@@ -87,21 +124,39 @@ class SellerRequestDetailScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                SafeArea(
-                  top: false,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(18, 8, 18, 12),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 52,
-                      child: ElevatedButton(
-                        onPressed: () => context.push('/seller/proposals/new/step1?requestId=$requestId'),
-                        style: ElevatedButton.styleFrom(backgroundColor: _sage, foregroundColor: whiteColor, shape: RoundedRectangleBorder(borderRadius: kBorderRadiusMd), elevation: 0),
-                        child: Text('제안서 작성하기 ✍️', style: AppTypography.body(fontSize: 15, fontWeight: FontWeight.w600, color: whiteColor)),
+                if (detail.myProposalId == null && detail.status == 'OPEN')
+                  SafeArea(
+                    top: false,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(18, 8, 18, 12),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: ElevatedButton(
+                          onPressed: () => context.push('/seller/proposals/new/step1?requestId=$requestId'),
+                          style: ElevatedButton.styleFrom(backgroundColor: _sage, foregroundColor: whiteColor, shape: RoundedRectangleBorder(borderRadius: kBorderRadiusMd), elevation: 0),
+                          child: Text('제안서 작성하기 ✍️', style: AppTypography.body(fontSize: 15, fontWeight: FontWeight.w600, color: whiteColor)),
+                        ),
+                      ),
+                    ),
+                  )
+                else if (detail.myProposalStatus == 'SUBMITTED')
+                  SafeArea(
+                    top: false,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(18, 12, 18, 16),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE8F0EC),
+                          borderRadius: kBorderRadiusMd,
+                        ),
+                        child: Text('제안서 제출 완료', style: AppTypography.body(fontSize: 14, fontWeight: FontWeight.w600, color: _sage)),
                       ),
                     ),
                   ),
-                ),
               ],
             ),
           );

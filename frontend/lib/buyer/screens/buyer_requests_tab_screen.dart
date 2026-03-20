@@ -26,27 +26,26 @@ class BuyerRequestsTabScreen extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
               child: Text('내 요청', style: AppTypography.body(fontSize: 17, fontWeight: FontWeight.w700)),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
+            SizedBox(
+              height: 36,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 children: [
-                  _FilterTag(
-                    label: '전체',
-                    isSelected: selectedFilter == BuyerRequestFilter.all,
-                    onTap: () => ref.read(buyerRequestFilterProvider.notifier).state = BuyerRequestFilter.all,
-                  ),
-                  const SizedBox(width: 8),
-                  _FilterTag(
-                    label: '진행 중',
-                    isSelected: selectedFilter == BuyerRequestFilter.active,
-                    onTap: () => ref.read(buyerRequestFilterProvider.notifier).state = BuyerRequestFilter.active,
-                  ),
-                  const SizedBox(width: 8),
-                  _FilterTag(
-                    label: '완료',
-                    isSelected: selectedFilter == BuyerRequestFilter.completed,
-                    onTap: () => ref.read(buyerRequestFilterProvider.notifier).state = BuyerRequestFilter.completed,
-                  ),
+                  for (final (filter, label) in [
+                    (BuyerRequestFilter.all, '전체'),
+                    (BuyerRequestFilter.waiting, '요청 중'),
+                    (BuyerRequestFilter.hasProposal, '제안 중'),
+                    (BuyerRequestFilter.confirmed, '확정됨'),
+                    (BuyerRequestFilter.expired, '만료됨'),
+                  ]) ...[
+                    _FilterTag(
+                      label: label,
+                      isSelected: selectedFilter == filter,
+                      onTap: () => ref.read(buyerRequestFilterProvider.notifier).state = filter,
+                    ),
+                    const SizedBox(width: 8),
+                  ],
                 ],
               ),
             ),
@@ -65,9 +64,11 @@ class BuyerRequestsTabScreen extends ConsumerWidget {
                     separatorBuilder: (_, __) => const SizedBox(height: 10),
                     itemBuilder: (_, i) {
                       final r = requests[i];
-                      final tag = r.purposeTags.isNotEmpty
-                          ? r.purposeTags.first.replaceAll(RegExp(r'[^\w가-힣]'), '').trim()
-                          : '꽃다발';
+                      final titleParts = <String>[
+                        if (r.purposeTags.isNotEmpty) r.purposeTags.first.replaceAll(RegExp(r'[^\w가-힣]'), '').trim(),
+                        if (r.relationTags.isNotEmpty) r.relationTags.first.replaceAll(RegExp(r'[^\w가-힣]'), '').trim(),
+                      ];
+                      final title = titleParts.isNotEmpty ? titleParts.join(' · ') : '꽃다발 요청';
                       final typeLabel = r.fulfillmentType == 'PICKUP' ? '픽업' : '배송';
                       final budgetLabel = _budgetLabel(r.budgetTier);
 
@@ -91,7 +92,7 @@ class BuyerRequestsTabScreen extends ConsumerWidget {
                                     Row(
                                       children: [
                                         Expanded(
-                                          child: Text('$tag 꽃다발', style: AppTypography.body(fontSize: 13, fontWeight: FontWeight.w600)),
+                                          child: Text(title, style: AppTypography.body(fontSize: 13, fontWeight: FontWeight.w600)),
                                         ),
                                         _StatusBadge(status: r.status),
                                       ],
@@ -221,9 +222,11 @@ class _EmptyState extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final (emoji, message, showCta) = switch (filter) {
-      BuyerRequestFilter.active => ('🌷', '진행 중인 요청이 없어요.\n꽃다발을 요청해보세요!', true),
-      BuyerRequestFilter.completed => ('📭', '완료된 요청이 없어요', false),
       BuyerRequestFilter.all => ('🌷', '아직 요청이 없어요.\n꽃다발을 요청해보세요!', true),
+      BuyerRequestFilter.waiting => ('🌷', '요청 중인 건이 없어요.\n꽃다발을 요청해보세요!', true),
+      BuyerRequestFilter.hasProposal => ('💐', '도착한 제안이 없어요', false),
+      BuyerRequestFilter.confirmed => ('📭', '확정된 요청이 없어요', false),
+      BuyerRequestFilter.expired => ('📭', '만료된 요청이 없어요', false),
     };
 
     return Center(

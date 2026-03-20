@@ -69,21 +69,7 @@ class SellerHomeScreen extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Text('안녕하세요, ${home.shopName} 👋', style: AppTypography.body(fontSize: 11, color: ink60)),
                 ),
-                const SizedBox(height: 12),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    children: [
-                      _StatCard(label: '새 요청', value: '${home.openRequestCount}', color: _sage),
-                      const SizedBox(width: 8),
-                      _StatCard(label: '제안 대기', value: '${home.draftProposalCount}', color: inkColor),
-                      const SizedBox(width: 8),
-                      _StatCard(label: '이번달 확정', value: '${home.confirmedReservationCount}', color: inkColor),
-                    ],
-                  ),
-                ),
                 const SizedBox(height: 16),
-                const Divider(),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
                   child: Text('새로 들어온 요청', style: AppTypography.body(fontSize: 15, fontWeight: FontWeight.w700)),
@@ -95,7 +81,13 @@ class SellerHomeScreen extends ConsumerWidget {
                   )),
                   error: (_, __) => const SizedBox.shrink(),
                   data: (requests) => Column(
-                    children: requests.where((r) => r.myProposalStatus == null).map((r) {
+                    children: requests.where((r) {
+                      if (r.myProposalStatus != null) return false;
+                      final expires = DateTime.tryParse(r.expiresAt);
+                      if (expires == null) return false;
+                      final createdAt = expires.subtract(const Duration(hours: 48));
+                      return DateTime.now().difference(createdAt).inHours < 24;
+                    }).map((r) {
                       final tag = r.purposeTags.isNotEmpty ? r.purposeTags.first : '';
                       final budget = r.budgetTier == 'TIER2' ? '기본형' : r.budgetTier == 'TIER1' ? '작은 꽃다발' : r.budgetTier == 'TIER3' ? '풍성한 꽃다발' : '프리미엄';
                       final type = r.fulfillmentType == 'PICKUP' ? '픽업' : '배송';
@@ -141,26 +133,3 @@ class SellerHomeScreen extends ConsumerWidget {
   }
 }
 
-class _StatCard extends StatelessWidget {
-  const _StatCard({required this.label, required this.value, required this.color});
-  final String label;
-  final String value;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        decoration: BoxDecoration(color: whiteColor, borderRadius: kBorderRadiusMd, border: Border.all(color: borderColor)),
-        child: Column(
-          children: [
-            Text(value, style: AppTypography.body(fontSize: 22, fontWeight: FontWeight.w700, color: color)),
-            const SizedBox(height: 2),
-            Text(label, style: AppTypography.body(fontSize: 10, color: ink60)),
-          ],
-        ),
-      ),
-    );
-  }
-}

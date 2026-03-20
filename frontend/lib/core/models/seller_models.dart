@@ -50,7 +50,8 @@ class SellerRequestDetail with _$SellerRequestDetail {
     @Default([]) List<String> relationTags,
     @Default([]) List<String> moodTags,
     @Default([]) List<Map<String, String>> requestedTimeSlots,
-    String? myProposalId,
+    int? myProposalId,
+    String? myProposalStatus,
     String? distance,
   }) = _SellerRequestDetail;
 

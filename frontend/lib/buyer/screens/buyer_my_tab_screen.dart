@@ -11,9 +11,7 @@ class BuyerMyTabScreen extends ConsumerWidget {
   const BuyerMyTabScreen({super.key});
 
   static const _menuItems = [
-    ('📋', '내 요청 내역'),
     ('🔔', '알림 설정'),
-    ('📍', '주소 관리'),
     ('❓', '고객센터'),
     ('📄', '이용약관'),
   ];
@@ -44,19 +42,25 @@ class BuyerMyTabScreen extends ConsumerWidget {
                   child: const Text('😊', style: TextStyle(fontSize: 22)),
                 ),
                 const SizedBox(width: 14),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      nickName.isNotEmpty ? nickName : '-',
-                      style: AppTypography.body(fontSize: 15, fontWeight: FontWeight.w700),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      email.isNotEmpty ? email : '-',
-                      style: AppTypography.body(fontSize: 11, color: ink60),
-                    ),
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        nickName.isNotEmpty ? nickName : '-',
+                        style: AppTypography.body(fontSize: 15, fontWeight: FontWeight.w700),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        email.isNotEmpty ? email : '-',
+                        style: AppTypography.body(fontSize: 11, color: ink60),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

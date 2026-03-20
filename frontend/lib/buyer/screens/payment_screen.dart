@@ -23,6 +23,7 @@ class PaymentScreen extends ConsumerStatefulWidget {
 
 class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   bool _isSubmitting = false;
+  int _selectedPaymentIndex = 0;
 
   Future<void> _handlePayment() async {
     if (_isSubmitting) return;
@@ -120,10 +121,17 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                           crossAxisSpacing: 8,
                           childAspectRatio: 2.8,
                           children: [
-                            _PaymentMethod(label: '💳 신용카드', isSelected: true),
-                            _PaymentMethod(label: '📱 카카오페이', isSelected: false),
-                            _PaymentMethod(label: '🍎 애플페이', isSelected: false),
-                            _PaymentMethod(label: '🏦 계좌이체', isSelected: false),
+                            for (final (i, label) in [
+                              '💳 신용카드',
+                              '📱 카카오페이',
+                              '🍎 애플페이',
+                              '🏦 계좌이체',
+                            ].indexed)
+                              _PaymentMethod(
+                                label: label,
+                                isSelected: _selectedPaymentIndex == i,
+                                onTap: () => setState(() => _selectedPaymentIndex = i),
+                              ),
                           ],
                         ),
                         const SizedBox(height: 16),
@@ -169,20 +177,25 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
 }
 
 class _PaymentMethod extends StatelessWidget {
-  const _PaymentMethod({required this.label, required this.isSelected});
+  const _PaymentMethod({required this.label, required this.isSelected, this.onTap});
   final String label;
   final bool isSelected;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: isSelected ? roseLt : creamColor,
-        borderRadius: kBorderRadiusSm,
-        border: Border.all(color: isSelected ? roseColor : borderColor, width: 1.5),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: isSelected ? roseLt : creamColor,
+          borderRadius: kBorderRadiusSm,
+          border: Border.all(color: isSelected ? roseColor : borderColor, width: 1.5),
+        ),
+        child: Text(label, style: AppTypography.body(fontSize: 12, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400, color: isSelected ? roseColor : inkColor)),
       ),
-      child: Text(label, style: AppTypography.body(fontSize: 12, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400, color: isSelected ? roseColor : inkColor)),
     );
   }
 }

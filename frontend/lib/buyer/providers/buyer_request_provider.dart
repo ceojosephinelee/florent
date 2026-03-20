@@ -8,41 +8,50 @@ final buyerRepositoryProvider = Provider<ApiBuyerRepository>(
   (ref) => ApiBuyerRepository(ref.watch(dioProvider)),
 );
 
-final buyerRequestDetailProvider =
-    FutureProvider.family<Map<String, dynamic>, int>((ref, requestId) {
+final buyerRequestDetailProvider = FutureProvider.autoDispose
+    .family<Map<String, dynamic>, int>((ref, requestId) {
   final repo = ref.watch(buyerRepositoryProvider);
   return repo.getRequestDetail(requestId);
 });
 
-final activeRequestsProvider =
-    FutureProvider<List<BuyerRequestSummary>>((ref) {
+// 전체 요청 목록 (필터 탭용)
+final allBuyerRequestsProvider =
+    FutureProvider.autoDispose<List<BuyerRequestSummary>>((ref) {
   final repo = ref.watch(buyerRepositoryProvider);
   return repo.getRequests();
 });
 
+// 홈 화면 진행중 요청 (OPEN만)
+final activeRequestsProvider =
+    FutureProvider.autoDispose<List<BuyerRequestSummary>>((ref) async {
+  final all = await ref.watch(allBuyerRequestsProvider.future);
+  return all.where((r) => r.status == 'OPEN').toList();
+});
+
 // ── 필터 탭 ──
 
-enum BuyerRequestFilter { all, active, completed }
+enum BuyerRequestFilter { all, waiting, hasProposal, confirmed, expired }
 
 final buyerRequestFilterProvider = StateProvider<BuyerRequestFilter>(
   (ref) => BuyerRequestFilter.all,
 );
 
 final filteredBuyerRequestsProvider =
-    Provider<AsyncValue<List<BuyerRequestSummary>>>((ref) {
+    Provider.autoDispose<AsyncValue<List<BuyerRequestSummary>>>((ref) {
   final filter = ref.watch(buyerRequestFilterProvider);
-  final asyncReqs = ref.watch(activeRequestsProvider);
+  final asyncReqs = ref.watch(allBuyerRequestsProvider);
 
   return asyncReqs.whenData((reqs) {
-    switch (filter) {
-      case BuyerRequestFilter.all:
-        return reqs;
-      case BuyerRequestFilter.active:
-        return reqs.where((r) => r.status == 'OPEN').toList();
-      case BuyerRequestFilter.completed:
-        return reqs
-            .where((r) => r.status == 'CONFIRMED' || r.status == 'EXPIRED')
-            .toList();
-    }
+    return switch (filter) {
+      BuyerRequestFilter.all => reqs,
+      BuyerRequestFilter.waiting =>
+        reqs.where((r) => r.status == 'OPEN' && r.submittedProposalCount == 0).toList(),
+      BuyerRequestFilter.hasProposal =>
+        reqs.where((r) => r.status == 'OPEN' && r.submittedProposalCount >= 1).toList(),
+      BuyerRequestFilter.confirmed =>
+        reqs.where((r) => r.status == 'CONFIRMED').toList(),
+      BuyerRequestFilter.expired =>
+        reqs.where((r) => r.status == 'EXPIRED').toList(),
+    };
   });
 });

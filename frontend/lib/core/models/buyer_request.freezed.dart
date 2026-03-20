@@ -30,6 +30,7 @@ mixin _$BuyerRequestSummary {
   int get draftProposalCount => throw _privateConstructorUsedError;
   int get submittedProposalCount => throw _privateConstructorUsedError;
   List<String> get purposeTags => throw _privateConstructorUsedError;
+  List<String> get relationTags => throw _privateConstructorUsedError;
 
   /// Serializes this BuyerRequestSummary to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -58,6 +59,7 @@ abstract class $BuyerRequestSummaryCopyWith<$Res> {
     int draftProposalCount,
     int submittedProposalCount,
     List<String> purposeTags,
+    List<String> relationTags,
   });
 }
 
@@ -85,6 +87,7 @@ class _$BuyerRequestSummaryCopyWithImpl<$Res, $Val extends BuyerRequestSummary>
     Object? draftProposalCount = null,
     Object? submittedProposalCount = null,
     Object? purposeTags = null,
+    Object? relationTags = null,
   }) {
     return _then(
       _value.copyWith(
@@ -124,6 +127,10 @@ class _$BuyerRequestSummaryCopyWithImpl<$Res, $Val extends BuyerRequestSummary>
                 ? _value.purposeTags
                 : purposeTags // ignore: cast_nullable_to_non_nullable
                       as List<String>,
+            relationTags: null == relationTags
+                ? _value.relationTags
+                : relationTags // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
           )
           as $Val,
     );
@@ -149,6 +156,7 @@ abstract class _$$BuyerRequestSummaryImplCopyWith<$Res>
     int draftProposalCount,
     int submittedProposalCount,
     List<String> purposeTags,
+    List<String> relationTags,
   });
 }
 
@@ -175,6 +183,7 @@ class __$$BuyerRequestSummaryImplCopyWithImpl<$Res>
     Object? draftProposalCount = null,
     Object? submittedProposalCount = null,
     Object? purposeTags = null,
+    Object? relationTags = null,
   }) {
     return _then(
       _$BuyerRequestSummaryImpl(
@@ -214,6 +223,10 @@ class __$$BuyerRequestSummaryImplCopyWithImpl<$Res>
             ? _value._purposeTags
             : purposeTags // ignore: cast_nullable_to_non_nullable
                   as List<String>,
+        relationTags: null == relationTags
+            ? _value._relationTags
+            : relationTags // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
       ),
     );
   }
@@ -232,7 +245,9 @@ class _$BuyerRequestSummaryImpl implements _BuyerRequestSummary {
     required this.draftProposalCount,
     required this.submittedProposalCount,
     final List<String> purposeTags = const [],
-  }) : _purposeTags = purposeTags;
+    final List<String> relationTags = const [],
+  }) : _purposeTags = purposeTags,
+       _relationTags = relationTags;
 
   factory _$BuyerRequestSummaryImpl.fromJson(Map<String, dynamic> json) =>
       _$$BuyerRequestSummaryImplFromJson(json);
@@ -262,9 +277,18 @@ class _$BuyerRequestSummaryImpl implements _BuyerRequestSummary {
     return EqualUnmodifiableListView(_purposeTags);
   }
 
+  final List<String> _relationTags;
+  @override
+  @JsonKey()
+  List<String> get relationTags {
+    if (_relationTags is EqualUnmodifiableListView) return _relationTags;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_relationTags);
+  }
+
   @override
   String toString() {
-    return 'BuyerRequestSummary(requestId: $requestId, status: $status, budgetTier: $budgetTier, fulfillmentType: $fulfillmentType, fulfillmentDate: $fulfillmentDate, expiresAt: $expiresAt, draftProposalCount: $draftProposalCount, submittedProposalCount: $submittedProposalCount, purposeTags: $purposeTags)';
+    return 'BuyerRequestSummary(requestId: $requestId, status: $status, budgetTier: $budgetTier, fulfillmentType: $fulfillmentType, fulfillmentDate: $fulfillmentDate, expiresAt: $expiresAt, draftProposalCount: $draftProposalCount, submittedProposalCount: $submittedProposalCount, purposeTags: $purposeTags, relationTags: $relationTags)';
   }
 
   @override
@@ -290,6 +314,10 @@ class _$BuyerRequestSummaryImpl implements _BuyerRequestSummary {
             const DeepCollectionEquality().equals(
               other._purposeTags,
               _purposeTags,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._relationTags,
+              _relationTags,
             ));
   }
 
@@ -306,6 +334,7 @@ class _$BuyerRequestSummaryImpl implements _BuyerRequestSummary {
     draftProposalCount,
     submittedProposalCount,
     const DeepCollectionEquality().hash(_purposeTags),
+    const DeepCollectionEquality().hash(_relationTags),
   );
 
   /// Create a copy of BuyerRequestSummary
@@ -336,6 +365,7 @@ abstract class _BuyerRequestSummary implements BuyerRequestSummary {
     required final int draftProposalCount,
     required final int submittedProposalCount,
     final List<String> purposeTags,
+    final List<String> relationTags,
   }) = _$BuyerRequestSummaryImpl;
 
   factory _BuyerRequestSummary.fromJson(Map<String, dynamic> json) =
@@ -359,6 +389,8 @@ abstract class _BuyerRequestSummary implements BuyerRequestSummary {
   int get submittedProposalCount;
   @override
   List<String> get purposeTags;
+  @override
+  List<String> get relationTags;
 
   /// Create a copy of BuyerRequestSummary
   /// with the given fields replaced by the non-null parameter values.

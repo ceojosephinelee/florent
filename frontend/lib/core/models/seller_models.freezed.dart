@@ -681,7 +681,8 @@ mixin _$SellerRequestDetail {
   List<String> get moodTags => throw _privateConstructorUsedError;
   List<Map<String, String>> get requestedTimeSlots =>
       throw _privateConstructorUsedError;
-  String? get myProposalId => throw _privateConstructorUsedError;
+  int? get myProposalId => throw _privateConstructorUsedError;
+  String? get myProposalStatus => throw _privateConstructorUsedError;
   String? get distance => throw _privateConstructorUsedError;
 
   /// Serializes this SellerRequestDetail to a JSON map.
@@ -713,7 +714,8 @@ abstract class $SellerRequestDetailCopyWith<$Res> {
     List<String> relationTags,
     List<String> moodTags,
     List<Map<String, String>> requestedTimeSlots,
-    String? myProposalId,
+    int? myProposalId,
+    String? myProposalStatus,
     String? distance,
   });
 }
@@ -745,6 +747,7 @@ class _$SellerRequestDetailCopyWithImpl<$Res, $Val extends SellerRequestDetail>
     Object? moodTags = null,
     Object? requestedTimeSlots = null,
     Object? myProposalId = freezed,
+    Object? myProposalStatus = freezed,
     Object? distance = freezed,
   }) {
     return _then(
@@ -796,6 +799,10 @@ class _$SellerRequestDetailCopyWithImpl<$Res, $Val extends SellerRequestDetail>
             myProposalId: freezed == myProposalId
                 ? _value.myProposalId
                 : myProposalId // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            myProposalStatus: freezed == myProposalStatus
+                ? _value.myProposalStatus
+                : myProposalStatus // ignore: cast_nullable_to_non_nullable
                       as String?,
             distance: freezed == distance
                 ? _value.distance
@@ -828,7 +835,8 @@ abstract class _$$SellerRequestDetailImplCopyWith<$Res>
     List<String> relationTags,
     List<String> moodTags,
     List<Map<String, String>> requestedTimeSlots,
-    String? myProposalId,
+    int? myProposalId,
+    String? myProposalStatus,
     String? distance,
   });
 }
@@ -859,6 +867,7 @@ class __$$SellerRequestDetailImplCopyWithImpl<$Res>
     Object? moodTags = null,
     Object? requestedTimeSlots = null,
     Object? myProposalId = freezed,
+    Object? myProposalStatus = freezed,
     Object? distance = freezed,
   }) {
     return _then(
@@ -910,6 +919,10 @@ class __$$SellerRequestDetailImplCopyWithImpl<$Res>
         myProposalId: freezed == myProposalId
             ? _value.myProposalId
             : myProposalId // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        myProposalStatus: freezed == myProposalStatus
+            ? _value.myProposalStatus
+            : myProposalStatus // ignore: cast_nullable_to_non_nullable
                   as String?,
         distance: freezed == distance
             ? _value.distance
@@ -936,6 +949,7 @@ class _$SellerRequestDetailImpl implements _SellerRequestDetail {
     final List<String> moodTags = const [],
     final List<Map<String, String>> requestedTimeSlots = const [],
     this.myProposalId,
+    this.myProposalStatus,
     this.distance,
   }) : _purposeTags = purposeTags,
        _relationTags = relationTags,
@@ -997,13 +1011,15 @@ class _$SellerRequestDetailImpl implements _SellerRequestDetail {
   }
 
   @override
-  final String? myProposalId;
+  final int? myProposalId;
+  @override
+  final String? myProposalStatus;
   @override
   final String? distance;
 
   @override
   String toString() {
-    return 'SellerRequestDetail(requestId: $requestId, status: $status, budgetTier: $budgetTier, fulfillmentType: $fulfillmentType, fulfillmentDate: $fulfillmentDate, expiresAt: $expiresAt, placeAddressText: $placeAddressText, purposeTags: $purposeTags, relationTags: $relationTags, moodTags: $moodTags, requestedTimeSlots: $requestedTimeSlots, myProposalId: $myProposalId, distance: $distance)';
+    return 'SellerRequestDetail(requestId: $requestId, status: $status, budgetTier: $budgetTier, fulfillmentType: $fulfillmentType, fulfillmentDate: $fulfillmentDate, expiresAt: $expiresAt, placeAddressText: $placeAddressText, purposeTags: $purposeTags, relationTags: $relationTags, moodTags: $moodTags, requestedTimeSlots: $requestedTimeSlots, myProposalId: $myProposalId, myProposalStatus: $myProposalStatus, distance: $distance)';
   }
 
   @override
@@ -1039,6 +1055,8 @@ class _$SellerRequestDetailImpl implements _SellerRequestDetail {
             ) &&
             (identical(other.myProposalId, myProposalId) ||
                 other.myProposalId == myProposalId) &&
+            (identical(other.myProposalStatus, myProposalStatus) ||
+                other.myProposalStatus == myProposalStatus) &&
             (identical(other.distance, distance) ||
                 other.distance == distance));
   }
@@ -1059,6 +1077,7 @@ class _$SellerRequestDetailImpl implements _SellerRequestDetail {
     const DeepCollectionEquality().hash(_moodTags),
     const DeepCollectionEquality().hash(_requestedTimeSlots),
     myProposalId,
+    myProposalStatus,
     distance,
   );
 
@@ -1092,7 +1111,8 @@ abstract class _SellerRequestDetail implements SellerRequestDetail {
     final List<String> relationTags,
     final List<String> moodTags,
     final List<Map<String, String>> requestedTimeSlots,
-    final String? myProposalId,
+    final int? myProposalId,
+    final String? myProposalStatus,
     final String? distance,
   }) = _$SellerRequestDetailImpl;
 
@@ -1122,7 +1142,9 @@ abstract class _SellerRequestDetail implements SellerRequestDetail {
   @override
   List<Map<String, String>> get requestedTimeSlots;
   @override
-  String? get myProposalId;
+  int? get myProposalId;
+  @override
+  String? get myProposalStatus;
   @override
   String? get distance;
 

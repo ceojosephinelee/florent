@@ -18,18 +18,6 @@ class SellerRequestsTabScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final filter = ref.watch(sellerRequestFilterProvider);
     final asyncFiltered = ref.watch(filteredSellerRequestsProvider);
-    final asyncAll = ref.watch(sellerRequestsProvider);
-
-    // 카운트 계산 (전체 데이터 기반)
-    final allReqs = asyncAll.valueOrNull ?? [];
-    final pickupCount = allReqs.where((r) => r.fulfillmentType == 'PICKUP').length;
-    final deliveryCount = allReqs.where((r) => r.fulfillmentType == 'DELIVERY').length;
-    final noProposalCount = allReqs
-        .where((r) =>
-            r.status == 'OPEN' &&
-            r.myProposalStatus != 'DRAFT' &&
-            r.myProposalStatus != 'SUBMITTED')
-        .length;
 
     return Scaffold(
       backgroundColor: creamColor,
@@ -54,33 +42,26 @@ class SellerRequestsTabScreen extends ConsumerWidget {
             ),
 
             // 필터 탭
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
+            SizedBox(
+              height: 36,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 children: [
-                  _FilterTag(
-                    label: '전체 (${allReqs.length})',
-                    isSelected: filter == SellerRequestFilter.all,
-                    onTap: () => ref.read(sellerRequestFilterProvider.notifier).state = SellerRequestFilter.all,
-                  ),
-                  const SizedBox(width: 8),
-                  _FilterTag(
-                    label: '픽업 ($pickupCount)',
-                    isSelected: filter == SellerRequestFilter.pickup,
-                    onTap: () => ref.read(sellerRequestFilterProvider.notifier).state = SellerRequestFilter.pickup,
-                  ),
-                  const SizedBox(width: 8),
-                  _FilterTag(
-                    label: '배송 ($deliveryCount)',
-                    isSelected: filter == SellerRequestFilter.delivery,
-                    onTap: () => ref.read(sellerRequestFilterProvider.notifier).state = SellerRequestFilter.delivery,
-                  ),
-                  const SizedBox(width: 8),
-                  _FilterTag(
-                    label: '미제안 ($noProposalCount)',
-                    isSelected: filter == SellerRequestFilter.noProposal,
-                    onTap: () => ref.read(sellerRequestFilterProvider.notifier).state = SellerRequestFilter.noProposal,
-                  ),
+                  for (final (f, label) in [
+                    (SellerRequestFilter.all, '전체'),
+                    (SellerRequestFilter.drafting, '작성 중'),
+                    (SellerRequestFilter.proposed, '제안 중'),
+                    (SellerRequestFilter.confirmed, '확정'),
+                    (SellerRequestFilter.expired, '만료'),
+                  ]) ...[
+                    _FilterTag(
+                      label: label,
+                      isSelected: filter == f,
+                      onTap: () => ref.read(sellerRequestFilterProvider.notifier).state = f,
+                    ),
+                    const SizedBox(width: 8),
+                  ],
                 ],
               ),
             ),
@@ -100,7 +81,7 @@ class SellerRequestsTabScreen extends ConsumerWidget {
                           const Text('📭', style: TextStyle(fontSize: 36)),
                           const SizedBox(height: 12),
                           Text(
-                            filter == SellerRequestFilter.noProposal ? '새로운 요청이 없어요' : '해당하는 요청이 없어요',
+                            '해당하는 요청이 없어요',
                             style: AppTypography.body(fontSize: 14, color: ink60),
                           ),
                         ],

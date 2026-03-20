@@ -125,8 +125,8 @@ class BuyerNotificationsTabScreen extends ConsumerWidget {
   void _navigateByType(BuildContext context, NotificationItem n) {
     switch (n.type) {
       case 'PROPOSAL_ARRIVED':
-        if (n.proposalId != null) {
-          context.push('/buyer/proposals/${n.proposalId}');
+        if (n.referenceId != null) {
+          context.push('/buyer/proposals/${n.referenceId}');
         }
       case 'RESERVATION_CONFIRMED':
         if (n.referenceId != null) {

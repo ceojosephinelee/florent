@@ -90,7 +90,8 @@ _$SellerRequestDetailImpl _$$SellerRequestDetailImplFromJson(
           ?.map((e) => Map<String, String>.from(e as Map))
           .toList() ??
       const [],
-  myProposalId: json['myProposalId'] as String?,
+  myProposalId: (json['myProposalId'] as num?)?.toInt(),
+  myProposalStatus: json['myProposalStatus'] as String?,
   distance: json['distance'] as String?,
 );
 
@@ -109,6 +110,7 @@ Map<String, dynamic> _$$SellerRequestDetailImplToJson(
   'moodTags': instance.moodTags,
   'requestedTimeSlots': instance.requestedTimeSlots,
   'myProposalId': instance.myProposalId,
+  'myProposalStatus': instance.myProposalStatus,
   'distance': instance.distance,
 };
 

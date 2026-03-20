@@ -62,6 +62,12 @@ class _SellerProposalStep2PickupScreenState
       await repo.submitProposal(proposalId);
 
       if (!mounted) return;
+
+      // 캐시 갱신: 홈 + 요청 목록에서 즉시 반영
+      ref.invalidate(sellerRequestsProvider);
+      ref.invalidate(sellerRecentRequestsProvider);
+      ref.invalidate(sellerHomeProvider);
+
       context.push('/seller/proposals/done');
     } catch (e) {
       if (!mounted) return;

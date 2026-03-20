@@ -32,7 +32,7 @@ import '../../seller/screens/seller_requests_tab_screen.dart';
 import '../../seller/screens/seller_notifications_screen.dart';
 import '../../seller/screens/seller_reservation_detail_screen.dart';
 import '../../seller/screens/seller_shell_screen.dart';
-import '../../seller/screens/seller_stats_tab_screen.dart';
+import '../../seller/screens/seller_reservations_tab_screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/splash',
@@ -115,7 +115,7 @@ final appRouter = GoRouter(
           GoRoute(path: '/seller/requests', builder: (_, __) => const SellerRequestsTabScreen()),
         ]),
         StatefulShellBranch(routes: [
-          GoRoute(path: '/seller/stats', builder: (_, __) => const SellerStatsTabScreen()),
+          GoRoute(path: '/seller/reservations', builder: (_, __) => const SellerReservationsTabScreen()),
         ]),
         StatefulShellBranch(routes: [
           GoRoute(path: '/seller/my', builder: (_, __) => const SellerMyTabScreen()),

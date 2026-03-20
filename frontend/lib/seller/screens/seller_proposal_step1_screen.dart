@@ -39,6 +39,16 @@ class _SellerProposalStep1ScreenState
       notifier.reset();
       notifier.setRequestId(widget.requestId);
 
+      // 기존 DRAFT가 있으면 재사용
+      final detail = await ref.read(sellerRequestDetailProvider(widget.requestId).future);
+      if (detail.myProposalId != null) {
+        if (!mounted) return;
+        notifier.setProposalId(detail.myProposalId!);
+        setState(() => _isCreatingDraft = false);
+        return;
+      }
+
+      // 없으면 새로 생성
       final repo = ref.read(sellerRepositoryProvider);
       final result = await repo.createDraftProposal(widget.requestId);
       final proposalId = result['proposalId'] as int;

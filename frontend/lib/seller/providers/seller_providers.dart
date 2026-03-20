@@ -18,44 +18,40 @@ final _sellerNotificationRepoProvider = Provider<ApiNotificationRepository>(
 
 // ── 요청 목록 필터 ──
 
-enum SellerRequestFilter { all, pickup, delivery, noProposal }
+enum SellerRequestFilter { all, drafting, proposed, confirmed, expired }
 
 final sellerRequestFilterProvider = StateProvider<SellerRequestFilter>(
   (ref) => SellerRequestFilter.all,
 );
 
 final filteredSellerRequestsProvider =
-    Provider<AsyncValue<List<SellerRequestSummary>>>((ref) {
+    Provider.autoDispose<AsyncValue<List<SellerRequestSummary>>>((ref) {
   final filter = ref.watch(sellerRequestFilterProvider);
   final asyncReqs = ref.watch(sellerRequestsProvider);
 
   return asyncReqs.whenData((reqs) {
-    switch (filter) {
-      case SellerRequestFilter.all:
-        return reqs;
-      case SellerRequestFilter.pickup:
-        return reqs.where((r) => r.fulfillmentType == 'PICKUP').toList();
-      case SellerRequestFilter.delivery:
-        return reqs.where((r) => r.fulfillmentType == 'DELIVERY').toList();
-      case SellerRequestFilter.noProposal:
-        return reqs
-            .where((r) =>
-                r.status == 'OPEN' &&
-                r.myProposalStatus != 'DRAFT' &&
-                r.myProposalStatus != 'SUBMITTED')
-            .toList();
-    }
+    return switch (filter) {
+      SellerRequestFilter.all => reqs,
+      SellerRequestFilter.drafting =>
+        reqs.where((r) => r.myProposalStatus == 'DRAFT').toList(),
+      SellerRequestFilter.proposed =>
+        reqs.where((r) => r.myProposalStatus == 'SUBMITTED').toList(),
+      SellerRequestFilter.confirmed =>
+        reqs.where((r) => r.status == 'CONFIRMED').toList(),
+      SellerRequestFilter.expired =>
+        reqs.where((r) => r.status == 'EXPIRED').toList(),
+    };
   });
 });
 
 // ── 홈 ──
 
-final _sellerHomeRawProvider = FutureProvider<Map<String, dynamic>>((ref) {
+final _sellerHomeRawProvider = FutureProvider.autoDispose<Map<String, dynamic>>((ref) {
   final repo = ref.watch(sellerRepositoryProvider);
   return repo.getHome();
 });
 
-final sellerHomeProvider = FutureProvider<SellerHomeData>((ref) async {
+final sellerHomeProvider = FutureProvider.autoDispose<SellerHomeData>((ref) async {
   final raw = await ref.watch(_sellerHomeRawProvider.future);
   final repo = ref.watch(sellerRepositoryProvider);
   final profile = await repo.getProfile();
@@ -68,7 +64,7 @@ final sellerHomeProvider = FutureProvider<SellerHomeData>((ref) async {
 });
 
 final sellerRecentRequestsProvider =
-    FutureProvider<List<SellerRequestSummary>>((ref) async {
+    FutureProvider.autoDispose<List<SellerRequestSummary>>((ref) async {
   final raw = await ref.watch(_sellerHomeRawProvider.future);
   final list = raw['recentRequests'] as List? ?? [];
   return list
@@ -79,13 +75,13 @@ final sellerRecentRequestsProvider =
 // ── 요청 ──
 
 final sellerRequestsProvider =
-    FutureProvider<List<SellerRequestSummary>>((ref) {
+    FutureProvider.autoDispose<List<SellerRequestSummary>>((ref) {
   final repo = ref.watch(sellerRepositoryProvider);
   return repo.getRequests();
 });
 
 final sellerRequestDetailProvider =
-    FutureProvider.family<SellerRequestDetail, int>((ref, id) {
+    FutureProvider.autoDispose.family<SellerRequestDetail, int>((ref, id) {
   final repo = ref.watch(sellerRepositoryProvider);
   return repo.getRequestDetail(id);
 });
@@ -93,20 +89,20 @@ final sellerRequestDetailProvider =
 // ── 예약 ──
 
 final sellerReservationDetailProvider =
-    FutureProvider.family<SellerReservationDetail, int>((ref, id) {
+    FutureProvider.autoDispose.family<SellerReservationDetail, int>((ref, id) {
   final repo = ref.watch(sellerRepositoryProvider);
   return repo.getReservationDetail(id);
 });
 
 final sellerReservationHistoryProvider =
-    FutureProvider<List<SellerReservationSummary>>((ref) {
+    FutureProvider.autoDispose<List<SellerReservationSummary>>((ref) {
   final repo = ref.watch(sellerRepositoryProvider);
   return repo.getReservations();
 });
 
 // ── 프로필 ──
 
-final sellerProfileProvider = FutureProvider<Map<String, dynamic>>((ref) {
+final sellerProfileProvider = FutureProvider.autoDispose<Map<String, dynamic>>((ref) {
   final repo = ref.watch(sellerRepositoryProvider);
   return repo.getProfile();
 });

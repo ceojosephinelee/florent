@@ -18,8 +18,11 @@ class ActiveRequestCard extends StatelessWidget {
   final VoidCallback? onTap;
 
   String get _displayName {
-    final tag = request.purposeTags.isNotEmpty ? request.purposeTags.first : '꽃다발';
-    return '$tag 꽃다발';
+    final parts = <String>[
+      if (request.purposeTags.isNotEmpty) request.purposeTags.first,
+      if (request.relationTags.isNotEmpty) request.relationTags.first,
+    ];
+    return parts.isNotEmpty ? parts.join(' · ') : '꽃다발 요청';
   }
 
   String get _fulfillmentLabel {

@@ -8,22 +8,22 @@ import 'buyer_request_provider.dart';
 
 // ── 제안 ──
 
-final proposalsProvider =
-    FutureProvider.family<List<ProposalSummary>, int>((ref, requestId) {
+final proposalsProvider = FutureProvider.autoDispose
+    .family<List<ProposalSummary>, int>((ref, requestId) {
   final repo = ref.watch(buyerRepositoryProvider);
   return repo.getProposals(requestId);
 });
 
 final proposalDetailProvider =
-    FutureProvider.family<ProposalDetail, int>((ref, id) {
+    FutureProvider.autoDispose.family<ProposalDetail, int>((ref, id) {
   final repo = ref.watch(buyerRepositoryProvider);
   return repo.getProposalDetail(id);
 });
 
 // ── 구매자 예약 상세 ──
 
-final buyerReservationDetailProvider =
-    FutureProvider.family<BuyerReservationDetail, int>((ref, id) {
+final buyerReservationDetailProvider = FutureProvider.autoDispose
+    .family<BuyerReservationDetail, int>((ref, id) {
   final repo = ref.watch(buyerRepositoryProvider);
   return repo.getReservationDetail(id);
 });
@@ -74,7 +74,8 @@ final buyerNotificationsProvider =
 // ── 구매자 예약 목록 ──
 
 final buyerReservationsListProvider =
-    FutureProvider<List<BuyerReservationDetail>>((ref) {
+    FutureProvider.autoDispose<List<BuyerReservationDetail>>((ref) async {
   final repo = ref.watch(buyerRepositoryProvider);
-  return repo.getReservations();
+  final all = await repo.getReservations();
+  return all.where((r) => r.status == 'CONFIRMED').toList();
 });

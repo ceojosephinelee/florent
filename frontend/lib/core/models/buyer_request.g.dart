@@ -22,6 +22,11 @@ _$BuyerRequestSummaryImpl _$$BuyerRequestSummaryImplFromJson(
           ?.map((e) => e as String)
           .toList() ??
       const [],
+  relationTags:
+      (json['relationTags'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ??
+      const [],
 );
 
 Map<String, dynamic> _$$BuyerRequestSummaryImplToJson(
@@ -36,4 +41,5 @@ Map<String, dynamic> _$$BuyerRequestSummaryImplToJson(
   'draftProposalCount': instance.draftProposalCount,
   'submittedProposalCount': instance.submittedProposalCount,
   'purposeTags': instance.purposeTags,
+  'relationTags': instance.relationTags,
 };
