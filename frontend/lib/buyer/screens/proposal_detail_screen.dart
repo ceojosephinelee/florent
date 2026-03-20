@@ -59,7 +59,7 @@ class ProposalDetailScreen extends ConsumerWidget {
                             Text(detail.conceptTitle, style: AppTypography.body(fontSize: 15, fontWeight: FontWeight.w700)),
                             const SizedBox(height: 6),
                             Text(
-                              '${detail.shopEmoji} ${detail.shopName} · ${detail.shopAddress} ${detail.shopDistance}',
+                              '${detail.shopEmoji ?? '🌸'} ${detail.shopName} · ${detail.shopAddress}',
                               style: AppTypography.body(fontSize: 11, color: ink60),
                             ),
                             const SizedBox(height: 12),
