@@ -67,7 +67,7 @@ class AuthControllerTest {
     void 카카오_로그인_성공() throws Exception {
         // given
         given(kakaoLoginUseCase.login(any()))
-                .willReturn(new KakaoLoginResult("access-token", "refresh-token", null, true));
+                .willReturn(new KakaoLoginResult("access-token", "refresh-token", null, true, false));
 
         String body = """
                 { "kakaoAccessToken": "kakao-access-token" }
@@ -149,7 +149,7 @@ class AuthControllerTest {
     void 토큰_재발급_성공() throws Exception {
         // given
         given(reissueTokenUseCase.reissue(any()))
-                .willReturn(new ReissueTokenResult("new-access", "new-refresh"));
+                .willReturn(new ReissueTokenResult("new-access", "new-refresh", null, false));
 
         String body = """
                 { "refreshToken": "old-refresh-token" }

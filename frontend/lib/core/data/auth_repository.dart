@@ -6,6 +6,7 @@ abstract class AuthRepository {
   Future<Map<String, dynamic>> setRole(String role);
   Future<ReissueResult> reissue(String refreshToken);
   Future<void> logout();
+  Future<KakaoLoginResult> devLogin(String role);
   Future<SellerInfoResult> registerSellerInfo({
     required String shopName,
     required String shopAddress,

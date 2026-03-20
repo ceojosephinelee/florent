@@ -13,6 +13,7 @@ _$KakaoLoginResultImpl _$$KakaoLoginResultImplFromJson(
   refreshToken: json['refreshToken'] as String,
   role: json['role'] as String?,
   isNewUser: json['isNewUser'] as bool,
+  hasFlowerShop: json['hasFlowerShop'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$$KakaoLoginResultImplToJson(
@@ -22,18 +23,23 @@ Map<String, dynamic> _$$KakaoLoginResultImplToJson(
   'refreshToken': instance.refreshToken,
   'role': instance.role,
   'isNewUser': instance.isNewUser,
+  'hasFlowerShop': instance.hasFlowerShop,
 };
 
 _$ReissueResultImpl _$$ReissueResultImplFromJson(Map<String, dynamic> json) =>
     _$ReissueResultImpl(
       accessToken: json['accessToken'] as String,
       refreshToken: json['refreshToken'] as String,
+      role: json['role'] as String?,
+      hasFlowerShop: json['hasFlowerShop'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$ReissueResultImplToJson(_$ReissueResultImpl instance) =>
     <String, dynamic>{
       'accessToken': instance.accessToken,
       'refreshToken': instance.refreshToken,
+      'role': instance.role,
+      'hasFlowerShop': instance.hasFlowerShop,
     };
 
 _$SellerInfoResultImpl _$$SellerInfoResultImplFromJson(

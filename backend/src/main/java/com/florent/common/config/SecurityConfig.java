@@ -39,7 +39,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                .requestMatchers("/api/v1/auth/kakao", "/api/v1/auth/reissue").permitAll()
+                .requestMatchers("/api/v1/auth/kakao", "/api/v1/auth/reissue", "/api/v1/auth/dev-login").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/addresses/search").permitAll()
                 .requestMatchers("/api/v1/auth/seller-info").hasRole("SELLER")
                 .requestMatchers("/api/v1/buyer/**").hasRole("BUYER")

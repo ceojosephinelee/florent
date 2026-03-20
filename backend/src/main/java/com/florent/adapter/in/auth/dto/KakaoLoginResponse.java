@@ -6,11 +6,12 @@ public record KakaoLoginResponse(
         String accessToken,
         String refreshToken,
         String role,
-        boolean isNewUser
+        boolean isNewUser,
+        boolean hasFlowerShop
 ) {
     public static KakaoLoginResponse from(KakaoLoginResult result) {
         return new KakaoLoginResponse(
                 result.accessToken(), result.refreshToken(),
-                result.role(), result.isNewUser());
+                result.role(), result.isNewUser(), result.hasFlowerShop());
     }
 }

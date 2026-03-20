@@ -25,6 +25,7 @@ mixin _$KakaoLoginResult {
   String get refreshToken => throw _privateConstructorUsedError;
   String? get role => throw _privateConstructorUsedError;
   bool get isNewUser => throw _privateConstructorUsedError;
+  bool get hasFlowerShop => throw _privateConstructorUsedError;
 
   /// Serializes this KakaoLoginResult to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -48,6 +49,7 @@ abstract class $KakaoLoginResultCopyWith<$Res> {
     String refreshToken,
     String? role,
     bool isNewUser,
+    bool hasFlowerShop,
   });
 }
 
@@ -70,6 +72,7 @@ class _$KakaoLoginResultCopyWithImpl<$Res, $Val extends KakaoLoginResult>
     Object? refreshToken = null,
     Object? role = freezed,
     Object? isNewUser = null,
+    Object? hasFlowerShop = null,
   }) {
     return _then(
       _value.copyWith(
@@ -88,6 +91,10 @@ class _$KakaoLoginResultCopyWithImpl<$Res, $Val extends KakaoLoginResult>
             isNewUser: null == isNewUser
                 ? _value.isNewUser
                 : isNewUser // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            hasFlowerShop: null == hasFlowerShop
+                ? _value.hasFlowerShop
+                : hasFlowerShop // ignore: cast_nullable_to_non_nullable
                       as bool,
           )
           as $Val,
@@ -109,6 +116,7 @@ abstract class _$$KakaoLoginResultImplCopyWith<$Res>
     String refreshToken,
     String? role,
     bool isNewUser,
+    bool hasFlowerShop,
   });
 }
 
@@ -130,6 +138,7 @@ class __$$KakaoLoginResultImplCopyWithImpl<$Res>
     Object? refreshToken = null,
     Object? role = freezed,
     Object? isNewUser = null,
+    Object? hasFlowerShop = null,
   }) {
     return _then(
       _$KakaoLoginResultImpl(
@@ -149,6 +158,10 @@ class __$$KakaoLoginResultImplCopyWithImpl<$Res>
             ? _value.isNewUser
             : isNewUser // ignore: cast_nullable_to_non_nullable
                   as bool,
+        hasFlowerShop: null == hasFlowerShop
+            ? _value.hasFlowerShop
+            : hasFlowerShop // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -162,6 +175,7 @@ class _$KakaoLoginResultImpl implements _KakaoLoginResult {
     required this.refreshToken,
     this.role,
     required this.isNewUser,
+    this.hasFlowerShop = false,
   });
 
   factory _$KakaoLoginResultImpl.fromJson(Map<String, dynamic> json) =>
@@ -175,10 +189,13 @@ class _$KakaoLoginResultImpl implements _KakaoLoginResult {
   final String? role;
   @override
   final bool isNewUser;
+  @override
+  @JsonKey()
+  final bool hasFlowerShop;
 
   @override
   String toString() {
-    return 'KakaoLoginResult(accessToken: $accessToken, refreshToken: $refreshToken, role: $role, isNewUser: $isNewUser)';
+    return 'KakaoLoginResult(accessToken: $accessToken, refreshToken: $refreshToken, role: $role, isNewUser: $isNewUser, hasFlowerShop: $hasFlowerShop)';
   }
 
   @override
@@ -192,13 +209,21 @@ class _$KakaoLoginResultImpl implements _KakaoLoginResult {
                 other.refreshToken == refreshToken) &&
             (identical(other.role, role) || other.role == role) &&
             (identical(other.isNewUser, isNewUser) ||
-                other.isNewUser == isNewUser));
+                other.isNewUser == isNewUser) &&
+            (identical(other.hasFlowerShop, hasFlowerShop) ||
+                other.hasFlowerShop == hasFlowerShop));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, accessToken, refreshToken, role, isNewUser);
+  int get hashCode => Object.hash(
+    runtimeType,
+    accessToken,
+    refreshToken,
+    role,
+    isNewUser,
+    hasFlowerShop,
+  );
 
   /// Create a copy of KakaoLoginResult
   /// with the given fields replaced by the non-null parameter values.
@@ -223,6 +248,7 @@ abstract class _KakaoLoginResult implements KakaoLoginResult {
     required final String refreshToken,
     final String? role,
     required final bool isNewUser,
+    final bool hasFlowerShop,
   }) = _$KakaoLoginResultImpl;
 
   factory _KakaoLoginResult.fromJson(Map<String, dynamic> json) =
@@ -236,6 +262,8 @@ abstract class _KakaoLoginResult implements KakaoLoginResult {
   String? get role;
   @override
   bool get isNewUser;
+  @override
+  bool get hasFlowerShop;
 
   /// Create a copy of KakaoLoginResult
   /// with the given fields replaced by the non-null parameter values.
@@ -253,6 +281,8 @@ ReissueResult _$ReissueResultFromJson(Map<String, dynamic> json) {
 mixin _$ReissueResult {
   String get accessToken => throw _privateConstructorUsedError;
   String get refreshToken => throw _privateConstructorUsedError;
+  String? get role => throw _privateConstructorUsedError;
+  bool get hasFlowerShop => throw _privateConstructorUsedError;
 
   /// Serializes this ReissueResult to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -271,7 +301,12 @@ abstract class $ReissueResultCopyWith<$Res> {
     $Res Function(ReissueResult) then,
   ) = _$ReissueResultCopyWithImpl<$Res, ReissueResult>;
   @useResult
-  $Res call({String accessToken, String refreshToken});
+  $Res call({
+    String accessToken,
+    String refreshToken,
+    String? role,
+    bool hasFlowerShop,
+  });
 }
 
 /// @nodoc
@@ -288,7 +323,12 @@ class _$ReissueResultCopyWithImpl<$Res, $Val extends ReissueResult>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? accessToken = null, Object? refreshToken = null}) {
+  $Res call({
+    Object? accessToken = null,
+    Object? refreshToken = null,
+    Object? role = freezed,
+    Object? hasFlowerShop = null,
+  }) {
     return _then(
       _value.copyWith(
             accessToken: null == accessToken
@@ -299,6 +339,14 @@ class _$ReissueResultCopyWithImpl<$Res, $Val extends ReissueResult>
                 ? _value.refreshToken
                 : refreshToken // ignore: cast_nullable_to_non_nullable
                       as String,
+            role: freezed == role
+                ? _value.role
+                : role // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            hasFlowerShop: null == hasFlowerShop
+                ? _value.hasFlowerShop
+                : hasFlowerShop // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -314,7 +362,12 @@ abstract class _$$ReissueResultImplCopyWith<$Res>
   ) = __$$ReissueResultImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String accessToken, String refreshToken});
+  $Res call({
+    String accessToken,
+    String refreshToken,
+    String? role,
+    bool hasFlowerShop,
+  });
 }
 
 /// @nodoc
@@ -330,7 +383,12 @@ class __$$ReissueResultImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? accessToken = null, Object? refreshToken = null}) {
+  $Res call({
+    Object? accessToken = null,
+    Object? refreshToken = null,
+    Object? role = freezed,
+    Object? hasFlowerShop = null,
+  }) {
     return _then(
       _$ReissueResultImpl(
         accessToken: null == accessToken
@@ -341,6 +399,14 @@ class __$$ReissueResultImplCopyWithImpl<$Res>
             ? _value.refreshToken
             : refreshToken // ignore: cast_nullable_to_non_nullable
                   as String,
+        role: freezed == role
+            ? _value.role
+            : role // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        hasFlowerShop: null == hasFlowerShop
+            ? _value.hasFlowerShop
+            : hasFlowerShop // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -352,6 +418,8 @@ class _$ReissueResultImpl implements _ReissueResult {
   const _$ReissueResultImpl({
     required this.accessToken,
     required this.refreshToken,
+    this.role,
+    this.hasFlowerShop = false,
   });
 
   factory _$ReissueResultImpl.fromJson(Map<String, dynamic> json) =>
@@ -361,10 +429,15 @@ class _$ReissueResultImpl implements _ReissueResult {
   final String accessToken;
   @override
   final String refreshToken;
+  @override
+  final String? role;
+  @override
+  @JsonKey()
+  final bool hasFlowerShop;
 
   @override
   String toString() {
-    return 'ReissueResult(accessToken: $accessToken, refreshToken: $refreshToken)';
+    return 'ReissueResult(accessToken: $accessToken, refreshToken: $refreshToken, role: $role, hasFlowerShop: $hasFlowerShop)';
   }
 
   @override
@@ -375,12 +448,16 @@ class _$ReissueResultImpl implements _ReissueResult {
             (identical(other.accessToken, accessToken) ||
                 other.accessToken == accessToken) &&
             (identical(other.refreshToken, refreshToken) ||
-                other.refreshToken == refreshToken));
+                other.refreshToken == refreshToken) &&
+            (identical(other.role, role) || other.role == role) &&
+            (identical(other.hasFlowerShop, hasFlowerShop) ||
+                other.hasFlowerShop == hasFlowerShop));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, accessToken, refreshToken);
+  int get hashCode =>
+      Object.hash(runtimeType, accessToken, refreshToken, role, hasFlowerShop);
 
   /// Create a copy of ReissueResult
   /// with the given fields replaced by the non-null parameter values.
@@ -400,6 +477,8 @@ abstract class _ReissueResult implements ReissueResult {
   const factory _ReissueResult({
     required final String accessToken,
     required final String refreshToken,
+    final String? role,
+    final bool hasFlowerShop,
   }) = _$ReissueResultImpl;
 
   factory _ReissueResult.fromJson(Map<String, dynamic> json) =
@@ -409,6 +488,10 @@ abstract class _ReissueResult implements ReissueResult {
   String get accessToken;
   @override
   String get refreshToken;
+  @override
+  String? get role;
+  @override
+  bool get hasFlowerShop;
 
   /// Create a copy of ReissueResult
   /// with the given fields replaced by the non-null parameter values.

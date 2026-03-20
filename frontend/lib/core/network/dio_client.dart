@@ -73,6 +73,10 @@ final dioProvider = Provider<Dio>((ref) {
                 accessToken: result.accessToken,
                 refreshToken: result.refreshToken,
               );
+              if (result.role != null) {
+                await tokenStorage.saveRole(result.role!);
+              }
+              await tokenStorage.saveHasFlowerShop(result.hasFlowerShop);
               print('[DIO]   토큰 재발급 성공 → 원래 요청 재시도');
               final opts = error.requestOptions;
               opts.headers['Authorization'] = 'Bearer ${result.accessToken}';

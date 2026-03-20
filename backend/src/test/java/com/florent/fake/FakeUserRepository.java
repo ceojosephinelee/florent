@@ -2,6 +2,7 @@ package com.florent.fake;
 
 import com.florent.domain.user.User;
 import com.florent.domain.user.UserRepository;
+import com.florent.domain.user.UserRole;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +37,13 @@ public class FakeUserRepository implements UserRepository {
     public Optional<User> findByKakaoId(String kakaoId) {
         return store.values().stream()
                 .filter(u -> u.getKakaoId().equals(kakaoId))
+                .findFirst();
+    }
+
+    @Override
+    public Optional<User> findFirstByRole(UserRole role) {
+        return store.values().stream()
+                .filter(u -> u.getRole() == role)
                 .findFirst();
     }
 }

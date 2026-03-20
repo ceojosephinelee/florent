@@ -10,7 +10,9 @@ run:
 		exit 1; \
 	fi
 	@export $$(grep -v '^#' $(ENV_FILE) | xargs) > /dev/null 2>&1 && \
-		flutter run -d $(DEVICE_ID) --dart-define=KAKAO_NATIVE_KEY=$$KAKAO_NATIVE_KEY
+		flutter run -d $(DEVICE_ID) \
+			--dart-define=KAKAO_NATIVE_KEY=$$KAKAO_NATIVE_KEY \
+			--dart-define=DEV_MODE=true
 
 ## 빌드 캐시 정리
 clean:

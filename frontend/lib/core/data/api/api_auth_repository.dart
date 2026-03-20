@@ -42,6 +42,13 @@ class ApiAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<KakaoLoginResult> devLogin(String role) async {
+    final response = await _dio.post('/auth/dev-login', data: {'role': role});
+    final data = response.data['data'] as Map<String, dynamic>;
+    return KakaoLoginResult.fromJson(data);
+  }
+
+  @override
   Future<void> logout() async {
     await _dio.post('/auth/logout');
   }

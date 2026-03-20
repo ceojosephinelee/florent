@@ -24,6 +24,8 @@ class LoginScreen extends ConsumerWidget {
           context.go('/auth/role');
         case AuthStatus.buyerAuthenticated:
           context.go('/buyer/home');
+        case AuthStatus.needsSellerInfo:
+          context.go('/auth/seller-info');
         case AuthStatus.sellerAuthenticated:
           context.go('/seller/home');
         default:
@@ -118,6 +120,26 @@ class LoginScreen extends ConsumerWidget {
                 '로그인하면 서비스 이용약관에 동의하게 됩니다.',
                 style: AppTypography.body(fontSize: 11, color: ink30),
               ),
+              if (const bool.fromEnvironment('DEV_MODE', defaultValue: false)) ...[
+                const SizedBox(height: 24),
+                const Divider(color: borderColor),
+                const SizedBox(height: 8),
+                Text('개발용 로그인', style: AppTypography.body(fontSize: 12, color: ink30)),
+                const SizedBox(height: 8),
+                Row(children: [
+                  Expanded(child: OutlinedButton(
+                    onPressed: auth.isLoading ? null : () => ref.read(authProvider.notifier).devLogin('BUYER'),
+                    style: OutlinedButton.styleFrom(foregroundColor: roseColor, side: const BorderSide(color: roseColor)),
+                    child: const Text('구매자로 로그인'),
+                  )),
+                  const SizedBox(width: 12),
+                  Expanded(child: OutlinedButton(
+                    onPressed: auth.isLoading ? null : () => ref.read(authProvider.notifier).devLogin('SELLER'),
+                    style: OutlinedButton.styleFrom(foregroundColor: sageColor, side: const BorderSide(color: sageColor)),
+                    child: const Text('판매자로 로그인'),
+                  )),
+                ]),
+              ],
               const SizedBox(height: 32),
             ],
           ),

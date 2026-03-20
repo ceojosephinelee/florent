@@ -80,7 +80,12 @@ public class AuthService implements KakaoLoginUseCase, SetRoleUseCase,
         user.updateRefreshToken(refreshToken, refreshExpiresAt);
         userRepository.save(user);
 
-        return new KakaoLoginResult(accessToken, refreshToken, roleName, isNewUser);
+        boolean hasFlowerShop = false;
+        if (user.getRole() == UserRole.SELLER && sellerId != null) {
+            hasFlowerShop = flowerShopRepository.findBySellerId(sellerId).isPresent();
+        }
+
+        return new KakaoLoginResult(accessToken, refreshToken, roleName, isNewUser, hasFlowerShop);
     }
 
     @Override
@@ -154,7 +159,12 @@ public class AuthService implements KakaoLoginUseCase, SetRoleUseCase,
         user.updateRefreshToken(newRefreshToken, refreshExpiresAt);
         userRepository.save(user);
 
-        return new ReissueTokenResult(accessToken, newRefreshToken);
+        boolean hasFlowerShop = false;
+        if (user.getRole() == UserRole.SELLER && sellerId != null) {
+            hasFlowerShop = flowerShopRepository.findBySellerId(sellerId).isPresent();
+        }
+
+        return new ReissueTokenResult(accessToken, newRefreshToken, roleName, hasFlowerShop);
     }
 
     @Override

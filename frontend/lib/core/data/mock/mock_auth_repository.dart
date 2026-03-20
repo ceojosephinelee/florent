@@ -34,6 +34,17 @@ class MockAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<KakaoLoginResult> devLogin(String role) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    return KakaoLoginResult(
+      accessToken: 'mock_dev_access_token',
+      refreshToken: 'mock_dev_refresh_token',
+      role: role,
+      isNewUser: false,
+    );
+  }
+
+  @override
   Future<void> logout() async {
     await Future.delayed(const Duration(milliseconds: 300));
   }

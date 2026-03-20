@@ -10,6 +10,7 @@ class KakaoLoginResult with _$KakaoLoginResult {
     required String refreshToken,
     String? role,
     required bool isNewUser,
+    @Default(false) bool hasFlowerShop,
   }) = _KakaoLoginResult;
 
   factory KakaoLoginResult.fromJson(Map<String, dynamic> json) =>
@@ -21,6 +22,8 @@ class ReissueResult with _$ReissueResult {
   const factory ReissueResult({
     required String accessToken,
     required String refreshToken,
+    String? role,
+    @Default(false) bool hasFlowerShop,
   }) = _ReissueResult;
 
   factory ReissueResult.fromJson(Map<String, dynamic> json) =>

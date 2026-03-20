@@ -128,7 +128,22 @@ class AuthNotifier extends StateNotifier<AuthState> {
             accessToken: result.accessToken,
             refreshToken: result.refreshToken,
           );
-          print('[AUTH] 토큰 재발급 성공');
+          if (result.role != null) {
+            await _tokenStorage.saveRole(result.role!);
+          }
+          print('[AUTH] 토큰 재발급 성공 — role=${result.role}, hasFlowerShop=${result.hasFlowerShop}');
+
+          final role = result.role ?? await _tokenStorage.getRole();
+          if (role == 'BUYER') {
+            state = state.copyWith(status: AuthStatus.buyerAuthenticated, isLoading: false);
+          } else if (role == 'SELLER' && !result.hasFlowerShop) {
+            state = state.copyWith(status: AuthStatus.needsSellerInfo, isLoading: false);
+          } else if (role == 'SELLER') {
+            state = state.copyWith(status: AuthStatus.sellerAuthenticated, isLoading: false);
+          } else {
+            state = state.copyWith(status: AuthStatus.needsRole, isLoading: false);
+          }
+          return;
         } catch (e) {
           print('[AUTH] 토큰 재발급 실패: $e → unauthenticated');
           await _tokenStorage.clearAll();
@@ -138,9 +153,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
       }
 
       final role = await _tokenStorage.getRole();
-      print('[AUTH] role=$role → 상태 전환');
+      final hasShop = await _tokenStorage.getHasFlowerShop();
+      print('[AUTH] role=$role, hasFlowerShop=$hasShop → 상태 전환');
       if (role == 'BUYER') {
         state = state.copyWith(status: AuthStatus.buyerAuthenticated, isLoading: false);
+      } else if (role == 'SELLER' && !hasShop) {
+        state = state.copyWith(status: AuthStatus.needsSellerInfo, isLoading: false);
       } else if (role == 'SELLER') {
         state = state.copyWith(status: AuthStatus.sellerAuthenticated, isLoading: false);
       } else {
@@ -173,9 +191,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (result.role != null) {
         await _tokenStorage.saveRole(result.role!);
       }
+      await _tokenStorage.saveHasFlowerShop(result.hasFlowerShop);
       // 저장 직후 재읽기 검증
       final savedToken = await _tokenStorage.getAccessToken();
       print('[AUTH] 5) 토큰 저장 완료 — 재읽기: ${savedToken != null ? "${savedToken.substring(0, 20)}... (len=${savedToken.length})" : "null ← 저장 실패!"}');
+      print('[AUTH] 5) hasFlowerShop=${result.hasFlowerShop}');
 
       if (result.isNewUser || result.role == null) {
         print('[AUTH] 6) → needsRole');
@@ -183,12 +203,40 @@ class AuthNotifier extends StateNotifier<AuthState> {
       } else if (result.role == 'BUYER') {
         print('[AUTH] 6) → buyerAuthenticated');
         state = state.copyWith(status: AuthStatus.buyerAuthenticated, isLoading: false);
+      } else if (result.role == 'SELLER' && !result.hasFlowerShop) {
+        print('[AUTH] 6) → needsSellerInfo (가게 미등록)');
+        state = state.copyWith(status: AuthStatus.needsSellerInfo, isLoading: false);
       } else {
         print('[AUTH] 6) → sellerAuthenticated');
         state = state.copyWith(status: AuthStatus.sellerAuthenticated, isLoading: false);
       }
     } catch (e, st) {
       print('[AUTH] kakaoLogin ERROR: $e\n$st');
+      state = state.copyWith(isLoading: false, error: e.toString());
+    }
+  }
+
+  /// 개발용 로그인. 카카오 SDK 없이 BUYER/SELLER로 즉시 로그인.
+  Future<void> devLogin(String role) async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      final result = await _authRepository.devLogin(role);
+      await _tokenStorage.saveTokens(
+        accessToken: result.accessToken,
+        refreshToken: result.refreshToken,
+      );
+      if (result.role != null) await _tokenStorage.saveRole(result.role!);
+      await _tokenStorage.saveHasFlowerShop(result.hasFlowerShop);
+
+      if (result.role == 'BUYER') {
+        state = state.copyWith(status: AuthStatus.buyerAuthenticated, isLoading: false);
+      } else if (result.role == 'SELLER' && !result.hasFlowerShop) {
+        state = state.copyWith(status: AuthStatus.needsSellerInfo, isLoading: false);
+      } else {
+        state = state.copyWith(status: AuthStatus.sellerAuthenticated, isLoading: false);
+      }
+    } catch (e, st) {
+      print('[AUTH] devLogin ERROR: $e\n$st');
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
@@ -238,6 +286,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         shopLng: shopLng,
         businessNumber: businessNumber,
       );
+      await _tokenStorage.saveHasFlowerShop(true);
       state = state.copyWith(status: AuthStatus.sellerAuthenticated, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
