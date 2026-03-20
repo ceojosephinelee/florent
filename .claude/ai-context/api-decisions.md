@@ -289,4 +289,13 @@
 
 ---
 
+## [AD-032] 알림 Provider autoDispose 전환
+
+- **결정일**: 2026-03-20
+- **결정 내용**: `buyerNotificationsProvider`, `sellerNotificationsProvider`, `sellerUnreadCountProvider`를 `StateNotifierProvider` → `StateNotifierProvider.autoDispose`로 변경.
+- **이유**: autoDispose가 아닌 Provider는 앱 생명주기 동안 Notifier 인스턴스가 유지되어, 최초 `_load()` 결과가 캐시됨. 화면 이탈 시 Provider 해제 → 재진입 시 Notifier 재생성으로 최신 데이터 보장.
+- **영향 파일**: `proposal_provider.dart`, `seller_providers.dart`
+
+---
+
 > 새 결정이 발생하면 [AD-{N}] 형식으로 추가한다.

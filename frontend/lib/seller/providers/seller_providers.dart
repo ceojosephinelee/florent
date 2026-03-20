@@ -121,10 +121,13 @@ class SellerNotificationsNotifier extends StateNotifier<AsyncValue<List<Notifica
   }
 
   Future<void> _load() async {
+    print('[NOTIFICATION-SELLER] _load() 호출됨');
     try {
       final items = await _repo.getNotifications();
+      print('[NOTIFICATION-SELLER] 수신: ${items.length}건');
       state = AsyncValue.data(items);
     } catch (e, st) {
+      print('[NOTIFICATION-SELLER] 에러: $e');
       state = AsyncValue.error(e, st);
     }
   }
@@ -146,11 +149,11 @@ class SellerNotificationsNotifier extends StateNotifier<AsyncValue<List<Notifica
 }
 
 final sellerNotificationsProvider =
-    StateNotifierProvider<SellerNotificationsNotifier, AsyncValue<List<NotificationItem>>>(
+    StateNotifierProvider.autoDispose<SellerNotificationsNotifier, AsyncValue<List<NotificationItem>>>(
   (ref) => SellerNotificationsNotifier(ref.watch(_sellerNotificationRepoProvider)),
 );
 
-final sellerUnreadCountProvider = Provider<int>((ref) {
+final sellerUnreadCountProvider = Provider.autoDispose<int>((ref) {
   final asyncNotifications = ref.watch(sellerNotificationsProvider);
   return asyncNotifications.whenOrNull(
         data: (items) => items.where((n) => !n.isRead).length,
