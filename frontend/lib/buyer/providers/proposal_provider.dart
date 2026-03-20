@@ -42,10 +42,13 @@ class BuyerNotificationsNotifier extends StateNotifier<AsyncValue<List<Notificat
   }
 
   Future<void> _load() async {
+    print('[NOTIFICATION-BUYER] _load() 호출됨');
     try {
       final items = await _repo.getNotifications();
+      print('[NOTIFICATION-BUYER] 수신: ${items.length}건');
       state = AsyncValue.data(items);
     } catch (e, st) {
+      print('[NOTIFICATION-BUYER] 에러: $e');
       state = AsyncValue.error(e, st);
     }
   }
@@ -67,7 +70,7 @@ class BuyerNotificationsNotifier extends StateNotifier<AsyncValue<List<Notificat
 }
 
 final buyerNotificationsProvider =
-    StateNotifierProvider<BuyerNotificationsNotifier, AsyncValue<List<NotificationItem>>>(
+    StateNotifierProvider.autoDispose<BuyerNotificationsNotifier, AsyncValue<List<NotificationItem>>>(
   (ref) => BuyerNotificationsNotifier(ref.watch(_notificationRepoProvider)),
 );
 
