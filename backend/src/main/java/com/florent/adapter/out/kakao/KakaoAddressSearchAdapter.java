@@ -44,13 +44,27 @@ public class KakaoAddressSearchAdapter {
         this.restKey = restKey;
     }
 
+    private static final java.util.regex.Pattern DONG_PATTERN =
+            java.util.regex.Pattern.compile(".*[동洞]\\d*$");
+
     public List<AddressSearchResponse> search(String query) {
         log.debug("주소 검색 요청: query={}", query);
 
-        // 1) 주소 검색 (도로명/지번)
+        // 1) 동 이름 패턴이면 행정구역 API로 중심 좌표 조회
+        if (DONG_PATTERN.matcher(query.trim()).matches()) {
+            log.debug("동 패턴 감지, 행정구역 API 우선 호출: query={}", query);
+            List<AddressSearchResponse> regionResults = callRegionCodeApi(query);
+            if (!regionResults.isEmpty()) {
+                log.debug("행정구역 API 결과: query={}, count={}", query, regionResults.size());
+                return regionResults;
+            }
+            log.debug("행정구역 API 결과 없음, 주소 검색 폴백: query={}", query);
+        }
+
+        // 2) 주소 검색 (도로명/지번)
         List<AddressSearchResponse> results = callAddressApi(query);
 
-        // 2) 결과 없으면 키워드 검색 (장소명/역명 등) 폴백
+        // 3) 결과 없으면 키워드 검색 (장소명/역명 등) 폴백
         if (results.isEmpty()) {
             log.debug("주소 검색 결과 없음, 키워드 검색 폴백: query={}", query);
             results = callKeywordApi(query);
@@ -71,6 +85,48 @@ public class KakaoAddressSearchAdapter {
 
         Map<String, Object> body = callKakaoApi(uri);
         return toAddressResults(body);
+    }
+
+    private List<AddressSearchResponse> callRegionCodeApi(String query) {
+        URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path("/v2/local/search/address.json")
+                .queryParam("query", query)
+                .queryParam("size", MAX_SIZE)
+                .queryParam("analyze_type", "similar")
+                .build()
+                .encode()
+                .toUri();
+
+        Map<String, Object> body = callKakaoApi(uri);
+        return toRegionResults(body);
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<AddressSearchResponse> toRegionResults(Map<String, Object> body) {
+        if (body == null) {
+            return Collections.emptyList();
+        }
+        List<Map<String, Object>> documents = (List<Map<String, Object>>) body.get("documents");
+        if (documents == null || documents.isEmpty()) {
+            return Collections.emptyList();
+        }
+        // 동 검색 시 address.h_code(행정동 코드)가 있는 결과만 필터링하고
+        // address의 x, y를 동 중심 좌표로 사용
+        return documents.stream()
+                .filter(doc -> {
+                    Map<String, Object> address = (Map<String, Object>) doc.get("address");
+                    return address != null && address.get("h_code") != null
+                            && !address.get("h_code").toString().isEmpty();
+                })
+                .map(doc -> {
+                    Map<String, Object> address = (Map<String, Object>) doc.get("address");
+                    String addressName = (String) address.get("address_name");
+                    double lat = parseDouble(address.get("y"));
+                    double lng = parseDouble(address.get("x"));
+                    return new AddressSearchResponse(addressName, lat, lng);
+                })
+                .limit(MAX_SIZE)
+                .toList();
     }
 
     private List<AddressSearchResponse> callKeywordApi(String query) {

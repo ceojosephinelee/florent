@@ -23,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.florent.domain.request.FulfillmentType;
+
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.util.Collections;
@@ -34,7 +36,8 @@ import java.util.Map;
 public class BuyerRequestService implements CreateRequestUseCase,
         GetRequestListUseCase, GetRequestDetailUseCase {
 
-    private static final double NOTIFICATION_RADIUS_KM = 2.0;
+    private static final double PICKUP_RADIUS_KM = 5.0;
+    private static final double DELIVERY_RADIUS_KM = 5.0;
 
     private final CurationRequestRepository requestRepository;
     private final FlowerShopRepository shopRepository;
@@ -47,7 +50,8 @@ public class BuyerRequestService implements CreateRequestUseCase,
     public CreateRequestResult create(CreateRequestCommand command) {
         CurationRequest request = CurationRequest.create(command, clock);
         CurationRequest saved = requestRepository.save(request);
-        notifyNearbyShops(command.placeLat(), command.placeLng(), saved.getId());
+        notifyNearbyShops(command.placeLat(), command.placeLng(),
+                saved.getId(), command.fulfillmentType());
         return CreateRequestResult.from(saved);
     }
 
@@ -102,14 +106,19 @@ public class BuyerRequestService implements CreateRequestUseCase,
         return RequestDetailResult.from(request, draftCount, submittedCount);
     }
 
-    private void notifyNearbyShops(BigDecimal lat, BigDecimal lng, Long requestId) {
+    private void notifyNearbyShops(BigDecimal lat, BigDecimal lng,
+                                    Long requestId, FulfillmentType type) {
+        double radius = radiusFor(type);
         List<FlowerShop> nearbyShops = shopRepository.findAll().stream()
                 .filter(shop -> HaversineUtil.isWithinRadius(
-                        lat, lng, shop.getShopLat(), shop.getShopLng(),
-                        NOTIFICATION_RADIUS_KM))
+                        lat, lng, shop.getShopLat(), shop.getShopLng(), radius))
                 .toList();
 
         nearbyShops.forEach(shop ->
                 saveNotificationPort.saveRequestArrived(shop.getSellerId(), requestId));
+    }
+
+    private double radiusFor(FulfillmentType type) {
+        return type == FulfillmentType.PICKUP ? PICKUP_RADIUS_KM : DELIVERY_RADIUS_KM;
     }
 }

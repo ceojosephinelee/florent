@@ -19,7 +19,8 @@ public record SellerRequestDetailResponse(
         List<TimeSlotDto> requestedTimeSlots,
         String placeAddressText,
         LocalDateTime expiresAt,
-        Long myProposalId
+        Long myProposalId,
+        String myProposalStatus
 ) {
     public static SellerRequestDetailResponse from(SellerRequestDetailResult r) {
         return new SellerRequestDetailResponse(
@@ -34,7 +35,8 @@ public record SellerRequestDetailResponse(
                 r.requestedTimeSlots().stream().map(TimeSlotDto::from).toList(),
                 r.placeAddressText(),
                 r.expiresAt(),
-                r.myProposalId());
+                r.myProposalId(),
+                r.myProposalStatus());
     }
 
     public record TimeSlotDto(String kind, String value) {

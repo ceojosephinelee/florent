@@ -112,7 +112,7 @@ class SellerRequestControllerTest {
                 List.of(new TimeSlot(SlotKind.PICKUP_30M, "14:00")),
                 "서울시 강남구",
                 LocalDateTime.of(2026, 3, 17, 19, 0),
-                5L);
+                5L, "DRAFT");
 
         given(getSellerRequestDetailUseCase.getSellerRequestDetail(eq(1L), eq(SELLER_ID)))
                 .willReturn(detail);
@@ -126,7 +126,8 @@ class SellerRequestControllerTest {
                 .andExpect(jsonPath("$.data.requestedTimeSlots[0].kind").value("PICKUP_30M"))
                 .andExpect(jsonPath("$.data.requestedTimeSlots[0].value").value("14:00"))
                 .andExpect(jsonPath("$.data.placeAddressText").value("서울시 강남구"))
-                .andExpect(jsonPath("$.data.myProposalId").value(5));
+                .andExpect(jsonPath("$.data.myProposalId").value(5))
+                .andExpect(jsonPath("$.data.myProposalStatus").value("DRAFT"));
     }
 
     @Test
@@ -155,7 +156,7 @@ class SellerRequestControllerTest {
                 List.of(new TimeSlot(SlotKind.PICKUP_30M, "14:00")),
                 "서울시 강남구",
                 LocalDateTime.of(2026, 3, 17, 19, 0),
-                null);
+                null, null);
 
         given(getSellerRequestDetailUseCase.getSellerRequestDetail(eq(1L), eq(SELLER_ID)))
                 .willReturn(detail);
@@ -163,6 +164,7 @@ class SellerRequestControllerTest {
         // when & then
         mockMvc.perform(get("/api/v1/seller/requests/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.myProposalId").doesNotExist());
+                .andExpect(jsonPath("$.data.myProposalId").doesNotExist())
+                .andExpect(jsonPath("$.data.myProposalStatus").doesNotExist());
     }
 }

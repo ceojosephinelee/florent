@@ -7,6 +7,7 @@ import com.florent.domain.proposal.Proposal;
 import com.florent.domain.proposal.ProposalRepository;
 import com.florent.domain.request.CurationRequest;
 import com.florent.domain.request.CurationRequestRepository;
+import com.florent.domain.request.FulfillmentType;
 import com.florent.domain.request.GetSellerRequestDetailUseCase;
 import com.florent.domain.request.GetSellerRequestListUseCase;
 import com.florent.domain.request.SellerRequestDetailResult;
@@ -28,7 +29,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SellerRequestService implements GetSellerRequestListUseCase, GetSellerRequestDetailUseCase {
 
-    private static final double RADIUS_KM = 2.0;
+    private static final double PICKUP_RADIUS_KM = 5.0;
+    private static final double DELIVERY_RADIUS_KM = 5.0;
 
     private final CurationRequestRepository requestRepository;
     private final FlowerShopRepository shopRepository;
@@ -60,19 +62,22 @@ public class SellerRequestService implements GetSellerRequestListUseCase, GetSel
 
         validateWithinRadius(request, shop);
 
-        Long myProposalId = proposalRepository
+        var myProposal = proposalRepository
                 .findByRequestIdAndFlowerShopId(requestId, shop.getId())
-                .map(Proposal::getId)
                 .orElse(null);
 
-        return SellerRequestDetailResult.from(request, myProposalId);
+        Long myProposalId = myProposal != null ? myProposal.getId() : null;
+        String myProposalStatus = myProposal != null ? myProposal.getStatus().name() : null;
+
+        return SellerRequestDetailResult.from(request, myProposalId, myProposalStatus);
     }
 
     private List<CurationRequest> filterNearbyRequests(FlowerShop shop) {
         return requestRepository.findAll().stream()
                 .filter(r -> HaversineUtil.isWithinRadius(
                         r.getPlaceLat(), r.getPlaceLng(),
-                        shop.getShopLat(), shop.getShopLng(), RADIUS_KM))
+                        shop.getShopLat(), shop.getShopLng(),
+                        radiusFor(r.getFulfillmentType())))
                 .sorted(Comparator.comparing(CurationRequest::getCreatedAt).reversed())
                 .toList();
     }
@@ -104,9 +109,14 @@ public class SellerRequestService implements GetSellerRequestListUseCase, GetSel
     private void validateWithinRadius(CurationRequest request, FlowerShop shop) {
         if (!HaversineUtil.isWithinRadius(
                 request.getPlaceLat(), request.getPlaceLng(),
-                shop.getShopLat(), shop.getShopLng(), RADIUS_KM)) {
+                shop.getShopLat(), shop.getShopLng(),
+                radiusFor(request.getFulfillmentType()))) {
             throw new BusinessException(ErrorCode.REQUEST_NOT_FOUND);
         }
+    }
+
+    private double radiusFor(FulfillmentType type) {
+        return type == FulfillmentType.PICKUP ? PICKUP_RADIUS_KM : DELIVERY_RADIUS_KM;
     }
 
     private FlowerShop findShopBySellerId(Long sellerId) {

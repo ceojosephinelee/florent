@@ -16,6 +16,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/buyer/requests")
 @RequiredArgsConstructor
@@ -43,8 +45,11 @@ public class BuyerRequestController {
             @RequestBody @Valid CreateRequestRequest request,
             @AuthenticationPrincipal UserPrincipal principal
     ) {
+        log.info("[POST /buyer/requests] 요청 진입 — buyerId={}, fulfillmentType={}",
+                principal.getBuyerId(), request.fulfillmentType());
         CreateRequestResult result = createRequestUseCase.create(
                 request.toCommand(principal.getBuyerId()));
+        log.info("[POST /buyer/requests] 요청 생성 완료 — requestId={}", result.requestId());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(CreateRequestResponse.from(result)));
     }

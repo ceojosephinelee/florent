@@ -8,6 +8,7 @@ import com.florent.domain.proposal.ProposalRepository;
 import com.florent.domain.proposal.ProposalStatus;
 import com.florent.domain.request.CurationRequest;
 import com.florent.domain.request.CurationRequestRepository;
+import com.florent.domain.request.FulfillmentType;
 import com.florent.domain.request.RequestStatus;
 import com.florent.domain.reservation.ReservationRepository;
 import com.florent.domain.reservation.ReservationStatus;
@@ -26,7 +27,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SellerHomeService implements GetSellerHomeUseCase {
 
-    private static final double RADIUS_KM = 2.0;
+    private static final double PICKUP_RADIUS_KM = 5.0;
+    private static final double DELIVERY_RADIUS_KM = 5.0;
     private static final int RECENT_REQUEST_LIMIT = 5;
 
     private final FlowerShopRepository shopRepository;
@@ -70,8 +72,13 @@ public class SellerHomeService implements GetSellerHomeUseCase {
                 .filter(r -> r.getStatus() == RequestStatus.OPEN)
                 .filter(r -> HaversineUtil.isWithinRadius(
                         r.getPlaceLat(), r.getPlaceLng(),
-                        shop.getShopLat(), shop.getShopLng(), RADIUS_KM))
+                        shop.getShopLat(), shop.getShopLng(),
+                        radiusFor(r.getFulfillmentType())))
                 .toList();
+    }
+
+    private double radiusFor(FulfillmentType type) {
+        return type == FulfillmentType.PICKUP ? PICKUP_RADIUS_KM : DELIVERY_RADIUS_KM;
     }
 
     private int countByStatus(List<Proposal> proposals, ProposalStatus status) {

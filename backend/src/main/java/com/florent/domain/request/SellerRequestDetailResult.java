@@ -16,9 +16,12 @@ public record SellerRequestDetailResult(
         List<TimeSlot> requestedTimeSlots,
         String placeAddressText,
         LocalDateTime expiresAt,
-        Long myProposalId
+        Long myProposalId,
+        String myProposalStatus
 ) {
-    public static SellerRequestDetailResult from(CurationRequest request, Long myProposalId) {
+    public static SellerRequestDetailResult from(CurationRequest request,
+                                                  Long myProposalId,
+                                                  String myProposalStatus) {
         return new SellerRequestDetailResult(
                 request.getId(),
                 request.getStatus(),
@@ -31,7 +34,8 @@ public record SellerRequestDetailResult(
                 request.getRequestedTimeSlots(),
                 request.getPlaceAddressText(),
                 request.getExpiresAt(),
-                myProposalId
+                myProposalId,
+                myProposalStatus
         );
     }
 }

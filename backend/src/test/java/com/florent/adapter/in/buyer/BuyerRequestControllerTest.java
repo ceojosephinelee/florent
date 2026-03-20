@@ -127,7 +127,9 @@ class BuyerRequestControllerTest {
     void 요청_목록_조회_성공() throws Exception {
         // given
         RequestSummaryResult summary = new RequestSummaryResult(
-                1L, RequestStatus.OPEN, BudgetTier.TIER2, FulfillmentType.DELIVERY,
+                1L, RequestStatus.OPEN,
+                List.of("생일"), List.of("연인"),
+                BudgetTier.TIER2, FulfillmentType.DELIVERY,
                 LocalDate.of(2026, 3, 18),
                 LocalDateTime.of(2026, 3, 17, 10, 0),
                 2, 1);

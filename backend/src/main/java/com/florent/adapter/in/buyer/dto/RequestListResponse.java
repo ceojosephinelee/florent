@@ -28,6 +28,8 @@ public record RequestListResponse(
     public record RequestSummaryResponse(
             Long requestId,
             String status,
+            List<String> purposeTags,
+            List<String> relationTags,
             String budgetTier,
             String fulfillmentType,
             LocalDate fulfillmentDate,
@@ -39,6 +41,8 @@ public record RequestListResponse(
             return new RequestSummaryResponse(
                     r.requestId(),
                     r.status().name(),
+                    r.purposeTags(),
+                    r.relationTags(),
                     r.budgetTier().name(),
                     r.fulfillmentType().name(),
                     r.fulfillmentDate(),
