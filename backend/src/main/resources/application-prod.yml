@@ -6,3 +6,8 @@ spring:
 
 jwt:
   secret-key: ${JWT_SECRET_KEY}
+
+kakao:
+  local:
+    base-url: https://dapi.kakao.com
+  rest-key: ${KAKAO_REST_KEY}
