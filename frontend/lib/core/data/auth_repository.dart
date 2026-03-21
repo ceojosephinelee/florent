@@ -14,4 +14,5 @@ abstract class AuthRepository {
     required double shopLng,
     String? businessNumber,
   });
+  Future<void> registerDevice(String fcmToken, String platform);
 }

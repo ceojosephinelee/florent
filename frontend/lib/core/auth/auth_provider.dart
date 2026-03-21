@@ -1,5 +1,7 @@
 import 'dart:developer' as dev;
+import 'dart:io' show Platform;
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
@@ -136,10 +138,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
           final role = result.role ?? await _tokenStorage.getRole();
           if (role == 'BUYER') {
             state = state.copyWith(status: AuthStatus.buyerAuthenticated, isLoading: false);
+            _registerFcmToken();
           } else if (role == 'SELLER' && !result.hasFlowerShop) {
             state = state.copyWith(status: AuthStatus.needsSellerInfo, isLoading: false);
           } else if (role == 'SELLER') {
             state = state.copyWith(status: AuthStatus.sellerAuthenticated, isLoading: false);
+            _registerFcmToken();
           } else {
             state = state.copyWith(status: AuthStatus.needsRole, isLoading: false);
           }
@@ -157,10 +161,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
       print('[AUTH] role=$role, hasFlowerShop=$hasShop → 상태 전환');
       if (role == 'BUYER') {
         state = state.copyWith(status: AuthStatus.buyerAuthenticated, isLoading: false);
+        _registerFcmToken();
       } else if (role == 'SELLER' && !hasShop) {
         state = state.copyWith(status: AuthStatus.needsSellerInfo, isLoading: false);
       } else if (role == 'SELLER') {
         state = state.copyWith(status: AuthStatus.sellerAuthenticated, isLoading: false);
+        _registerFcmToken();
       } else {
         state = state.copyWith(status: AuthStatus.needsRole, isLoading: false);
       }
@@ -203,12 +209,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
       } else if (result.role == 'BUYER') {
         print('[AUTH] 6) → buyerAuthenticated');
         state = state.copyWith(status: AuthStatus.buyerAuthenticated, isLoading: false);
+        _registerFcmToken();
       } else if (result.role == 'SELLER' && !result.hasFlowerShop) {
         print('[AUTH] 6) → needsSellerInfo (가게 미등록)');
         state = state.copyWith(status: AuthStatus.needsSellerInfo, isLoading: false);
       } else {
         print('[AUTH] 6) → sellerAuthenticated');
         state = state.copyWith(status: AuthStatus.sellerAuthenticated, isLoading: false);
+        _registerFcmToken();
       }
     } catch (e, st) {
       print('[AUTH] kakaoLogin ERROR: $e\n$st');
@@ -230,10 +238,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       if (result.role == 'BUYER') {
         state = state.copyWith(status: AuthStatus.buyerAuthenticated, isLoading: false);
+        _registerFcmToken();
       } else if (result.role == 'SELLER' && !result.hasFlowerShop) {
         state = state.copyWith(status: AuthStatus.needsSellerInfo, isLoading: false);
       } else {
         state = state.copyWith(status: AuthStatus.sellerAuthenticated, isLoading: false);
+        _registerFcmToken();
       }
     } catch (e, st) {
       print('[AUTH] devLogin ERROR: $e\n$st');
@@ -290,6 +300,22 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(status: AuthStatus.sellerAuthenticated, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
+    }
+  }
+
+  /// FCM 토큰을 서버에 등록.
+  Future<void> _registerFcmToken() async {
+    try {
+      final messaging = FirebaseMessaging.instance;
+      await messaging.requestPermission();
+      final fcmToken = await messaging.getToken();
+      if (fcmToken != null) {
+        final platform = Platform.isIOS ? 'IOS' : 'ANDROID';
+        await _authRepository.registerDevice(fcmToken, platform);
+        print('[FCM] 토큰 등록 완료: platform=$platform');
+      }
+    } catch (e) {
+      print('[FCM] 토큰 등록 실패 (무시): $e');
     }
   }
 

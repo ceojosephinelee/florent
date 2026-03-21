@@ -50,6 +50,11 @@ class MockAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<void> registerDevice(String fcmToken, String platform) async {
+    await Future.delayed(const Duration(milliseconds: 100));
+  }
+
+  @override
   Future<SellerInfoResult> registerSellerInfo({
     required String shopName,
     required String shopAddress,
