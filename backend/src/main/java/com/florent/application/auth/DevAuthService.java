@@ -24,7 +24,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 
 @Service
-@Profile("local")
+@Profile({"local", "prod"})
 @RequiredArgsConstructor
 public class DevAuthService implements DevLoginUseCase {
 
