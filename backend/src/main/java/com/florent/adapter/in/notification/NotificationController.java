@@ -36,7 +36,7 @@ public class NotificationController {
     ) {
         NotificationPageResult result = getNotificationsUseCase.getNotifications(
                 principal.getUserId(), page, size);
-        log.debug("알림 조회: userId={}, page={}, size={}, 결과={}건",
+        log.info("알림 조회: userId={}, page={}, size={}, 결과={}건",
                 principal.getUserId(), page, size, result.notifications().size());
         return ResponseEntity.ok(ApiResponse.success(NotificationListResponse.from(result)));
     }

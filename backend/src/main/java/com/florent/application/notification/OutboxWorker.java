@@ -36,7 +36,7 @@ public class OutboxWorker {
         List<OutboxEvent> events = outboxEventRepository.findPendingBefore(
                 LocalDateTime.now(clock), BATCH_SIZE);
 
-        log.debug("OutboxWorker 실행: {} 건 PENDING", events.size());
+        log.info("OutboxWorker 실행: {} 건 PENDING", events.size());
 
         for (OutboxEvent event : events) {
             processEvent(event);
