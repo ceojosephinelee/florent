@@ -13,7 +13,7 @@ final buyerNameProvider = Provider<String>((ref) {
   return asyncProfile.whenOrNull(data: (p) => p['nickName'] as String?) ?? '';
 });
 
-final unreadNotificationCountProvider = Provider<int>((ref) {
+final unreadNotificationCountProvider = Provider.autoDispose<int>((ref) {
   final asyncNotifications = ref.watch(buyerNotificationsProvider);
   return asyncNotifications.whenOrNull(
         data: (items) => items.where((n) => !n.isRead).length,

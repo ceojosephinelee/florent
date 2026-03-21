@@ -15,7 +15,8 @@ class ApiNotificationRepository {
       '/notifications',
       queryParameters: {'page': page, 'size': size},
     );
-    final content = response.data['data']['content'] as List;
+    print('[NOTIFICATION-RAW] response: ${response.data}');
+    final content = (response.data['data']?['notifications'] as List?) ?? [];
     return content
         .map((e) => NotificationItem.fromJson(e as Map<String, dynamic>))
         .toList();

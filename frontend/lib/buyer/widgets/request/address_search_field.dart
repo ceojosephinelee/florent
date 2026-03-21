@@ -92,7 +92,7 @@ class _AddressSearchSheetState extends State<_AddressSearchSheet> {
   final _dio = Dio(BaseOptions(
     baseUrl: const String.fromEnvironment(
       'API_BASE_URL',
-      defaultValue: 'http://13.239.23.33:8080/api/v1',
+      defaultValue: 'https://florent.co.kr/api/v1',
     ),
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
