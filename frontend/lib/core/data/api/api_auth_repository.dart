@@ -54,6 +54,15 @@ class ApiAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<void> registerDevice(String fcmToken, String platform) async {
+    await _dio.post('/devices', data: {
+      'fcmToken': fcmToken,
+      'platform': platform,
+    });
+    print('[API] registerDevice — platform=$platform');
+  }
+
+  @override
   Future<SellerInfoResult> registerSellerInfo({
     required String shopName,
     required String shopAddress,
