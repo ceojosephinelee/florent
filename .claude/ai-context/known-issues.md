@@ -391,4 +391,24 @@
 
 ---
 
+### [DEBT-034] MockStorageAdapter @Profile FQCN 사용
+
+- **유형**: 컨벤션 검토
+- **위치**: `adapter/out/storage/MockStorageAdapter.java`
+- **내용**: `@org.springframework.context.annotation.Profile("local")`로 FQCN 사용. MockFcmPushAdapter는 `@Profile("local")`로 import 방식 사용. 스타일 통일 필요.
+- **심각도**: Low
+- **상태**: OPEN
+
+---
+
+### [DEBT-035] Flutter FCM print() 로그 — 프로덕션 전 제거/교체 필요
+
+- **유형**: 기술 부채 (코드 정리)
+- **위치**: `frontend/lib/main.dart`
+- **내용**: `print('[FCM] 포그라운드 메시지 수신: ...')`로 디버그 로그 출력 중. 프로덕션 빌드 전 로거(logger 패키지) 교체 또는 제거 필요. DEBT-033과 동일 맥락.
+- **심각도**: Low
+- **상태**: OPEN
+
+---
+
 > 이슈 해결 시 상태를 RESOLVED로 변경하고 해결 방법을 기록한다.

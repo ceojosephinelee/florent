@@ -298,4 +298,23 @@
 
 ---
 
+## [AD-033] FcmPushAdapter 예외 전파 — OutboxWorker 재시도 연동
+
+- **결정일**: 2026-04-02
+- **결정 내용**: `FcmPushAdapter.send()`에서 `FirebaseMessagingException`을 `RuntimeException`으로 감싸 rethrow.
+- **이유**: 예외를 삼키면 `OutboxWorker.processEvent()`의 catch 블록에 도달하지 않아 `markSent()`가 호출됨. 실제로는 발송 실패인데 SENT로 처리되는 버그. rethrow하면 OutboxWorker의 `catch(Exception)` → `incrementAttemptAndRetry()` → 재시도 또는 FAILED 전이.
+- **트레이드오프**: RuntimeException wrapping은 checked exception을 unchecked로 변환. PushNotificationPort 인터페이스 시그니처에 throws를 추가하지 않고 해결.
+- **영향 파일**: `FcmPushAdapter.java`
+
+---
+
+## [AD-034] S3StorageAdapter + FcmPushAdapter prod 어댑터 실구현
+
+- **결정일**: 2026-04-02
+- **결정 내용**: AD-027의 MockStorageAdapter(MVP) 외에 `S3StorageAdapter`(`@Profile("prod")`) 실구현 추가. FcmPushAdapter도 실제 Firebase Admin SDK 호출.
+- **이유**: 프로덕션 배포 준비. AWS SDK v2 S3Presigner로 PUT presigned URL 생성. Firebase Admin SDK 9.2.0으로 실제 FCM 발송. `S3Properties` record로 설정 바인딩.
+- **영향 파일**: `S3StorageAdapter.java`, `FcmPushAdapter.java`, `S3Properties.java`, `build.gradle.kts`, `application-prod.yml`
+
+---
+
 > 새 결정이 발생하면 [AD-{N}] 형식으로 추가한다.
