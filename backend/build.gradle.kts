@@ -46,6 +46,13 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
 
+    // Firebase Admin SDK
+    implementation("com.google.firebase:firebase-admin:9.2.0")
+
+    // AWS S3
+    implementation(platform("software.amazon.awssdk:bom:2.25.16"))
+    implementation("software.amazon.awssdk:s3")
+
     // Lombok
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
