@@ -7,6 +7,16 @@ spring:
 jwt:
   secret-key: ${JWT_SECRET_KEY}
 
+firebase:
+  credentials-path: ${FIREBASE_CREDENTIALS_PATH}
+
+cloud:
+  aws:
+    s3:
+      bucket: ${S3_BUCKET_NAME}
+      region: ${AWS_REGION:ap-northeast-2}
+      presigned-url-expiration: 600
+
 kakao:
   local:
     base-url: https://dapi.kakao.com

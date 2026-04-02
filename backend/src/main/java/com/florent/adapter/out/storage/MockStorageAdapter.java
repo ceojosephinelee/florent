@@ -10,6 +10,7 @@ import java.util.UUID;
 
 @Slf4j
 @Component
+@org.springframework.context.annotation.Profile("local")
 public class MockStorageAdapter implements StoragePort {
 
     private static final String MOCK_BASE_URL = "https://florent-mock-s3.amazonaws.com";
