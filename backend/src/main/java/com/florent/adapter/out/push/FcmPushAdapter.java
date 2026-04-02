@@ -53,6 +53,7 @@ public class FcmPushAdapter implements PushNotificationPort {
             log.info("[FCM] 푸시 발송 성공: messageId={}", messageId);
         } catch (FirebaseMessagingException e) {
             log.error("[FCM] 푸시 발송 실패: token={}, error={}", fcmToken, e.getMessage(), e);
+            throw new RuntimeException("FCM 푸시 발송 실패: " + e.getMessage(), e);
         }
     }
 }
