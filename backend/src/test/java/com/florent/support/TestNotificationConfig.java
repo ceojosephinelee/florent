@@ -1,5 +1,7 @@
 package com.florent.support;
 
+import com.florent.domain.notification.PushNotificationPort;
+import com.florent.fake.FakePushNotificationPort;
 import com.florent.fake.FakeSaveNotificationUseCase;
 import com.florent.domain.notification.SaveNotificationUseCase;
 import org.springframework.context.annotation.Bean;
@@ -18,5 +20,10 @@ public class TestNotificationConfig {
     @Primary
     public SaveNotificationUseCase saveNotificationPort(FakeSaveNotificationUseCase fake) {
         return fake;
+    }
+
+    @Bean
+    public PushNotificationPort pushNotificationPort() {
+        return new FakePushNotificationPort();
     }
 }
