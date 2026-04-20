@@ -23,7 +23,7 @@ public class DeviceService implements RegisterDeviceUseCase {
     public RegisterDeviceResult register(RegisterDeviceCommand command) {
         UserDevice device = userDeviceRepository.findByFcmToken(command.fcmToken())
                 .map(existing -> {
-                    existing.updateToken(command.fcmToken(), command.platform(), clock);
+                    existing.updateToken(command.userId(), command.fcmToken(), command.platform(), clock);
                     return existing;
                 })
                 .orElseGet(() -> UserDevice.register(

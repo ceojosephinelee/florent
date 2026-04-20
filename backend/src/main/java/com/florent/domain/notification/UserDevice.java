@@ -35,7 +35,8 @@ public class UserDevice {
         this.updatedAt = LocalDateTime.now(clock);
     }
 
-    public void updateToken(String fcmToken, DevicePlatform platform, Clock clock) {
+    public void updateToken(Long userId, String fcmToken, DevicePlatform platform, Clock clock) {
+        this.userId = userId;
         this.fcmToken = fcmToken;
         this.platform = platform;
         this.isActive = true;
