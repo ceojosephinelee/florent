@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 
 import '../../models/seller_models.dart';
 
@@ -103,6 +106,48 @@ class ApiSellerRepository {
       moodTags: List<String>.from(request['moodTags'] ?? []),
       budgetTier: request['budgetTier'] as String?,
     );
+  }
+
+  // ── 이미지 업로드 ──
+
+  /// 1) 서버에서 presigned URL 발급 → 2) S3에 직접 업로드 → 3) imageUrl 반환
+  Future<String> uploadImage(File imageFile) async {
+    final fileName = imageFile.path.split('/').last;
+    final contentType = _guessContentType(fileName);
+
+    // Step 1: presigned URL 발급
+    final response = await _dio.post('/images/presigned-url', data: {
+      'fileName': fileName,
+      'contentType': contentType,
+      'target': 'PROPOSAL',
+    });
+    final presignedUrl = response.data['data']['presignedUrl'] as String;
+    final imageUrl = response.data['data']['imageUrl'] as String;
+
+    // Step 2: S3에 직접 PUT 업로드 (Dio가 아닌 http 패키지 사용 — 인증 헤더 불필요)
+    final bytes = await imageFile.readAsBytes();
+    final putResponse = await http.put(
+      Uri.parse(presignedUrl),
+      headers: {'Content-Type': contentType},
+      body: bytes,
+    );
+    if (putResponse.statusCode != 200) {
+      throw Exception('S3 업로드 실패: ${putResponse.statusCode}');
+    }
+
+    // Step 3: 업로드 완료된 이미지 URL 반환
+    return imageUrl;
+  }
+
+  String _guessContentType(String fileName) {
+    final ext = fileName.split('.').last.toLowerCase();
+    return switch (ext) {
+      'png' => 'image/png',
+      'gif' => 'image/gif',
+      'webp' => 'image/webp',
+      'heic' || 'heif' => 'image/heic',
+      _ => 'image/jpeg',
+    };
   }
 
   // ── 프로필 ──

@@ -113,6 +113,7 @@ class SellerProposalForm with _$SellerProposalForm {
     @Default('') String wrapping,
     @Default('') String recommendation,
     @Default(0) int price,
+    @Default([]) List<String> imageUrls,
     String? selectedSlotKind,
     String? selectedSlotValue,
     String? expiresAt,
