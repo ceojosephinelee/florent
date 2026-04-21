@@ -37,7 +37,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>kakao$(KAKAO_NATIVE_KEY)</string>
+				<string>kakao4c252d5a806db7d1a51d80209e7dbf53</string>
 			</array>
 		</dict>
 	</array>
@@ -64,6 +64,8 @@
 			</array>
 		</dict>
 	</dict>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<false/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
