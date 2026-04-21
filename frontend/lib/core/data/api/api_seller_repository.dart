@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
 
 import '../../models/seller_models.dart';
 
@@ -124,15 +123,28 @@ class ApiSellerRepository {
     final presignedUrl = response.data['data']['presignedUrl'] as String;
     final imageUrl = response.data['data']['imageUrl'] as String;
 
-    // Step 2: S3에 직접 PUT 업로드 (Dio가 아닌 http 패키지 사용 — 인증 헤더 불필요)
+    // Step 2: S3에 직접 PUT 업로드 (인증 헤더 없는 별도 Dio 인스턴스 사용)
     final bytes = await imageFile.readAsBytes();
-    final putResponse = await http.put(
-      Uri.parse(presignedUrl),
-      headers: {'Content-Type': contentType},
-      body: bytes,
-    );
-    if (putResponse.statusCode != 200) {
-      throw Exception('S3 업로드 실패: ${putResponse.statusCode}');
+    print('[IMAGE] 업로드 시작: fileName=$fileName, contentType=$contentType, size=${bytes.length}');
+    print('[IMAGE] presignedUrl=${presignedUrl.substring(0, 80)}...');
+
+    final s3Dio = Dio();
+    try {
+      await s3Dio.put(
+        presignedUrl,
+        data: Stream.fromIterable([bytes]),
+        options: Options(
+          headers: {
+            'Content-Type': contentType,
+            'Content-Length': bytes.length,
+          },
+          sendTimeout: const Duration(seconds: 30),
+          receiveTimeout: const Duration(seconds: 30),
+        ),
+      );
+    } on DioException catch (e) {
+      print('[IMAGE] S3 업로드 실패: status=${e.response?.statusCode}, body=${e.response?.data}');
+      throw Exception('S3 업로드 실패: ${e.response?.statusCode} ${e.response?.data}');
     }
 
     // Step 3: 업로드 완료된 이미지 URL 반환
