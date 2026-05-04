@@ -1,7 +1,7 @@
 # /ship — 기능 완료 후 커밋 & PR
 
-> Layer 6(Cucumber)까지 구현 완료 후 실행한다.
-> 테스트 → worktree → 커밋 → PR → 정리까지 자동 처리한다.
+> 기능 구현 완료 후 실행한다.
+> 테스트 → 커밋 → PR 생성까지 처리한다.
 
 ---
 
@@ -9,86 +9,80 @@
 
 직접 bash로 실행한다. 명령어만 알려주는 게 아니라 네가 실행한다.
 
-### [주의 — 반드시 지킬 것]
-- `cp` 명령어 절대 사용 금지 (파일 복사 하지 않는다)
-- worktree 안에 새 폴더를 만들거나 기존 폴더를 중첩하지 않는다
-- worktree는 레포 전체 구조가 그대로 들어가므로 추가 복사 없이 `git add`만 한다
+---
 
-### Step 0.5. ai-context 업데이트 (커밋 전에 먼저)
-- `.claude/ai-context/known-issues.md` — 새 DEBT/BUG 추가, 해결된 것은 RESOLVED 처리
-- `.claude/ai-context/domain-knowledge.md` — 도메인 관련 발견 사항 추가
-- `.claude/ai-context/api-decisions.md` — 이번 구현 중 발생한 설계 결정 추가
+### Step 1. develop 최신화
 
-### Step 0.7. Medium 이상 DEBT 경고
 ```bash
-# known-issues.md에서 Medium/High OPEN DEBT 확인
-grep -B2 -A2 "심각도: Medium\|심각도: High" .claude/ai-context/known-issues.md | grep -A4 "OPEN"
+git checkout develop
+git pull origin develop
 ```
-→ Medium 이상 OPEN DEBT가 있으면 사용자에게 경고하고 이번 PR에서 처리할지 확인 요청.
-→ 사용자가 이월을 선택하면 그대로 진행.
 
-### Step 1. 최종 테스트
+---
 
-Docker 상태를 먼저 확인한다:
+### Step 2. feat 브랜치 생성
+
+```bash
+git checkout -b feat/{기능명}
+# 예: git checkout -b feat/proposal-api
+```
+
+---
+
+### Step 3. ai-context 업데이트
+
+- `.claude/ai-context/known-issues.md` — 새 DEBT/BUG 추가, 해결된 것 RESOLVED 처리
+- `.claude/ai-context/api-decisions.md` — 이번 구현 중 설계 결정 추가
+
+---
+
+### Step 4. 테스트
+
+Docker 상태 확인:
+
 ```bash
 docker info > /dev/null 2>&1 && echo "DOCKER_RUNNING" || echo "DOCKER_NOT_RUNNING"
 ```
 
-**Docker 실행 중:**
+Docker 실행 중:
 ```bash
 cd backend && ./gradlew test
 ```
-→ BUILD SUCCESSFUL (전체 GREEN) 확인. FAILED 있으면 수정 후 재실행. 통과 전까지 다음 단계 금지.
 
-**Docker 미실행:**
+Docker 미실행:
 ```bash
-cd backend && ./gradlew test --tests "!com.florent.acceptance.*" 2>/dev/null || ./gradlew test -x cucumberTest 2>/dev/null || ./gradlew test
+cd backend && ./gradlew test -x cucumberTest
 ```
-→ 단위 + 슬라이스 테스트 GREEN이면 통과. Cucumber(Testcontainers) 실패는 허용.
-→ 단위/슬라이스 테스트도 실패하면 수정 후 재실행.
 
-### Step 2. 변경 파일 확인
+→ FAILED 있으면 수정 후 재실행. 통과 전까지 다음 단계 금지.
+
+---
+
+### Step 5. anti-pattern 검사
+
 ```bash
+grep -r "@Autowired" backend/src/main --include="*.java"
+grep -r "throw new RuntimeException" backend/src/main --include="*.java"
+grep -r "import jakarta.persistence" backend/src/main/java/com/florent/*/domain --include="*.java"
+```
+
+→ 결과 나오면 수정 후 Step 4부터 재실행.
+
+---
+
+### Step 6. 커밋 & 푸시
+
+```bash
+git add .
 git status
-git diff --stat HEAD
-```
-
-### Step 0. develop 최신화 확인 (반드시 먼저)
-```bash
-git checkout develop
-git pull origin develop
-git log --oneline -3
-```
-→ 이전 PR 머지 커밋이 포함되어 있는지 확인
-→ 포함되어 있지 않으면 중단하고 GitHub에서 PR 머지 후 다시 실행
-
-### Step 3. 브랜치 + worktree 생성
-```bash
-# $BRANCH_NAME 은 아래 규칙으로 결정:
-# 백엔드 기능: feature/backend/{기능명}
-# 예: feature/backend/proposal-api
-
-# 항상 최신 develop 기준으로 브랜치 생성
-git checkout develop && git pull origin develop && git checkout -b $BRANCH_NAME
-git push -u origin $BRANCH_NAME
-git worktree add ../$WORKTREE_NAME $BRANCH_NAME
-```
-
-### Step 4. worktree 이동 후 구조 확인
-```bash
-cd ../$WORKTREE_NAME
-ls          # 레포 루트 구조가 그대로 있어야 함 (backend/, frontend/ 등)
-git status  # 변경 파일 목록 확인
-```
-
-### Step 5. 커밋 & 푸시
-```bash
-git add backend/
 git commit -m "{type}({scope}): {기능명}"
-git push origin $BRANCH_NAME
+git push -u origin feat/{기능명}
 ```
 
-### Step 6. PR 생성
+---
+
+### Step 7. PR 생성
+
 ```bash
 gh pr create --base develop \
   --title "{type}({scope}): {기능명}" \
@@ -100,22 +94,22 @@ gh pr create --base develop \
 - [ ] Domain에 JPA 어노테이션 없음
 - [ ] Service가 Port 인터페이스만 의존
 - [ ] Controller가 UseCase 인터페이스만 의존
-- [ ] feature 파일 에러코드와 ErrorCode enum 일치
 
 ## 테스트
-{통과한 feature 목록 및 시나리오 수}
 - BUILD SUCCESSFUL
+{통과한 테스트 목록}
 "
 ```
 
-### Step 7. worktree 정리
+---
+
+### Step 8. 완료 안내
+
+PR 링크를 지현이에게 보여준다.
+머지는 지현이가 직접 GitHub에서 한다.
+머지 후 다음 작업 시작 전 반드시:
+
 ```bash
-cd ../florent
-git worktree remove ../$WORKTREE_NAME
+git checkout develop
+git pull origin develop
 ```
-
-### Step 8. 머지 후 안내
-→ PR 머지 후 다음 세션 시작 전 반드시 `git pull origin develop` 실행
-
-### Step 9. ai-context 최종 확인
-→ Step 0.5에서 이미 업데이트했으므로, 커밋/PR 과정에서 추가로 발견한 사항만 보완한다.
