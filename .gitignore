@@ -3,3 +3,4 @@ request.diff
 *.diff
 Claude.md
 claude.md
+.DS_Store
