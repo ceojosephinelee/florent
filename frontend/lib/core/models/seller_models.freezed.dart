@@ -1998,6 +1998,7 @@ mixin _$SellerProposalForm {
   String get wrapping => throw _privateConstructorUsedError;
   String get recommendation => throw _privateConstructorUsedError;
   int get price => throw _privateConstructorUsedError;
+  List<String> get imageUrls => throw _privateConstructorUsedError;
   String? get selectedSlotKind => throw _privateConstructorUsedError;
   String? get selectedSlotValue => throw _privateConstructorUsedError;
   String? get expiresAt => throw _privateConstructorUsedError;
@@ -2027,6 +2028,7 @@ abstract class $SellerProposalFormCopyWith<$Res> {
     String wrapping,
     String recommendation,
     int price,
+    List<String> imageUrls,
     String? selectedSlotKind,
     String? selectedSlotValue,
     String? expiresAt,
@@ -2058,6 +2060,7 @@ class _$SellerProposalFormCopyWithImpl<$Res, $Val extends SellerProposalForm>
     Object? wrapping = null,
     Object? recommendation = null,
     Object? price = null,
+    Object? imageUrls = null,
     Object? selectedSlotKind = freezed,
     Object? selectedSlotValue = freezed,
     Object? expiresAt = freezed,
@@ -2101,6 +2104,10 @@ class _$SellerProposalFormCopyWithImpl<$Res, $Val extends SellerProposalForm>
                 ? _value.price
                 : price // ignore: cast_nullable_to_non_nullable
                       as int,
+            imageUrls: null == imageUrls
+                ? _value.imageUrls
+                : imageUrls // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
             selectedSlotKind: freezed == selectedSlotKind
                 ? _value.selectedSlotKind
                 : selectedSlotKind // ignore: cast_nullable_to_non_nullable
@@ -2142,6 +2149,7 @@ abstract class _$$SellerProposalFormImplCopyWith<$Res>
     String wrapping,
     String recommendation,
     int price,
+    List<String> imageUrls,
     String? selectedSlotKind,
     String? selectedSlotValue,
     String? expiresAt,
@@ -2172,6 +2180,7 @@ class __$$SellerProposalFormImplCopyWithImpl<$Res>
     Object? wrapping = null,
     Object? recommendation = null,
     Object? price = null,
+    Object? imageUrls = null,
     Object? selectedSlotKind = freezed,
     Object? selectedSlotValue = freezed,
     Object? expiresAt = freezed,
@@ -2215,6 +2224,10 @@ class __$$SellerProposalFormImplCopyWithImpl<$Res>
             ? _value.price
             : price // ignore: cast_nullable_to_non_nullable
                   as int,
+        imageUrls: null == imageUrls
+            ? _value._imageUrls
+            : imageUrls // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
         selectedSlotKind: freezed == selectedSlotKind
             ? _value.selectedSlotKind
             : selectedSlotKind // ignore: cast_nullable_to_non_nullable
@@ -2249,11 +2262,13 @@ class _$SellerProposalFormImpl extends _SellerProposalForm {
     this.wrapping = '',
     this.recommendation = '',
     this.price = 0,
+    final List<String> imageUrls = const [],
     this.selectedSlotKind,
     this.selectedSlotValue,
     this.expiresAt,
     this.fulfillmentType,
-  }) : super._();
+  }) : _imageUrls = imageUrls,
+       super._();
 
   @override
   final int? requestId;
@@ -2280,6 +2295,15 @@ class _$SellerProposalFormImpl extends _SellerProposalForm {
   @override
   @JsonKey()
   final int price;
+  final List<String> _imageUrls;
+  @override
+  @JsonKey()
+  List<String> get imageUrls {
+    if (_imageUrls is EqualUnmodifiableListView) return _imageUrls;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_imageUrls);
+  }
+
   @override
   final String? selectedSlotKind;
   @override
@@ -2291,7 +2315,7 @@ class _$SellerProposalFormImpl extends _SellerProposalForm {
 
   @override
   String toString() {
-    return 'SellerProposalForm(requestId: $requestId, proposalId: $proposalId, conceptTitle: $conceptTitle, mainFlowers: $mainFlowers, subFlowers: $subFlowers, concept: $concept, wrapping: $wrapping, recommendation: $recommendation, price: $price, selectedSlotKind: $selectedSlotKind, selectedSlotValue: $selectedSlotValue, expiresAt: $expiresAt, fulfillmentType: $fulfillmentType)';
+    return 'SellerProposalForm(requestId: $requestId, proposalId: $proposalId, conceptTitle: $conceptTitle, mainFlowers: $mainFlowers, subFlowers: $subFlowers, concept: $concept, wrapping: $wrapping, recommendation: $recommendation, price: $price, imageUrls: $imageUrls, selectedSlotKind: $selectedSlotKind, selectedSlotValue: $selectedSlotValue, expiresAt: $expiresAt, fulfillmentType: $fulfillmentType)';
   }
 
   @override
@@ -2315,6 +2339,10 @@ class _$SellerProposalFormImpl extends _SellerProposalForm {
             (identical(other.recommendation, recommendation) ||
                 other.recommendation == recommendation) &&
             (identical(other.price, price) || other.price == price) &&
+            const DeepCollectionEquality().equals(
+              other._imageUrls,
+              _imageUrls,
+            ) &&
             (identical(other.selectedSlotKind, selectedSlotKind) ||
                 other.selectedSlotKind == selectedSlotKind) &&
             (identical(other.selectedSlotValue, selectedSlotValue) ||
@@ -2337,6 +2365,7 @@ class _$SellerProposalFormImpl extends _SellerProposalForm {
     wrapping,
     recommendation,
     price,
+    const DeepCollectionEquality().hash(_imageUrls),
     selectedSlotKind,
     selectedSlotValue,
     expiresAt,
@@ -2366,6 +2395,7 @@ abstract class _SellerProposalForm extends SellerProposalForm {
     final String wrapping,
     final String recommendation,
     final int price,
+    final List<String> imageUrls,
     final String? selectedSlotKind,
     final String? selectedSlotValue,
     final String? expiresAt,
@@ -2391,6 +2421,8 @@ abstract class _SellerProposalForm extends SellerProposalForm {
   String get recommendation;
   @override
   int get price;
+  @override
+  List<String> get imageUrls;
   @override
   String? get selectedSlotKind;
   @override

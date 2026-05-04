@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 
 import '../../models/seller_models.dart';
@@ -103,6 +105,61 @@ class ApiSellerRepository {
       moodTags: List<String>.from(request['moodTags'] ?? []),
       budgetTier: request['budgetTier'] as String?,
     );
+  }
+
+  // ── 이미지 업로드 ──
+
+  /// 1) 서버에서 presigned URL 발급 → 2) S3에 직접 업로드 → 3) imageUrl 반환
+  Future<String> uploadImage(File imageFile) async {
+    final fileName = imageFile.path.split('/').last;
+    final contentType = _guessContentType(fileName);
+
+    // Step 1: presigned URL 발급
+    final response = await _dio.post('/images/presigned-url', data: {
+      'fileName': fileName,
+      'contentType': contentType,
+      'target': 'PROPOSAL',
+    });
+    final presignedUrl = response.data['data']['presignedUrl'] as String;
+    final imageUrl = response.data['data']['imageUrl'] as String;
+
+    // Step 2: S3에 직접 PUT 업로드 (인증 헤더 없는 별도 Dio 인스턴스 사용)
+    final bytes = await imageFile.readAsBytes();
+    print('[IMAGE] 업로드 시작: fileName=$fileName, contentType=$contentType, size=${bytes.length}');
+    print('[IMAGE] presignedUrl=${presignedUrl.substring(0, 80)}...');
+
+    final s3Dio = Dio();
+    try {
+      await s3Dio.put(
+        presignedUrl,
+        data: Stream.fromIterable([bytes]),
+        options: Options(
+          headers: {
+            'Content-Type': contentType,
+            'Content-Length': bytes.length,
+          },
+          sendTimeout: const Duration(seconds: 30),
+          receiveTimeout: const Duration(seconds: 30),
+        ),
+      );
+    } on DioException catch (e) {
+      print('[IMAGE] S3 업로드 실패: status=${e.response?.statusCode}, body=${e.response?.data}');
+      throw Exception('S3 업로드 실패: ${e.response?.statusCode} ${e.response?.data}');
+    }
+
+    // Step 3: 업로드 완료된 이미지 URL 반환
+    return imageUrl;
+  }
+
+  String _guessContentType(String fileName) {
+    final ext = fileName.split('.').last.toLowerCase();
+    return switch (ext) {
+      'png' => 'image/png',
+      'gif' => 'image/gif',
+      'webp' => 'image/webp',
+      'heic' || 'heif' => 'image/heic',
+      _ => 'image/jpeg',
+    };
   }
 
   // ── 프로필 ──

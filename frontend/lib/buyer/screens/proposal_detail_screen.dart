@@ -33,24 +33,51 @@ class ProposalDetailScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: double.infinity,
-                        height: 210,
-                        color: roseLt,
-                        alignment: Alignment.center,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(detail.shopEmoji ?? '🌸', style: const TextStyle(fontSize: 48)),
-                            const SizedBox(height: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                              decoration: BoxDecoration(color: whiteColor.withValues(alpha: 0.8), borderRadius: BorderRadius.circular(4)),
-                              child: Text('참고용 이미지', style: AppTypography.body(fontSize: 9, color: ink60)),
+                      if (detail.imageUrls.isNotEmpty)
+                        SizedBox(
+                          height: 210,
+                          child: PageView.builder(
+                            itemCount: detail.imageUrls.length,
+                            itemBuilder: (context, index) => Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                Image.network(
+                                  detail.imageUrls[index],
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => Container(
+                                    color: roseLt,
+                                    alignment: Alignment.center,
+                                    child: const Text('🌸', style: TextStyle(fontSize: 48)),
+                                  ),
+                                ),
+                                if (detail.imageUrls.length > 1)
+                                  Positioned(
+                                    bottom: 8,
+                                    right: 12,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black54,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        '${index + 1}/${detail.imageUrls.length}',
+                                        style: AppTypography.body(fontSize: 10, color: whiteColor),
+                                      ),
+                                    ),
+                                  ),
+                              ],
                             ),
-                          ],
+                          ),
+                        )
+                      else
+                        Container(
+                          width: double.infinity,
+                          height: 210,
+                          color: roseLt,
+                          alignment: Alignment.center,
+                          child: Text(detail.shopEmoji ?? '🌸', style: const TextStyle(fontSize: 48)),
                         ),
-                      ),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(18, 16, 18, 24),
                         child: Column(

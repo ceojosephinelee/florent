@@ -411,4 +411,15 @@
 
 ---
 
+### [DEBT-036] FCM 토큰 갱신 리스너(onTokenRefresh) 미구현
+
+- **유형**: 기술 부채 (기능 제한)
+- **위치**: `frontend/lib/core/auth/auth_provider.dart` — `_registerFcmToken()`
+- **내용**: `FirebaseMessaging.instance.onTokenRefresh` 리스너가 없음. FCM 토큰이 갱신되면 서버에 등록된 토큰이 무효화되어 푸시 실패. 현재는 앱 재시작 시 `checkAuthStatus()` → `_registerFcmToken()`에서 재등록되므로 MVP 단계에서는 허용.
+- **심각도**: Low
+- **해결 조건**: 실사용자 유입 후 토큰 만료로 인한 푸시 미수신 이슈 발생 시
+- **상태**: OPEN
+
+---
+
 > 이슈 해결 시 상태를 RESOLVED로 변경하고 해결 방법을 기록한다.

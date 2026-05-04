@@ -1,3 +1,6 @@
+---
+description: 문서 작성, api-spec.md 업데이트, README 작성 시 활성화. "문서", "docs", "정리해줘" 관련 요청.
+---
 # skills/tech-writer.md — Tech Writer 에이전트 행동 지침
 
 > 이 파일은 **Tech Writer** 에이전트가 작업 시작 전 반드시 읽는 행동 강령이다.

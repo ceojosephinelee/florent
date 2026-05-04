@@ -37,6 +37,10 @@ import '../../seller/screens/seller_reservations_tab_screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/splash',
+  onException: (context, state, router) {
+    // 카카오 OAuth 콜백 URL (kakao{앱키}://oauth?code=...) 등
+    // GoRouter가 처리할 수 없는 외부 scheme URL은 무시
+  },
   routes: [
     // ========== AUTH ==========
     GoRoute(path: '/splash', builder: (_, __) => const SplashScreen()),

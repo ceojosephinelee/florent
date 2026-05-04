@@ -1,3 +1,6 @@
+---
+description: 성능 리뷰, N+1 문제, 쿼리 최적화 시 활성화. "성능", "N+1", "느려", "최적화" 관련 요청.
+---
 # skills/reviewer-performance.md — 성능 전문 리뷰어
 
 > **새 대화창**에서 실행한다. 기본 code-reviewer.md와 별개로 성능 관점만 집중 검토한다.

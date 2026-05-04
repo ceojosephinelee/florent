@@ -34,9 +34,10 @@ class UserDeviceTest {
                 1L, DevicePlatform.IOS, "old-token", fixedClock);
 
         // when
-        device.updateToken("new-token", DevicePlatform.ANDROID, fixedClock);
+        device.updateToken(99L, "new-token", DevicePlatform.ANDROID, fixedClock);
 
         // then
+        assertThat(device.getUserId()).isEqualTo(99L);
         assertThat(device.getFcmToken()).isEqualTo("new-token");
         assertThat(device.getPlatform()).isEqualTo(DevicePlatform.ANDROID);
         assertThat(device.isActive()).isTrue();

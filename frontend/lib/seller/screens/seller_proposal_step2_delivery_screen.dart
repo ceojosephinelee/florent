@@ -52,6 +52,7 @@ class _SellerProposalStep2DeliveryScreenState
           'value': form.selectedSlotValue,
         },
         'price': form.price,
+        'imageUrls': form.imageUrls,
       });
 
       await repo.submitProposal(proposalId);

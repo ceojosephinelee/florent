@@ -1,4 +1,4 @@
-name: Florent CI
+cname: Florent CI
 
 on:
   push:

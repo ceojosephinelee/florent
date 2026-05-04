@@ -1,3 +1,6 @@
+---
+description: 보안 리뷰, 인증/인가, JWT, Kakao OAuth 관련 코드 리뷰 시 활성화. "보안", "auth", "인증" 관련 요청.
+---
 # skills/reviewer-security.md — 보안 전문 리뷰어
 
 > **새 대화창**에서 실행한다. Auth/JWT/인가 관점만 집중 검토한다.

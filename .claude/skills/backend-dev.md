@@ -1,3 +1,6 @@
+---
+description: 백엔드 기능 구현, Spring Boot 코드 작성, API 개발 시 활성화. "구현해줘", "만들어줘", "백엔드" 관련 요청.
+---
 # skills/backend-dev.md — Backend Dev 에이전트 행동 지침
 
 > 이 파일은 **Backend Dev** 에이전트가 작업 시작 전 반드시 읽는 행동 강령이다.

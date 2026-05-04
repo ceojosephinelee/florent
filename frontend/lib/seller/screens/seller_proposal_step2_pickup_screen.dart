@@ -56,6 +56,7 @@ class _SellerProposalStep2PickupScreenState
           'value': form.selectedSlotValue,
         },
         'price': form.price,
+        'imageUrls': form.imageUrls,
       });
 
       // 2. POST — 제출

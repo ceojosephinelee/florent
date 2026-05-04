@@ -307,15 +307,46 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> _registerFcmToken() async {
     try {
       final messaging = FirebaseMessaging.instance;
-      await messaging.requestPermission();
+      print('[FCM] ① requestPermission() 호출');
+      final settings = await messaging.requestPermission();
+      print('[FCM] ② 권한 결과: authorizationStatus=${settings.authorizationStatus}, alert=${settings.alert}, badge=${settings.badge}, sound=${settings.sound}');
+
+      // iOS: APNS 토큰이 설정되어야 FCM 토큰 발급 가능
+      if (Platform.isIOS) {
+        String? apnsToken;
+        for (var i = 0; i < 3; i++) {
+          print('[FCM] ③ getAPNSToken() 시도 ${i + 1}/3');
+          try {
+            apnsToken = await messaging.getAPNSToken();
+            print('[FCM] ③ getAPNSToken() 결과: ${apnsToken != null ? "${apnsToken.substring(0, 10)}... (len=${apnsToken.length})" : "null"}');
+          } catch (apnsError, apnsSt) {
+            print('[FCM] ③ getAPNSToken() 예외: $apnsError');
+            print('[FCM] ③ 스택트레이스:\n$apnsSt');
+          }
+          if (apnsToken != null) break;
+          print('[FCM] ③ 1초 대기 후 재시도...');
+          await Future.delayed(const Duration(seconds: 1));
+        }
+        if (apnsToken == null) {
+          print('[FCM] ④ APNS 토큰 3회 모두 null — FCM 등록 건너뜀');
+          print('[FCM] ④ 확인사항: Runner.entitlements에 aps-environment 있는지, Xcode Push Notifications capability 활성화됐는지, 실기기인지 시뮬레이터인지');
+          return;
+        }
+      }
+
+      print('[FCM] ⑤ getToken() 호출');
       final fcmToken = await messaging.getToken();
+      print('[FCM] ⑤ FCM 토큰: ${fcmToken != null ? "${fcmToken.substring(0, 20)}... (len=${fcmToken.length})" : "null"}');
       if (fcmToken != null) {
         final platform = Platform.isIOS ? 'IOS' : 'ANDROID';
         await _authRepository.registerDevice(fcmToken, platform);
-        print('[FCM] 토큰 등록 완료: platform=$platform');
+        print('[FCM] ⑥ 서버 등록 완료: platform=$platform');
+      } else {
+        print('[FCM] ⑤ FCM 토큰 null — 서버 등록 건너뜀');
       }
-    } catch (e) {
-      print('[FCM] 토큰 등록 실패 (무시): $e');
+    } catch (e, st) {
+      print('[FCM] 토큰 등록 실패: $e');
+      print('[FCM] 스택트레이스:\n$st');
     }
   }
 

@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../buyer/widgets/common/app_nav_bar.dart';
 import '../../core/models/enums.dart';
@@ -26,7 +29,9 @@ class _SellerProposalStep1ScreenState
     extends ConsumerState<SellerProposalStep1Screen> {
   bool _isCreatingDraft = true;
   String? _draftError;
+  bool _isUploading = false;
 
+  final _imagePicker = ImagePicker();
   final _conceptTitleCtrl = TextEditingController();
   final _mainFlowersCtrl = TextEditingController();
   final _subFlowersCtrl = TextEditingController();
@@ -95,6 +100,14 @@ class _SellerProposalStep1ScreenState
             }
           }
 
+          // 이미지 로드
+          final savedUrls = proposalData['imageUrls'] as List?;
+          if (savedUrls != null) {
+            for (final url in savedUrls) {
+              notifier.addImageUrl(url as String);
+            }
+          }
+
           // 슬롯 로드
           final slot = proposalData['availableSlot'] as Map<String, dynamic>?;
           if (slot != null) {
@@ -145,6 +158,30 @@ class _SellerProposalStep1ScreenState
         _isCreatingDraft = false;
         _draftError = e.toString();
       });
+    }
+  }
+
+  Future<void> _pickAndUploadImage() async {
+    final picked = await _imagePicker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1024,
+      imageQuality: 80,
+    );
+    if (picked == null || !mounted) return;
+
+    setState(() => _isUploading = true);
+    try {
+      final repo = ref.read(sellerRepositoryProvider);
+      final imageUrl = await repo.uploadImage(File(picked.path));
+      if (!mounted) return;
+      ref.read(sellerProposalFormProvider.notifier).addImageUrl(imageUrl);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('이미지 업로드 실패: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _isUploading = false);
     }
   }
 
@@ -306,22 +343,88 @@ class _SellerProposalStep1ScreenState
                         const SizedBox(height: 20),
                         _label('📷 사진 첨부 (선택)'),
                         const SizedBox(height: 6),
-                        Container(
-                          width: 60,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            color: creamColor,
-                            borderRadius: kBorderRadiusSm,
-                            border: Border.all(
-                                color: borderColor, width: 1.5),
+                        SizedBox(
+                          height: 72,
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: [
+                              // 업로드된 이미지 썸네일
+                              for (var i = 0; i < form.imageUrls.length; i++)
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 8),
+                                  child: Stack(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: Image.network(
+                                          form.imageUrls[i],
+                                          width: 64,
+                                          height: 64,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (_, __, ___) =>
+                                              Container(
+                                            width: 64,
+                                            height: 64,
+                                            color: _sageLt,
+                                            child: const Icon(Icons.image,
+                                                color: _sage, size: 24),
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: -4,
+                                        right: -4,
+                                        child: GestureDetector(
+                                          onTap: () => notifier.removeImageUrl(i),
+                                          child: Container(
+                                            width: 20,
+                                            height: 20,
+                                            decoration: const BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.black54,
+                                            ),
+                                            child: const Icon(Icons.close,
+                                                size: 12, color: Colors.white),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              // + 버튼 (최대 5장)
+                              if (form.imageUrls.length < 5)
+                                GestureDetector(
+                                  onTap: _isUploading ? null : _pickAndUploadImage,
+                                  child: Container(
+                                    width: 64,
+                                    height: 64,
+                                    decoration: BoxDecoration(
+                                      color: creamColor,
+                                      borderRadius: kBorderRadiusSm,
+                                      border: Border.all(
+                                          color: borderColor, width: 1.5),
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: _isUploading
+                                        ? const SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: _sage,
+                                            ),
+                                          )
+                                        : Text('+',
+                                            style: AppTypography.body(
+                                                fontSize: 24, color: ink30)),
+                                  ),
+                                ),
+                            ],
                           ),
-                          alignment: Alignment.center,
-                          child: Text('+',
-                              style: AppTypography.body(
-                                  fontSize: 24, color: ink30)),
                         ),
                         const SizedBox(height: 4),
-                        Text('레퍼런스나 직접 제작한 예시 이미지를 올려주세요.',
+                        Text(
+                            '레퍼런스나 직접 제작한 예시 이미지를 올려주세요. (최대 5장)',
                             style: AppTypography.body(
                                 fontSize: 10, color: ink30)),
                       ],

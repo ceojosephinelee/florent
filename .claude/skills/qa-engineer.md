@@ -1,3 +1,6 @@
+---
+description: 테스트 작성, Cucumber feature 파일 작성, E2E 시나리오 설계 시 활성화. "테스트", "feature", "시나리오" 관련 요청.
+---
 # skills/qa-engineer.md — QA Engineer 에이전트 행동 지침
 
 > 이 파일은 **QA Engineer** 에이전트가 작업 시작 전 반드시 읽는 행동 강령이다.
