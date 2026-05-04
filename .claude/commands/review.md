@@ -25,10 +25,10 @@ git diff develop...HEAD
 - `skills/code-reviewer.md` — 아키텍처 · 컨벤션 종합 리뷰
 
 전문 리뷰어 (필요 시 추가 — 새 대화창에서 각각 실행):
-- `skills/reviewer-performance.md` — 성능 · N+1 전문
-- `skills/reviewer-security.md` — 보안 · Auth/JWT 전문
-- `skills/reviewer-test.md` — 테스트 커버리지 전문
-- `skills/reviewer-ddd.md` — DDD · 도메인 설계 전문
+- `.claude/agents/reviewer-performance.md` — 성능 · N+1 전문
+- `.claude/agents/reviewer-security.md` — 보안 · Auth/JWT 전문
+- `.claude/agents/reviewer-test.md` — 테스트 커버리지 전문
+- `.claude/agents/reviewer-ddd.md` — DDD · 도메인 설계 전문
 
 ---
 

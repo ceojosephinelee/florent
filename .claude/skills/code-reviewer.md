@@ -1,4 +1,7 @@
-# skills/code-reviewer.md — Code Reviewer 에이전트 행동 지침
+---
+description: 코드 리뷰, 리팩토링 요청 시 활성화. "리뷰해줘", "review", "코드 봐줘" 관련 요청.
+---
+# .claude/skills/code-reviewer.md — Code Reviewer 에이전트 행동 지침
 
 > 이 파일은 **Code Reviewer** 에이전트가 작업 시작 전 반드시 읽는 행동 강령이다.
 > CLAUDE.md → architecture.md → conventions.md → 이 파일 순서로 읽어라.

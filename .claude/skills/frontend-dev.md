@@ -1,3 +1,6 @@
+---
+description: Flutter 프론트엔드 구현, UI 컴포넌트 작성, Riverpod 상태관리 시 활성화. "Flutter", "화면", "프론트" 관련 요청.
+---
 # skills/frontend-dev.md — Frontend Dev 에이전트 행동 지침
 
 > 루트 CLAUDE.md → `frontend/CLAUDE.md` → 이 파일 순서로 읽어라.
