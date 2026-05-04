@@ -24,7 +24,6 @@ public class S3StorageAdapter implements StoragePort {
     private final S3Presigner presigner;
     private final S3Properties properties;
 
-    @org.springframework.beans.factory.annotation.Autowired
     public S3StorageAdapter(S3Properties properties) {
         this(properties, S3Presigner.builder()
                 .region(Region.of(properties.region()))
