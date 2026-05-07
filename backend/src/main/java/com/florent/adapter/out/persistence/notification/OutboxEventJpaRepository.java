@@ -17,4 +17,8 @@ public interface OutboxEventJpaRepository extends JpaRepository<OutboxEventJpaEn
     List<OutboxEventJpaEntity> findPendingBefore(
             @Param("now") LocalDateTime now,
             org.springframework.data.domain.Pageable pageable);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @Query("DELETE FROM OutboxEventJpaEntity e WHERE e.notificationId IN :notificationIds")
+    void deleteByNotificationIds(@Param("notificationIds") List<Long> notificationIds);
 }

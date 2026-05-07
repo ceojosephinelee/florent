@@ -94,12 +94,57 @@ class BuyerMyTabScreen extends ConsumerWidget {
                 ),
               ),
             ),
+            const SizedBox(height: 12),
+            Center(
+              child: GestureDetector(
+                onTap: () => _showWithdrawDialog(context, ref),
+                child: Text(
+                  '회원 탈퇴',
+                  style: AppTypography.body(fontSize: 12, color: ink30),
+                ),
+              ),
+            ),
             const SizedBox(height: 32),
           ],
         ),
       ),
     );
   }
+}
+
+void _showWithdrawDialog(BuildContext context, WidgetRef ref) {
+  showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: const Text('회원 탈퇴'),
+      content: const Text('탈퇴 시 모든 데이터가 삭제되며 복구할 수 없습니다.\n정말 탈퇴하시겠습니까?'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(ctx).pop(),
+          child: const Text('취소'),
+        ),
+        TextButton(
+          onPressed: () async {
+            Navigator.of(ctx).pop();
+            try {
+              await ref.read(authProvider.notifier).withdraw();
+              if (context.mounted) {
+                context.go('/login');
+              }
+            } catch (e) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('탈퇴 처리 중 오류가 발생했습니다.')),
+                );
+              }
+            }
+          },
+          style: TextButton.styleFrom(foregroundColor: Colors.red),
+          child: const Text('탈퇴'),
+        ),
+      ],
+    ),
+  );
 }
 
 class _MenuItem extends StatelessWidget {

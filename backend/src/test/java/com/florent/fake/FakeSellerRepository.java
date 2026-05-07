@@ -35,4 +35,9 @@ public class FakeSellerRepository implements SellerRepository {
                 .filter(s -> s.getUserId().equals(userId))
                 .findFirst();
     }
+
+    @Override
+    public void deleteByUserId(Long userId) {
+        store.values().removeIf(s -> s.getUserId().equals(userId));
+    }
 }

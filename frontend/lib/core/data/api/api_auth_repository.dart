@@ -63,6 +63,11 @@ class ApiAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<void> withdraw() async {
+    await _dio.delete('/auth/withdraw');
+  }
+
+  @override
   Future<SellerInfoResult> registerSellerInfo({
     required String shopName,
     required String shopAddress,

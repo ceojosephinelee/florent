@@ -52,4 +52,9 @@ public class FakeOutboxEventRepository implements OutboxEventRepository {
     public List<OutboxEvent> findAll() {
         return List.copyOf(store);
     }
+
+    @Override
+    public void deleteByNotificationIds(List<Long> notificationIds) {
+        store.removeIf(e -> notificationIds.contains(e.getNotificationId()));
+    }
 }

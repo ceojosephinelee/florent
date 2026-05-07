@@ -22,4 +22,11 @@ public interface ReservationJpaRepository extends JpaRepository<ReservationJpaEn
             + "WHERE fs.sellerId = :sellerId "
             + "ORDER BY r.confirmedAt DESC")
     List<ReservationJpaEntity> findAllBySellerId(@Param("sellerId") Long sellerId);
+
+    @Query("SELECT r.id FROM ReservationJpaEntity r WHERE r.requestId IN :requestIds")
+    List<Long> findIdsByRequestIds(@Param("requestIds") List<Long> requestIds);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @Query("DELETE FROM ReservationJpaEntity r WHERE r.requestId IN :requestIds")
+    void deleteByRequestIds(@Param("requestIds") List<Long> requestIds);
 }

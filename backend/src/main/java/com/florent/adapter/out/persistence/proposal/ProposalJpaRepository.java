@@ -34,4 +34,15 @@ public interface ProposalJpaRepository extends JpaRepository<ProposalJpaEntity, 
     @Query("SELECT p FROM ProposalJpaEntity p "
             + "WHERE p.status IN ('DRAFT', 'SUBMITTED') AND p.expiresAt < :now")
     List<ProposalJpaEntity> findExpirableBefore(@Param("now") LocalDateTime now);
+
+    @Query("SELECT p.id FROM ProposalJpaEntity p WHERE p.requestId IN :requestIds")
+    List<Long> findIdsByRequestIds(@Param("requestIds") List<Long> requestIds);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @Query("DELETE FROM ProposalJpaEntity p WHERE p.requestId IN :requestIds")
+    void deleteByRequestIds(@Param("requestIds") List<Long> requestIds);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @Query("DELETE FROM ProposalJpaEntity p WHERE p.flowerShopId = :flowerShopId")
+    void deleteByFlowerShopId(@Param("flowerShopId") Long flowerShopId);
 }

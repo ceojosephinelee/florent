@@ -33,4 +33,9 @@ public class UserDeviceRepositoryImpl implements UserDeviceRepository {
                 .map(UserDeviceJpaEntity::toDomain)
                 .toList();
     }
+
+    @Override
+    public void deleteByUserId(Long userId) {
+        jpaRepository.deleteByUserId(userId);
+    }
 }

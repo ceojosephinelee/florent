@@ -121,4 +121,22 @@ public class FakeProposalRepository implements ProposalRepository {
                 .filter(p -> p.getExpiresAt().isBefore(now))
                 .toList();
     }
+
+    @Override
+    public List<Long> findIdsByRequestIds(List<Long> requestIds) {
+        return store.values().stream()
+                .filter(p -> requestIds.contains(p.getRequestId()))
+                .map(Proposal::getId)
+                .toList();
+    }
+
+    @Override
+    public void deleteByRequestIds(List<Long> requestIds) {
+        store.values().removeIf(p -> requestIds.contains(p.getRequestId()));
+    }
+
+    @Override
+    public void deleteByFlowerShopId(Long flowerShopId) {
+        store.values().removeIf(p -> p.getFlowerShopId().equals(flowerShopId));
+    }
 }

@@ -15,4 +15,11 @@ public interface CurationRequestJpaRepository extends JpaRepository<CurationRequ
     @Query("SELECT r FROM CurationRequestJpaEntity r "
             + "WHERE r.status = 'OPEN' AND r.expiresAt < :now")
     List<CurationRequestJpaEntity> findOpenExpiredBefore(@Param("now") LocalDateTime now);
+
+    @Query("SELECT r.id FROM CurationRequestJpaEntity r WHERE r.buyerId = :buyerId")
+    List<Long> findIdsByBuyerId(@Param("buyerId") Long buyerId);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @Query("DELETE FROM CurationRequestJpaEntity r WHERE r.buyerId = :buyerId")
+    void deleteByBuyerId(@Param("buyerId") Long buyerId);
 }

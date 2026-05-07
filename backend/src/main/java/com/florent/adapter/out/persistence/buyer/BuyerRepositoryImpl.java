@@ -38,4 +38,9 @@ public class BuyerRepositoryImpl implements BuyerRepository {
                 .map(BuyerJpaEntity::toDomain)
                 .toList();
     }
+
+    @Override
+    public void deleteByUserId(Long userId) {
+        jpaRepository.deleteByUserId(userId);
+    }
 }

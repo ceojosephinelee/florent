@@ -6,4 +6,5 @@ import java.util.Optional;
 
 public interface FlowerShopJpaRepository extends JpaRepository<FlowerShopJpaEntity, Long> {
     Optional<FlowerShopJpaEntity> findBySellerId(Long sellerId);
+    void deleteBySellerId(Long sellerId);
 }

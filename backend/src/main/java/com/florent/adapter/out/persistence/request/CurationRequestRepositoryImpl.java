@@ -62,4 +62,14 @@ public class CurationRequestRepositoryImpl implements CurationRequestRepository 
                 jpaPage.getTotalPages(),
                 jpaPage.isLast());
     }
+
+    @Override
+    public List<Long> findIdsByBuyerId(Long buyerId) {
+        return jpaRepository.findIdsByBuyerId(buyerId);
+    }
+
+    @Override
+    public void deleteByBuyerId(Long buyerId) {
+        jpaRepository.deleteByBuyerId(buyerId);
+    }
 }

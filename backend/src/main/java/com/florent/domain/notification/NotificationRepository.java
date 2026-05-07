@@ -8,4 +8,6 @@ public interface NotificationRepository {
     Optional<Notification> findById(Long id);
     List<Notification> findByUserId(Long userId, int page, int size);
     long countByUserId(Long userId);
+    List<Long> findIdsByUserId(Long userId);
+    void deleteByUserId(Long userId);
 }

@@ -30,4 +30,9 @@ public class SellerRepositoryImpl implements SellerRepository {
         return jpaRepository.findByUserId(userId)
                 .map(SellerJpaEntity::toDomain);
     }
+
+    @Override
+    public void deleteByUserId(Long userId) {
+        jpaRepository.deleteByUserId(userId);
+    }
 }

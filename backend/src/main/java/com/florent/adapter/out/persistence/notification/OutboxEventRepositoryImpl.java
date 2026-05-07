@@ -34,4 +34,10 @@ public class OutboxEventRepositoryImpl implements OutboxEventRepository {
                 .map(OutboxEventJpaEntity::toDomain)
                 .toList();
     }
+
+    @Override
+    public void deleteByNotificationIds(List<Long> notificationIds) {
+        if (notificationIds.isEmpty()) return;
+        jpaRepository.deleteByNotificationIds(notificationIds);
+    }
 }

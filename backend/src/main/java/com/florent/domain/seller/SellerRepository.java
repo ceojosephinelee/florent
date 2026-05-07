@@ -6,4 +6,5 @@ public interface SellerRepository {
     Seller save(Seller seller);
     Optional<Seller> findById(Long id);
     Optional<Seller> findByUserId(Long userId);
+    void deleteByUserId(Long userId);
 }

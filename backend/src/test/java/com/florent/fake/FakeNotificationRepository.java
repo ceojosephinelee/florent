@@ -59,4 +59,17 @@ public class FakeNotificationRepository implements NotificationRepository {
                 .filter(n -> n.getUserId().equals(userId))
                 .count();
     }
+
+    @Override
+    public List<Long> findIdsByUserId(Long userId) {
+        return store.stream()
+                .filter(n -> n.getUserId().equals(userId))
+                .map(Notification::getId)
+                .toList();
+    }
+
+    @Override
+    public void deleteByUserId(Long userId) {
+        store.removeIf(n -> n.getUserId().equals(userId));
+    }
 }

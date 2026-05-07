@@ -14,6 +14,7 @@ import com.florent.domain.auth.KakaoLoginCommand;
 import com.florent.domain.auth.KakaoLoginResult;
 import com.florent.domain.auth.KakaoLoginUseCase;
 import com.florent.domain.auth.LogoutUseCase;
+import com.florent.domain.auth.WithdrawUseCase;
 import com.florent.domain.auth.ReissueTokenCommand;
 import com.florent.domain.auth.ReissueTokenResult;
 import com.florent.domain.auth.ReissueTokenUseCase;
@@ -27,6 +28,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +43,7 @@ public class AuthController {
     private final SetRoleUseCase setRoleUseCase;
     private final ReissueTokenUseCase reissueTokenUseCase;
     private final LogoutUseCase logoutUseCase;
+    private final WithdrawUseCase withdrawUseCase;
     private final RegisterSellerInfoUseCase registerSellerInfoUseCase;
 
     @PostMapping("/kakao")
@@ -73,6 +76,13 @@ public class AuthController {
     public ResponseEntity<ApiResponse<Void>> logout(
             @AuthenticationPrincipal UserPrincipal principal) {
         logoutUseCase.logout(principal.getUserId());
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    @DeleteMapping("/withdraw")
+    public ResponseEntity<ApiResponse<Void>> withdraw(
+            @AuthenticationPrincipal UserPrincipal principal) {
+        withdrawUseCase.withdraw(principal.getUserId());
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 

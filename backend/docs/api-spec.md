@@ -100,6 +100,21 @@ Response 200: `{ "sellerId": 1, "shopName": "string" }`
 
 ---
 
+### 1-6. 회원 탈퇴
+```
+DELETE /api/v1/auth/withdraw
+```
+Request: 없음 (Authorization 헤더만 필요)
+
+Response 200:
+```json
+{ "success": true, "data": null }
+```
+- 사용자와 관련된 모든 데이터 (구매자/판매자, 꽃집, 요청, 제안, 예약, 결제, 알림, 디바이스) 삭제
+- 삭제 후 복구 불가
+
+---
+
 ### 2-1. 요청 생성
 ```
 POST /api/v1/buyer/requests

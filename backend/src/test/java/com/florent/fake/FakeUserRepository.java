@@ -46,4 +46,9 @@ public class FakeUserRepository implements UserRepository {
                 .filter(u -> u.getRole() == role)
                 .findFirst();
     }
+
+    @Override
+    public void deleteById(Long id) {
+        store.remove(id);
+    }
 }

@@ -45,4 +45,9 @@ public class FakeUserDeviceRepository implements UserDeviceRepository {
                 .filter(d -> d.getUserId().equals(userId) && d.isActive())
                 .toList();
     }
+
+    @Override
+    public void deleteByUserId(Long userId) {
+        store.removeIf(d -> d.getUserId().equals(userId));
+    }
 }

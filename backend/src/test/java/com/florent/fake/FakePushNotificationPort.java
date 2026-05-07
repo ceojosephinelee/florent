@@ -1,5 +1,7 @@
 package com.florent.fake;
 
+import com.florent.common.exception.BusinessException;
+import com.florent.common.exception.ErrorCode;
 import com.florent.domain.notification.PushNotificationPort;
 
 import java.util.ArrayList;
@@ -11,11 +13,12 @@ public class FakePushNotificationPort implements PushNotificationPort {
     private boolean shouldFail = false;
 
     @Override
-    public void send(String fcmToken, String title, String body) {
+    public void send(String fcmToken, String title, String body,
+                     String type, String referenceType, Long referenceId) {
         if (shouldFail) {
-            throw new RuntimeException("FCM send failed");
+            throw new BusinessException(ErrorCode.FCM_SEND_FAILED);
         }
-        sentMessages.add(new PushRecord(fcmToken, title, body));
+        sentMessages.add(new PushRecord(fcmToken, title, body, type, referenceType, referenceId));
     }
 
     public List<PushRecord> getSentMessages() {
@@ -26,5 +29,6 @@ public class FakePushNotificationPort implements PushNotificationPort {
         this.shouldFail = shouldFail;
     }
 
-    public record PushRecord(String fcmToken, String title, String body) {}
+    public record PushRecord(String fcmToken, String title, String body,
+                             String type, String referenceType, Long referenceId) {}
 }

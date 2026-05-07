@@ -45,4 +45,9 @@ public class FlowerShopRepositoryImpl implements FlowerShopRepository {
         return jpaRepository.findBySellerId(sellerId)
                 .map(FlowerShopJpaEntity::toDomain);
     }
+
+    @Override
+    public void deleteBySellerId(Long sellerId) {
+        jpaRepository.deleteBySellerId(sellerId);
+    }
 }

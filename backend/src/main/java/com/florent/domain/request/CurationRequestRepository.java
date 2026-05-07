@@ -11,4 +11,6 @@ public interface CurationRequestRepository {
     List<CurationRequest> findAll();
     RequestPage findByBuyerId(Long buyerId, int page, int size);
     List<CurationRequest> findOpenExpiredBefore(LocalDateTime now);
+    List<Long> findIdsByBuyerId(Long buyerId);
+    void deleteByBuyerId(Long buyerId);
 }

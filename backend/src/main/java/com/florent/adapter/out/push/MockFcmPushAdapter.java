@@ -11,7 +11,9 @@ import org.springframework.stereotype.Component;
 public class MockFcmPushAdapter implements PushNotificationPort {
 
     @Override
-    public void send(String fcmToken, String title, String body) {
-        log.info("[MockFCM] token={}, title={}, body={}", fcmToken, title, body);
+    public void send(String fcmToken, String title, String body,
+                     String type, String referenceType, Long referenceId) {
+        log.info("[MockFCM] token={}, title={}, body={}, type={}, ref={}:{}",
+                fcmToken, title, body, type, referenceType, referenceId);
     }
 }

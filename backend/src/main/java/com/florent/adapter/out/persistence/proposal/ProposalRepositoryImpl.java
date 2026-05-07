@@ -88,4 +88,21 @@ public class ProposalRepositoryImpl implements ProposalRepository {
                 .map(ProposalJpaEntity::toDomain)
                 .toList();
     }
+
+    @Override
+    public List<Long> findIdsByRequestIds(List<Long> requestIds) {
+        if (requestIds.isEmpty()) return List.of();
+        return jpaRepository.findIdsByRequestIds(requestIds);
+    }
+
+    @Override
+    public void deleteByRequestIds(List<Long> requestIds) {
+        if (requestIds.isEmpty()) return;
+        jpaRepository.deleteByRequestIds(requestIds);
+    }
+
+    @Override
+    public void deleteByFlowerShopId(Long flowerShopId) {
+        jpaRepository.deleteByFlowerShopId(flowerShopId);
+    }
 }
