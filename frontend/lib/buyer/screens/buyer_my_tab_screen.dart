@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/auth/auth_provider.dart';
 import '../../core/theme/colors.dart';
@@ -101,6 +102,16 @@ class BuyerMyTabScreen extends ConsumerWidget {
                 child: Text(
                   '회원 탈퇴',
                   style: AppTypography.body(fontSize: 12, color: ink30),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Center(
+              child: GestureDetector(
+                onTap: () => launchUrl(Uri.parse('https://florent.co.kr/privacy'), mode: LaunchMode.externalApplication),
+                child: Text(
+                  '개인정보처리방침',
+                  style: AppTypography.body(fontSize: 11, color: ink30, decoration: TextDecoration.underline),
                 ),
               ),
             ),
