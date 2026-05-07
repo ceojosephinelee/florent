@@ -37,4 +37,9 @@ public class UserRepositoryImpl implements UserRepository {
         return jpaRepository.findFirstByRole(role.name())
                 .map(UserJpaEntity::toDomain);
     }
+
+    @Override
+    public void deleteById(Long id) {
+        jpaRepository.deleteById(id);
+    }
 }

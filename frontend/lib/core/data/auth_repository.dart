@@ -15,4 +15,5 @@ abstract class AuthRepository {
     String? businessNumber,
   });
   Future<void> registerDevice(String fcmToken, String platform);
+  Future<void> withdraw();
 }

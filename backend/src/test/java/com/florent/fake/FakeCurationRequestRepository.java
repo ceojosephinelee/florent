@@ -86,4 +86,17 @@ public class FakeCurationRequestRepository implements CurationRequestRepository 
                 .filter(r -> r.getExpiresAt().isBefore(now))
                 .toList();
     }
+
+    @Override
+    public List<Long> findIdsByBuyerId(Long buyerId) {
+        return store.values().stream()
+                .filter(r -> r.getBuyerId().equals(buyerId))
+                .map(CurationRequest::getId)
+                .toList();
+    }
+
+    @Override
+    public void deleteByBuyerId(Long buyerId) {
+        store.values().removeIf(r -> r.getBuyerId().equals(buyerId));
+    }
 }

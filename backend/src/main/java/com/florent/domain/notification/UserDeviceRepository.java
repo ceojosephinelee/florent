@@ -7,4 +7,5 @@ public interface UserDeviceRepository {
     UserDevice save(UserDevice device);
     Optional<UserDevice> findByFcmToken(String fcmToken);
     List<UserDevice> findActiveByUserId(Long userId);
+    void deleteByUserId(Long userId);
 }

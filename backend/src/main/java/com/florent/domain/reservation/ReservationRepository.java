@@ -9,4 +9,6 @@ public interface ReservationRepository {
     boolean existsByRequestId(Long requestId);
     List<Reservation> findAllByBuyerId(Long buyerId);
     List<Reservation> findAllBySellerId(Long sellerId);
+    List<Long> findIdsByRequestIds(List<Long> requestIds);
+    void deleteByRequestIds(List<Long> requestIds);
 }

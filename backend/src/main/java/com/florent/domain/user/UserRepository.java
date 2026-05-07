@@ -7,4 +7,5 @@ public interface UserRepository {
     Optional<User> findById(Long id);
     Optional<User> findByKakaoId(String kakaoId);
     Optional<User> findFirstByRole(UserRole role);
+    void deleteById(Long id);
 }

@@ -80,4 +80,17 @@ public class FakeReservationRepository implements ReservationRepository {
                 .filter(belongsToSeller)
                 .toList();
     }
+
+    @Override
+    public List<Long> findIdsByRequestIds(List<Long> requestIds) {
+        return store.values().stream()
+                .filter(r -> requestIds.contains(r.getRequestId()))
+                .map(Reservation::getId)
+                .toList();
+    }
+
+    @Override
+    public void deleteByRequestIds(List<Long> requestIds) {
+        store.values().removeIf(r -> requestIds.contains(r.getRequestId()));
+    }
 }

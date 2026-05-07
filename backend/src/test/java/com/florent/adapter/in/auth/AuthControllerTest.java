@@ -7,6 +7,7 @@ import com.florent.common.security.JwtProvider;
 import com.florent.domain.auth.KakaoLoginResult;
 import com.florent.domain.auth.KakaoLoginUseCase;
 import com.florent.domain.auth.LogoutUseCase;
+import com.florent.domain.auth.WithdrawUseCase;
 import com.florent.domain.auth.ReissueTokenResult;
 import com.florent.domain.auth.ReissueTokenUseCase;
 import com.florent.domain.auth.RegisterSellerInfoResult;
@@ -53,6 +54,9 @@ class AuthControllerTest {
 
     @MockBean
     private LogoutUseCase logoutUseCase;
+
+    @MockBean
+    private WithdrawUseCase withdrawUseCase;
 
     @MockBean
     private RegisterSellerInfoUseCase registerSellerInfoUseCase;

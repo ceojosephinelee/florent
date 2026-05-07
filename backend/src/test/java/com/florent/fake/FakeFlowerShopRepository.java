@@ -52,4 +52,9 @@ public class FakeFlowerShopRepository implements FlowerShopRepository {
                 .filter(shop -> shop.getSellerId().equals(sellerId))
                 .findFirst();
     }
+
+    @Override
+    public void deleteBySellerId(Long sellerId) {
+        store.values().removeIf(shop -> shop.getSellerId().equals(sellerId));
+    }
 }

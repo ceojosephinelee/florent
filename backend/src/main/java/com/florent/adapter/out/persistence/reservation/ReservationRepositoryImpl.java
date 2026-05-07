@@ -45,4 +45,16 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                 .map(ReservationJpaEntity::toDomain)
                 .toList();
     }
+
+    @Override
+    public List<Long> findIdsByRequestIds(List<Long> requestIds) {
+        if (requestIds.isEmpty()) return List.of();
+        return jpaRepository.findIdsByRequestIds(requestIds);
+    }
+
+    @Override
+    public void deleteByRequestIds(List<Long> requestIds) {
+        if (requestIds.isEmpty()) return;
+        jpaRepository.deleteByRequestIds(requestIds);
+    }
 }

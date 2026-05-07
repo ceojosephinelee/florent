@@ -6,4 +6,5 @@ import java.util.Optional;
 
 public interface BuyerJpaRepository extends JpaRepository<BuyerJpaEntity, Long> {
     Optional<BuyerJpaEntity> findByUserId(Long userId);
+    void deleteByUserId(Long userId);
 }

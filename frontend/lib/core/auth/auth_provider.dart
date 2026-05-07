@@ -350,6 +350,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  /// 회원 탈퇴. 서버 데이터 삭제 + 로컬 토큰 삭제.
+  Future<void> withdraw() async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      await _authRepository.withdraw();
+      await _tokenStorage.clearAll();
+      state = const AuthState(status: AuthStatus.unauthenticated);
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      rethrow;
+    }
+  }
+
   /// 로그아웃. 토큰 삭제 + /login 이동.
   Future<void> logout() async {
     try {

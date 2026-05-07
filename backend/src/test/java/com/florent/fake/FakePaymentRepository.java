@@ -4,6 +4,7 @@ import com.florent.domain.payment.Payment;
 import com.florent.domain.payment.PaymentRepository;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
@@ -39,5 +40,10 @@ public class FakePaymentRepository implements PaymentRepository {
     public boolean existsByIdempotencyKey(String idempotencyKey) {
         return store.values().stream()
                 .anyMatch(p -> p.getIdempotencyKey().equals(idempotencyKey));
+    }
+
+    @Override
+    public void deleteByReservationIds(List<Long> reservationIds) {
+        store.values().removeIf(p -> reservationIds.contains(p.getReservationId()));
     }
 }

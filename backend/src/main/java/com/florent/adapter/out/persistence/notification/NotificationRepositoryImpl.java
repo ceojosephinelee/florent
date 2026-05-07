@@ -40,4 +40,14 @@ public class NotificationRepositoryImpl implements NotificationRepository {
     public long countByUserId(Long userId) {
         return jpaRepository.countByUserId(userId);
     }
+
+    @Override
+    public List<Long> findIdsByUserId(Long userId) {
+        return jpaRepository.findIdsByUserId(userId);
+    }
+
+    @Override
+    public void deleteByUserId(Long userId) {
+        jpaRepository.deleteByUserId(userId);
+    }
 }

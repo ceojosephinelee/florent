@@ -9,4 +9,5 @@ public interface FlowerShopRepository {
     List<FlowerShop> findAll();
     List<FlowerShop> findAllByIds(List<Long> ids);
     Optional<FlowerShop> findBySellerId(Long sellerId);
+    void deleteBySellerId(Long sellerId);
 }

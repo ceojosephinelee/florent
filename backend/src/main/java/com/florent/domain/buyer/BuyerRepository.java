@@ -8,4 +8,5 @@ public interface BuyerRepository {
     Optional<Buyer> findById(Long id);
     Optional<Buyer> findByUserId(Long userId);
     List<Buyer> findAllByIds(List<Long> ids);
+    void deleteByUserId(Long userId);
 }

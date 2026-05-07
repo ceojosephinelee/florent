@@ -45,4 +45,9 @@ public class FakeBuyerRepository implements BuyerRepository {
                 .filter(Objects::nonNull)
                 .toList();
     }
+
+    @Override
+    public void deleteByUserId(Long userId) {
+        store.values().removeIf(b -> b.getUserId().equals(userId));
+    }
 }

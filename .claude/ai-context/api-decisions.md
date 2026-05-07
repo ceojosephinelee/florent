@@ -317,4 +317,14 @@
 
 ---
 
+## [AD-035] 회원 탈퇴 — Hard Delete + 앱 레이어 Cascade
+
+- **결정 내용**: 회원 탈퇴 시 Hard Delete. DB에 CASCADE DELETE가 없으므로 WithdrawService에서 FK 역순으로 수동 삭제.
+- **이유**: MVP에서 Soft Delete는 복잡성 대비 이점 없음. 개인정보 완전 삭제가 더 간단하고 GDPR 친화적. 탈퇴 확인은 프론트에서 다이얼로그로 처리.
+- **삭제 순서**: OutboxEvent → Notification → UserDevice → Payment → Reservation → Proposal → CurationRequest → FlowerShop → Seller/Buyer → User
+- **트레이드오프**: 판매자 탈퇴 시 해당 제안이 삭제되어도 구매자에게 알림 미발송 (DEBT-037). 카카오 연동 해제 미구현 (DEBT-038).
+- **영향 파일**: `WithdrawUseCase.java`, `WithdrawService.java`, `AuthController.java`, 11개 Repository + RepositoryImpl + JpaRepository, 프론트 마이탭 2개
+
+---
+
 > 새 결정이 발생하면 [AD-{N}] 형식으로 추가한다.
