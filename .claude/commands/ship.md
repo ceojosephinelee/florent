@@ -48,7 +48,8 @@ docker info > /dev/null 2>&1 && echo "DOCKER_RUNNING" || echo "DOCKER_NOT_RUNNIN
 
 Docker 실행 중:
 ```bash
-cd backend && ./gradlew test
+git checkout -b feat/{기능명}
+# 예: git checkout -b feat/proposal-api
 ```
 
 Docker 미실행:
