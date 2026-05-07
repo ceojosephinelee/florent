@@ -67,7 +67,10 @@ public class OutboxWorker {
                 pushNotificationPort.send(
                         device.getFcmToken(),
                         notification.getTitle(),
-                        notification.getBody());
+                        notification.getBody(),
+                        notification.getType().name(),
+                        notification.getReferenceType().name(),
+                        notification.getReferenceId());
             }
 
             event.markSent();

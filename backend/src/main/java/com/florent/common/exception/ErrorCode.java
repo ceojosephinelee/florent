@@ -36,6 +36,7 @@ public enum ErrorCode {
     // Notification
     NOTIFICATION_NOT_FOUND(404, "알림을 찾을 수 없습니다."),
     NOTIFICATION_ALREADY_READ(422, "이미 읽은 알림입니다."),
+    FCM_SEND_FAILED(502, "FCM 푸시 발송에 실패했습니다."),
 
     // Auth
     KAKAO_AUTH_FAILED(401, "카카오 인증에 실패했습니다."),

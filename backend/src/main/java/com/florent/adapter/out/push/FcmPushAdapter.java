@@ -1,5 +1,7 @@
 package com.florent.adapter.out.push;
 
+import com.florent.common.exception.BusinessException;
+import com.florent.common.exception.ErrorCode;
 import com.florent.domain.notification.PushNotificationPort;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
@@ -40,20 +42,24 @@ public class FcmPushAdapter implements PushNotificationPort {
     }
 
     @Override
-    public void send(String fcmToken, String title, String body) {
+    public void send(String fcmToken, String title, String body,
+                     String type, String referenceType, Long referenceId) {
         Message message = Message.builder()
                 .setToken(fcmToken)
                 .setNotification(Notification.builder()
                         .setTitle(title)
                         .setBody(body)
                         .build())
+                .putData("type", type)
+                .putData("referenceType", referenceType)
+                .putData("referenceId", String.valueOf(referenceId))
                 .build();
         try {
             String messageId = FirebaseMessaging.getInstance().send(message);
             log.info("[FCM] 푸시 발송 성공: messageId={}", messageId);
         } catch (FirebaseMessagingException e) {
             log.error("[FCM] 푸시 발송 실패: token={}, error={}", fcmToken, e.getMessage(), e);
-            throw new RuntimeException("FCM 푸시 발송 실패: " + e.getMessage(), e);
+            throw new BusinessException(ErrorCode.FCM_SEND_FAILED);
         }
     }
 }
