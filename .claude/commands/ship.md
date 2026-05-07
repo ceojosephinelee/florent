@@ -28,11 +28,12 @@ git checkout -b feat/{기능명}
 ```
 
 ---
-
 ### Step 3. ai-context 업데이트
 
-- `.claude/ai-context/known-issues.md` — 새 DEBT/BUG 추가, 해결된 것 RESOLVED 처리
 - `.claude/ai-context/api-decisions.md` — 이번 구현 중 설계 결정 추가
+- `.claude/ai-context/known-issues.md` — 수정 금지
+  → known-issues.md는 develop 브랜치에서만 수정한다
+  → 이번 브랜치에서 발견한 DEBT/BUG는 메모만 해두고, Step 8 머지 후 develop에서 업데이트
 
 ---
 
@@ -67,6 +68,27 @@ grep -r "import jakarta.persistence" backend/src/main/java/com/florent/*/domain 
 ```
 
 → 결과 나오면 수정 후 Step 4부터 재실행.
+
+**known-issues.md 충돌 방지 검사:**
+
+```bash
+git diff --cached --name-only | grep "known-issues.md" && echo "BLOCKED: known-issues.md는 feat 브랜치에서 수정 금지. git restore --staged으로 되돌려라." || echo "PASS"
+```
+
+→ BLOCKED 나오면 반드시 되돌린다:
+```bash
+git restore --staged .claude/ai-context/known-issues.md
+git restore .claude/ai-context/known-issues.md
+```
+
+**Medium 이상 DEBT 경고:**
+
+```bash
+grep -c "심각도.*Medium" .claude/ai-context/known-issues.md | xargs -I{} echo "Medium+ DEBT: {}건"
+grep -c "심각도.*High" .claude/ai-context/known-issues.md | xargs -I{} echo "High DEBT: {}건"
+```
+
+→ Medium 3건 이상 또는 High 1건 이상이면 사용자에게 경고 후 확인 요청.
 
 ---
 
@@ -113,3 +135,8 @@ PR 링크를 지현이에게 보여준다.
 git checkout develop
 git pull origin develop
 ```
+
+그 다음 known-issues.md 업데이트:
+- 이번 브랜치에서 발견한 DEBT/BUG 추가
+- 해결된 것 RESOLVED 처리
+- 커밋: `docs: known-issues 업데이트`
