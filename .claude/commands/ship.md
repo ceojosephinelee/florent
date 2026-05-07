@@ -131,6 +131,11 @@ gh pr create --base develop \
 
 PR 링크를 지현이에게 보여준다.
 머지는 지현이가 직접 GitHub에서 한다.
+
+**머지 방식 주의:**
+- feat → develop: **Squash and Merge** 사용
+- develop → main: **Create a merge commit** 사용 (Squash 절대 금지 — 무한 충돌 원인)
+
 머지 후 다음 작업 시작 전 반드시:
 
 ```bash

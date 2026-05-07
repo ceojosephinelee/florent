@@ -156,10 +156,19 @@ Shift+Tab 한 번 → Normal Mode 복귀 → 실제 구현
 ```
 main           ← 배포 가능 상태만
 develop        ← 통합 브랜치
-feature/backend/{기능명}   ← 백엔드 기능
-feature/frontend/{기능명}  ← 프론트엔드 기능
+feat/{기능명}             ← 기능 개발
 fix/{버그명}               ← 버그 수정
 ```
+
+### 머지 전략 (반드시 준수)
+
+| 머지 방향 | GitHub 머지 방식 | 이유 |
+|---|---|---|
+| feat → develop | **Squash and Merge** | 커밋 히스토리 깔끔하게 |
+| develop → main | **Create a merge commit** | Squash 사용 시 SHA 불일치로 무한 충돌 발생 |
+
+> **develop → main에 Squash 절대 금지.**
+> Squash하면 main과 develop의 커밋 SHA가 달라져서 이후 모든 PR에서 충돌이 반복된다.
 
 ### 커밋 메시지
 ```
