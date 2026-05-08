@@ -29,7 +29,7 @@ import java.util.List;
  */
 @Slf4j
 @Component
-@Profile({"local", "prod"})
+@Profile("local")
 @RequiredArgsConstructor
 public class DevAuthFilter extends OncePerRequestFilter {
 

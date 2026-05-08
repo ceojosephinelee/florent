@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 @Slf4j
 @RestControllerAdvice
@@ -47,6 +48,12 @@ public class GlobalExceptionHandler {
         log.error("외부 API 오류: status={}, reason={}", e.getStatusCode(), e.getReason());
         return ResponseEntity.status(e.getStatusCode())
                 .body(ApiResponse.error(String.valueOf(e.getStatusCode().value()), e.getReason()));
+    }
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNoHandlerFound(NoHandlerFoundException e) {
+        return ResponseEntity.status(404)
+                .body(ApiResponse.error("NOT_FOUND", "요청한 API를 찾을 수 없습니다."));
     }
 
     @ExceptionHandler(Exception.class)
