@@ -1,5 +1,7 @@
 import 'package:go_router/go_router.dart';
 
+import '../auth/screens/email_login_screen.dart';
+import '../auth/screens/email_signup_screen.dart';
 import '../auth/screens/login_screen.dart';
 import '../auth/screens/role_selection_screen.dart';
 import '../auth/screens/seller_info_screen.dart';
@@ -45,6 +47,8 @@ final appRouter = GoRouter(
     // ========== AUTH ==========
     GoRoute(path: '/splash', builder: (_, __) => const SplashScreen()),
     GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
+    GoRoute(path: '/auth/email-login', builder: (_, __) => const EmailLoginScreen()),
+    GoRoute(path: '/auth/email-signup', builder: (_, __) => const EmailSignupScreen()),
     GoRoute(path: '/auth/role', builder: (_, __) => const RoleSelectionScreen()),
     GoRoute(path: '/auth/seller-info', builder: (_, __) => const SellerInfoScreen()),
 

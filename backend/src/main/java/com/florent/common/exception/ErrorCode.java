@@ -43,6 +43,8 @@ public enum ErrorCode {
     USER_NOT_FOUND(404, "사용자를 찾을 수 없습니다."),
     INVALID_ROLE(400, "유효하지 않은 역할입니다. BUYER 또는 SELLER만 가능합니다."),
     ROLE_ALREADY_SET(422, "이미 역할이 설정되어 있습니다."),
+    EMAIL_ALREADY_EXISTS(409, "이미 등록된 이메일입니다."),
+    INVALID_CREDENTIALS(401, "이메일 또는 비밀번호가 올바르지 않습니다."),
     SELLER_ALREADY_REGISTERED(409, "이미 판매자 정보가 등록되어 있습니다."),
 
     // Shop

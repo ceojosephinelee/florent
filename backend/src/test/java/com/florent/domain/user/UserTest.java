@@ -145,7 +145,7 @@ class UserTest {
     void reconstitute_DB_재구성() {
         // given & when
         User user = User.reconstitute(
-                1L, "kakao123", "test@kakao.com", "테스트유저",
+                1L, "kakao123", "test@kakao.com", null, "테스트유저",
                 UserRole.BUYER, "refresh-token",
                 LocalDateTime.of(2026, 4, 15, 10, 0),
                 LocalDateTime.of(2026, 3, 15, 10, 0));

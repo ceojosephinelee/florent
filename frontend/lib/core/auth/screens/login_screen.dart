@@ -116,6 +116,36 @@ class LoginScreen extends ConsumerWidget {
                         ),
                 ),
               ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: OutlinedButton(
+                  onPressed: auth.isLoading
+                      ? null
+                      : () => context.go('/auth/email-login'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: ink60,
+                    side: BorderSide(color: borderColor),
+                    shape: RoundedRectangleBorder(borderRadius: kBorderRadiusMd),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.email_outlined, size: 18, color: ink60),
+                      const SizedBox(width: 8),
+                      Text(
+                        '이메일로 시작하기',
+                        style: AppTypography.body(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: ink60,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               const SizedBox(height: 16),
               Text(
                 '로그인하면 서비스 이용약관에 동의하게 됩니다.',

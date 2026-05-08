@@ -21,8 +21,8 @@ public class FakeUserRepository implements UserRepository {
             id = idGenerator.getAndIncrement();
         }
         User persisted = User.reconstitute(
-                id, user.getKakaoId(), user.getEmail(), user.getNickname(),
-                user.getRole(), user.getRefreshToken(),
+                id, user.getKakaoId(), user.getEmail(), user.getPasswordHash(),
+                user.getNickname(), user.getRole(), user.getRefreshToken(),
                 user.getRefreshTokenExpiresAt(), user.getCreatedAt());
         store.put(id, persisted);
         return persisted;
@@ -36,7 +36,14 @@ public class FakeUserRepository implements UserRepository {
     @Override
     public Optional<User> findByKakaoId(String kakaoId) {
         return store.values().stream()
-                .filter(u -> u.getKakaoId().equals(kakaoId))
+                .filter(u -> u.getKakaoId() != null && u.getKakaoId().equals(kakaoId))
+                .findFirst();
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return store.values().stream()
+                .filter(u -> u.getEmail() != null && u.getEmail().equals(email))
                 .findFirst();
     }
 

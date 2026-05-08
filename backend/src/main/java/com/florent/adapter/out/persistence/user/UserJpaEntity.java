@@ -26,10 +26,12 @@ public class UserJpaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String kakaoId;
 
     private String email;
+
+    private String passwordHash;
 
     private String nickname;
 
@@ -61,6 +63,7 @@ public class UserJpaEntity {
         entity.id = domain.getId();
         entity.kakaoId = domain.getKakaoId();
         entity.email = domain.getEmail();
+        entity.passwordHash = domain.getPasswordHash();
         entity.nickname = domain.getNickname();
         entity.role = domain.getRole() != null ? domain.getRole().name() : null;
         entity.refreshToken = domain.getRefreshToken();
@@ -71,7 +74,7 @@ public class UserJpaEntity {
 
     public User toDomain() {
         return User.reconstitute(
-                id, kakaoId, email, nickname,
+                id, kakaoId, email, passwordHash, nickname,
                 role != null ? UserRole.valueOf(role) : null,
                 refreshToken, refreshTokenExpiresAt, createdAt);
     }

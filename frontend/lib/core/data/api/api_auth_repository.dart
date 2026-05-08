@@ -49,6 +49,27 @@ class ApiAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<KakaoLoginResult> emailSignup(String email, String password, String nickname) async {
+    final response = await _dio.post('/auth/email-signup', data: {
+      'email': email,
+      'password': password,
+      'nickname': nickname,
+    });
+    final data = response.data['data'] as Map<String, dynamic>;
+    return KakaoLoginResult.fromJson(data);
+  }
+
+  @override
+  Future<KakaoLoginResult> emailLogin(String email, String password) async {
+    final response = await _dio.post('/auth/email-login', data: {
+      'email': email,
+      'password': password,
+    });
+    final data = response.data['data'] as Map<String, dynamic>;
+    return KakaoLoginResult.fromJson(data);
+  }
+
+  @override
   Future<void> logout() async {
     await _dio.post('/auth/logout');
   }

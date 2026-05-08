@@ -251,6 +251,54 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  /// 이메일 회원가입.
+  Future<void> emailSignup(String email, String password, String nickname) async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      final result = await _authRepository.emailSignup(email, password, nickname);
+      await _tokenStorage.saveTokens(
+        accessToken: result.accessToken,
+        refreshToken: result.refreshToken,
+      );
+
+      state = state.copyWith(status: AuthStatus.needsRole, isLoading: false);
+    } catch (e, st) {
+      print('[AUTH] emailSignup ERROR: $e\n$st');
+      state = state.copyWith(isLoading: false, error: e.toString());
+    }
+  }
+
+  /// 이메일 로그인.
+  Future<void> emailLogin(String email, String password) async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      final result = await _authRepository.emailLogin(email, password);
+      await _tokenStorage.saveTokens(
+        accessToken: result.accessToken,
+        refreshToken: result.refreshToken,
+      );
+      if (result.role != null) {
+        await _tokenStorage.saveRole(result.role!);
+      }
+      await _tokenStorage.saveHasFlowerShop(result.hasFlowerShop);
+
+      if (result.isNewUser || result.role == null) {
+        state = state.copyWith(status: AuthStatus.needsRole, isLoading: false);
+      } else if (result.role == 'BUYER') {
+        state = state.copyWith(status: AuthStatus.buyerAuthenticated, isLoading: false);
+        _registerFcmToken();
+      } else if (result.role == 'SELLER' && !result.hasFlowerShop) {
+        state = state.copyWith(status: AuthStatus.needsSellerInfo, isLoading: false);
+      } else {
+        state = state.copyWith(status: AuthStatus.sellerAuthenticated, isLoading: false);
+        _registerFcmToken();
+      }
+    } catch (e, st) {
+      print('[AUTH] emailLogin ERROR: $e\n$st');
+      state = state.copyWith(isLoading: false, error: e.toString());
+    }
+  }
+
   /// 역할 설정 (BUYER / SELLER). 서버에서 새 토큰 반환.
   Future<void> setRole(String role) async {
     print('[AUTH] setRole($role) 시작');
