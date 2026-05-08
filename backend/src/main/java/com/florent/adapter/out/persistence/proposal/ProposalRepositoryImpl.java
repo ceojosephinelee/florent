@@ -96,6 +96,11 @@ public class ProposalRepositoryImpl implements ProposalRepository {
     }
 
     @Override
+    public List<Long> findIdsByFlowerShopId(Long flowerShopId) {
+        return jpaRepository.findIdsByFlowerShopId(flowerShopId);
+    }
+
+    @Override
     public void deleteByRequestIds(List<Long> requestIds) {
         if (requestIds.isEmpty()) return;
         jpaRepository.deleteByRequestIds(requestIds);

@@ -91,7 +91,15 @@ public class WithdrawService implements WithdrawUseCase {
     }
 
     private void deleteFlowerShopCascade(FlowerShop shop) {
-        proposalRepository.deleteByFlowerShopId(shop.getId());
+        List<Long> proposalIds = proposalRepository.findIdsByFlowerShopId(shop.getId());
+        if (!proposalIds.isEmpty()) {
+            List<Long> reservationIds = reservationRepository.findIdsByProposalIds(proposalIds);
+            if (!reservationIds.isEmpty()) {
+                paymentRepository.deleteByReservationIds(reservationIds);
+                reservationRepository.deleteByProposalIds(proposalIds);
+            }
+            proposalRepository.deleteByFlowerShopId(shop.getId());
+        }
     }
 
     private void deleteCommonData(Long userId) {

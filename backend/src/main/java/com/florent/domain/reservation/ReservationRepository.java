@@ -10,5 +10,7 @@ public interface ReservationRepository {
     List<Reservation> findAllByBuyerId(Long buyerId);
     List<Reservation> findAllBySellerId(Long sellerId);
     List<Long> findIdsByRequestIds(List<Long> requestIds);
+    List<Long> findIdsByProposalIds(List<Long> proposalIds);
     void deleteByRequestIds(List<Long> requestIds);
+    void deleteByProposalIds(List<Long> proposalIds);
 }

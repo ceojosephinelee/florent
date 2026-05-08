@@ -53,8 +53,20 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
+    public List<Long> findIdsByProposalIds(List<Long> proposalIds) {
+        if (proposalIds.isEmpty()) return List.of();
+        return jpaRepository.findIdsByProposalIds(proposalIds);
+    }
+
+    @Override
     public void deleteByRequestIds(List<Long> requestIds) {
         if (requestIds.isEmpty()) return;
         jpaRepository.deleteByRequestIds(requestIds);
+    }
+
+    @Override
+    public void deleteByProposalIds(List<Long> proposalIds) {
+        if (proposalIds.isEmpty()) return;
+        jpaRepository.deleteByProposalIds(proposalIds);
     }
 }
