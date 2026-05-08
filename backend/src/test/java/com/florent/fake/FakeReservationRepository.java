@@ -90,7 +90,20 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Long> findIdsByProposalIds(List<Long> proposalIds) {
+        return store.values().stream()
+                .filter(r -> proposalIds.contains(r.getProposalId()))
+                .map(Reservation::getId)
+                .toList();
+    }
+
+    @Override
     public void deleteByRequestIds(List<Long> requestIds) {
         store.values().removeIf(r -> requestIds.contains(r.getRequestId()));
+    }
+
+    @Override
+    public void deleteByProposalIds(List<Long> proposalIds) {
+        store.values().removeIf(r -> proposalIds.contains(r.getProposalId()));
     }
 }

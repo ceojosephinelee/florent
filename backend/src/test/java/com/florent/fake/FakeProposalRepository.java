@@ -123,6 +123,14 @@ public class FakeProposalRepository implements ProposalRepository {
     }
 
     @Override
+    public List<Long> findIdsByFlowerShopId(Long flowerShopId) {
+        return store.values().stream()
+                .filter(p -> p.getFlowerShopId().equals(flowerShopId))
+                .map(Proposal::getId)
+                .toList();
+    }
+
+    @Override
     public List<Long> findIdsByRequestIds(List<Long> requestIds) {
         return store.values().stream()
                 .filter(p -> requestIds.contains(p.getRequestId()))

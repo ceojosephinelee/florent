@@ -16,6 +16,7 @@ public interface ProposalRepository {
     List<Proposal> findAllByFlowerShopId(Long flowerShopId);
     List<Proposal> findExpirableBefore(LocalDateTime now);
     List<Long> findIdsByRequestIds(List<Long> requestIds);
+    List<Long> findIdsByFlowerShopId(Long flowerShopId);
     void deleteByRequestIds(List<Long> requestIds);
     void deleteByFlowerShopId(Long flowerShopId);
 }

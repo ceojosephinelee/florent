@@ -38,6 +38,9 @@ public interface ProposalJpaRepository extends JpaRepository<ProposalJpaEntity, 
     @Query("SELECT p.id FROM ProposalJpaEntity p WHERE p.requestId IN :requestIds")
     List<Long> findIdsByRequestIds(@Param("requestIds") List<Long> requestIds);
 
+    @Query("SELECT p.id FROM ProposalJpaEntity p WHERE p.flowerShopId = :flowerShopId")
+    List<Long> findIdsByFlowerShopId(@Param("flowerShopId") Long flowerShopId);
+
     @org.springframework.data.jpa.repository.Modifying
     @Query("DELETE FROM ProposalJpaEntity p WHERE p.requestId IN :requestIds")
     void deleteByRequestIds(@Param("requestIds") List<Long> requestIds);

@@ -25,11 +25,15 @@ public class S3StorageAdapter implements StoragePort {
     private final S3Properties properties;
 
     public S3StorageAdapter(S3Properties properties) {
-        this.properties = properties;
-        this.presigner = S3Presigner.builder()
+        this(properties, S3Presigner.builder()
                 .region(Region.of(properties.region()))
                 .credentialsProvider(DefaultCredentialsProvider.create())
-                .build();
+                .build());
+    }
+
+    S3StorageAdapter(S3Properties properties, S3Presigner presigner) {
+        this.properties = properties;
+        this.presigner = presigner;
     }
 
     @Override

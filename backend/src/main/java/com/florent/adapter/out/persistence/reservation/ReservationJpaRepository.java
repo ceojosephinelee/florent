@@ -26,7 +26,14 @@ public interface ReservationJpaRepository extends JpaRepository<ReservationJpaEn
     @Query("SELECT r.id FROM ReservationJpaEntity r WHERE r.requestId IN :requestIds")
     List<Long> findIdsByRequestIds(@Param("requestIds") List<Long> requestIds);
 
+    @Query("SELECT r.id FROM ReservationJpaEntity r WHERE r.proposalId IN :proposalIds")
+    List<Long> findIdsByProposalIds(@Param("proposalIds") List<Long> proposalIds);
+
     @org.springframework.data.jpa.repository.Modifying
     @Query("DELETE FROM ReservationJpaEntity r WHERE r.requestId IN :requestIds")
     void deleteByRequestIds(@Param("requestIds") List<Long> requestIds);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @Query("DELETE FROM ReservationJpaEntity r WHERE r.proposalId IN :proposalIds")
+    void deleteByProposalIds(@Param("proposalIds") List<Long> proposalIds);
 }
