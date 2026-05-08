@@ -46,7 +46,9 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                .requestMatchers("/api/v1/auth/kakao", "/api/v1/auth/reissue", "/api/v1/auth/dev-login",
+                // dev-login은 @Profile("local") 컴포넌트로 prod에서 빈 자체가 제외됨.
+                // 다른 환경(staging 등)에서 dev-login 활성화 시 여기에도 permitAll 추가 필요.
+                .requestMatchers("/api/v1/auth/kakao", "/api/v1/auth/reissue",
                         "/api/v1/auth/email-signup", "/api/v1/auth/email-login").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/addresses/search").permitAll()
                 .requestMatchers("/api/v1/auth/seller-info").hasRole("SELLER")

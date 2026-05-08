@@ -327,4 +327,14 @@
 
 ---
 
+## [AD-036] dev-login 프로덕션 차단 — @Profile("local") 단일화
+
+- **결정일**: 2026-05-08
+- **결정 내용**: `DevAuthController`, `DevAuthService`, `DevAuthFilter` 3개 컴포넌트의 `@Profile({"local", "prod"})` → `@Profile("local")`로 변경. `SecurityConfig`의 permitAll에서 `/api/v1/auth/dev-login` 제거. `GlobalExceptionHandler`에 `NoHandlerFoundException` → 404 핸들러 추가.
+- **이유**: dev-login이 prod에서 접근 가능한 보안 이슈. `@Profile("local")`로 통일하면 prod에서 빈 자체가 등록되지 않아 엔드포인트 접근 불가. MockFcmPushAdapter, MockKakaoOAuthAdapter 등 기존 로컬 전용 컴포넌트와 동일 패턴.
+- **트레이드오프**: 앱스토어 심사 시 dev-login 사용 불가. 심사용 빌드는 `DEV_MODE=true`로 프론트에서 dev-login 버튼을 노출하되, 백엔드는 local 환경에서만 동작.
+- **영향 파일**: `DevAuthController.java`, `DevAuthService.java`, `DevAuthFilter.java`, `SecurityConfig.java`, `GlobalExceptionHandler.java`
+
+---
+
 > 새 결정이 발생하면 [AD-{N}] 형식으로 추가한다.
