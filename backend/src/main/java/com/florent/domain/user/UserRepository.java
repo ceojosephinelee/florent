@@ -6,6 +6,7 @@ public interface UserRepository {
     User save(User user);
     Optional<User> findById(Long id);
     Optional<User> findByKakaoId(String kakaoId);
+    Optional<User> findByEmail(String email);
     Optional<User> findFirstByRole(UserRole role);
     void deleteById(Long id);
 }

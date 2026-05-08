@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.florent.common.exception.BusinessException;
 import com.florent.common.exception.ErrorCode;
 import com.florent.common.security.JwtProvider;
+import com.florent.domain.auth.EmailLoginUseCase;
+import com.florent.domain.auth.EmailSignupUseCase;
 import com.florent.domain.auth.KakaoLoginResult;
 import com.florent.domain.auth.KakaoLoginUseCase;
 import com.florent.domain.auth.LogoutUseCase;
@@ -45,6 +47,12 @@ class AuthControllerTest {
 
     @MockBean
     private KakaoLoginUseCase kakaoLoginUseCase;
+
+    @MockBean
+    private EmailSignupUseCase emailSignupUseCase;
+
+    @MockBean
+    private EmailLoginUseCase emailLoginUseCase;
 
     @MockBean
     private SetRoleUseCase setRoleUseCase;

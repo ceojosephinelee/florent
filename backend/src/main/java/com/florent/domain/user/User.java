@@ -11,6 +11,7 @@ public class User {
     private Long id;
     private String kakaoId;
     private String email;
+    private String passwordHash;
     private String nickname;
     private UserRole role;
     private String refreshToken;
@@ -29,14 +30,25 @@ public class User {
         return user;
     }
 
-    public static User reconstitute(Long id, String kakaoId, String email, String nickname,
-                                    UserRole role, String refreshToken,
+    public static User createFromEmail(String email, String passwordHash, String nickname) {
+        User user = new User();
+        user.email = email;
+        user.passwordHash = passwordHash;
+        user.nickname = nickname;
+        user.role = null;
+        user.createdAt = LocalDateTime.now();
+        return user;
+    }
+
+    public static User reconstitute(Long id, String kakaoId, String email, String passwordHash,
+                                    String nickname, UserRole role, String refreshToken,
                                     LocalDateTime refreshTokenExpiresAt,
                                     LocalDateTime createdAt) {
         User user = new User();
         user.id = id;
         user.kakaoId = kakaoId;
         user.email = email;
+        user.passwordHash = passwordHash;
         user.nickname = nickname;
         user.role = role;
         user.refreshToken = refreshToken;

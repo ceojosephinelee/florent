@@ -14,6 +14,8 @@ abstract class AuthRepository {
     required double shopLng,
     String? businessNumber,
   });
+  Future<KakaoLoginResult> emailSignup(String email, String password, String nickname);
+  Future<KakaoLoginResult> emailLogin(String email, String password);
   Future<void> registerDevice(String fcmToken, String platform);
   Future<void> withdraw();
 }

@@ -10,6 +10,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -31,6 +33,11 @@ public class SecurityConfig {
     }
 
     @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
 
@@ -39,7 +46,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                .requestMatchers("/api/v1/auth/kakao", "/api/v1/auth/reissue", "/api/v1/auth/dev-login").permitAll()
+                .requestMatchers("/api/v1/auth/kakao", "/api/v1/auth/reissue", "/api/v1/auth/dev-login",
+                        "/api/v1/auth/email-signup", "/api/v1/auth/email-login").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/addresses/search").permitAll()
                 .requestMatchers("/api/v1/auth/seller-info").hasRole("SELLER")
                 .requestMatchers("/api/v1/buyer/**").hasRole("BUYER")

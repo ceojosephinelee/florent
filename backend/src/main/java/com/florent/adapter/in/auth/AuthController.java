@@ -1,5 +1,8 @@
 package com.florent.adapter.in.auth;
 
+import com.florent.adapter.in.auth.dto.EmailAuthResponse;
+import com.florent.adapter.in.auth.dto.EmailLoginRequest;
+import com.florent.adapter.in.auth.dto.EmailSignupRequest;
 import com.florent.adapter.in.auth.dto.KakaoLoginRequest;
 import com.florent.adapter.in.auth.dto.KakaoLoginResponse;
 import com.florent.adapter.in.auth.dto.ReissueTokenRequest;
@@ -10,6 +13,11 @@ import com.florent.adapter.in.auth.dto.SetRoleRequest;
 import com.florent.adapter.in.auth.dto.SetRoleResponse;
 import com.florent.common.response.ApiResponse;
 import com.florent.common.security.UserPrincipal;
+import com.florent.domain.auth.EmailAuthResult;
+import com.florent.domain.auth.EmailLoginCommand;
+import com.florent.domain.auth.EmailLoginUseCase;
+import com.florent.domain.auth.EmailSignupCommand;
+import com.florent.domain.auth.EmailSignupUseCase;
 import com.florent.domain.auth.KakaoLoginCommand;
 import com.florent.domain.auth.KakaoLoginResult;
 import com.florent.domain.auth.KakaoLoginUseCase;
@@ -40,6 +48,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final KakaoLoginUseCase kakaoLoginUseCase;
+    private final EmailSignupUseCase emailSignupUseCase;
+    private final EmailLoginUseCase emailLoginUseCase;
     private final SetRoleUseCase setRoleUseCase;
     private final ReissueTokenUseCase reissueTokenUseCase;
     private final LogoutUseCase logoutUseCase;
@@ -52,6 +62,22 @@ public class AuthController {
         KakaoLoginResult result = kakaoLoginUseCase.login(
                 new KakaoLoginCommand(request.kakaoAccessToken()));
         return ResponseEntity.ok(ApiResponse.success(KakaoLoginResponse.from(result)));
+    }
+
+    @PostMapping("/email-signup")
+    public ResponseEntity<ApiResponse<EmailAuthResponse>> emailSignup(
+            @RequestBody @Valid EmailSignupRequest request) {
+        EmailAuthResult result = emailSignupUseCase.signup(
+                new EmailSignupCommand(request.email(), request.password(), request.nickname()));
+        return ResponseEntity.ok(ApiResponse.success(EmailAuthResponse.from(result)));
+    }
+
+    @PostMapping("/email-login")
+    public ResponseEntity<ApiResponse<EmailAuthResponse>> emailLogin(
+            @RequestBody @Valid EmailLoginRequest request) {
+        EmailAuthResult result = emailLoginUseCase.login(
+                new EmailLoginCommand(request.email(), request.password()));
+        return ResponseEntity.ok(ApiResponse.success(EmailAuthResponse.from(result)));
     }
 
     @PostMapping("/role")
