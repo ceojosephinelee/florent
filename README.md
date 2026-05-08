@@ -6,7 +6,6 @@
 
 요청서 1장으로 주변 꽃집의 제안을 받고, 마음에 드는 제안을 골라 예약을 확정합니다.
 
-[![Live](https://img.shields.io/badge/Live-florent.co.kr-EC4899?style=flat-square)](https://florent.co.kr)
 [![Backend](https://img.shields.io/badge/Backend-Spring_Boot_3-6DB33F?style=flat-square&logo=springboot&logoColor=white)](#기술-스택)
 [![Frontend](https://img.shields.io/badge/Frontend-Flutter-02569B?style=flat-square&logo=flutter&logoColor=white)](#기술-스택)
 [![Cloud](https://img.shields.io/badge/Cloud-AWS-FF9900?style=flat-square&logo=amazonaws&logoColor=white)](#인프라)
@@ -22,9 +21,9 @@
 
 > **"상황에 맞는 꽃다발을 설명하기 어렵고, 여러 꽃집을 비교하기는 더 번거롭다."**
 
-기존 화훼 시장은 구매자에게 일방적입니다. 어떤 꽃집이 어떤 가격에 어떤 스타일을 만드는지, 직접 발품을 팔기 전에는 알 수 없습니다. **Florent**는 이 정보 비대칭을 구매자 관점에서 뒤집어, **요청서 → 제안 → 선택 → 예약 확정**의 역경매 구조로 다시 설계했습니다.
+기존 꽃 시장은 어떤 꽃집이 어떤 가격에 어떤 스타일을 만드는지, 직접 발품을 팔기 전에는 알 수 없습니다. 
+**Florent**는 이 정보 비대칭을 해결하기 위해 구매자를 중심으로 거래 구조를 바꾸어, **요청서 → 제안 → 선택 → 예약 확정**의 역경매 구조로 다시 설계했습니다.
 
-- 🌐 **Live**: [florent.co.kr](https://florent.co.kr)
 - 👤 **개발 / 운영**: 1인 (기획·디자인·풀스택·인프라·운영)
 - 🛠️ **개발 방식**: Claude Code 기반 AI 오케스트레이션 워크플로우
 - 📅 **상태**: MVP — iOS Happy Path E2E 검증 완료, 베타 운영 중
@@ -38,7 +37,7 @@
   │     ↓ 반경 2km 내 꽃집에 자동 전달
   │                                      ② 요청 수신 → 제안서 작성 (24h 유효)
   │ ③ 제안 비교 ←──────────────────────────┘
-  │ ④ 제안 선택 + Mock 결제
+  │ ④ 제안 선택 + 연락(추후 결제기능 구현)
   │ ⑤ 예약 확정 ──────────────────────→ 선택/미선택 알림
   ↓                                      ↓
   픽업 또는 배송 약속 시간                  꽃다발 준비
@@ -139,16 +138,6 @@ Florent는 **Hexagonal Architecture (Ports & Adapters)** 기반으로 설계되�
 → **2차: Haversine 공식으로 정확한 반경 계산**
 
 설계 단계에서 `EXPLAIN ANALYZE` 기반 검증을 거쳤고, 가게 수가 늘어날수록 차이가 커지는 구조입니다.
-
-### 3. 왜 예약 확정에 동시성 문제가 없는가?
-
-경매·예약 시스템에서 동시성은 흔한 이슈지만, Florent는 **선택 시점이 단일 구매자에게만 존재**합니다.
-
-- 요청서: 1명의 구매자만 작성
-- 제안 선택: 그 구매자만 가능
-- 동일 제안에 대해 다른 사람이 동시 결제할 시나리오 자체가 도메인상 불가능
-
-→ 락이 필요 없는 도메인 모델을 만든 것이 핵심입니다.
 
 ---
 
@@ -291,68 +280,17 @@ florent/
 
 ---
 
-## 🚀 로컬 실행
-
-### Prerequisites
-- Java 17
-- Flutter 3.x
-- Docker (PostgreSQL via Docker Compose)
-
-### Backend
-```bash
-cd backend
-docker compose up -d postgres
-make run      # 환경변수 로딩 + Spring profile=local 자동 적용
-```
-
-### Frontend
-```bash
-cd frontend
-flutter pub get
-flutter run --dart-define=KAKAO_NATIVE_KEY=$KAKAO_NATIVE_KEY
-```
-
-> ⚠️ *Kakao OAuth, FCM, S3 등 외부 키는 `.env.example` 참고하여 설정.*
-
----
-
-## 📈 로드맵
-
-- [x] MVP 핵심 플로우 (요청 → 제안 → 선택 → Mock 결제 → 예약 확정)
-- [x] iOS Happy Path E2E 검증
-- [x] AWS 인프라 구축 (EC2, RDS, Route53, HTTPS)
-- [x] Kakao OAuth + JWT 통합
-- [x] 인앱 알림함 + FCM 푸시 알림
-- [ ] S3 Presigned URL 이미지 업로드
-- [ ] Apple Developer 가입 + TestFlight 배포
-- [ ] Android 출시
-- [ ] 30명 베타 유저 테스트
-- [ ] 실결제(PG) 연동 — Toss Payments
-- [ ] 영등포 / 강남 권역 하이퍼로컬 GTM
-
----
-
 ## 👤 만든 사람
 
 **이지현 (Jihyun Lee)** — *혼자서 팀을 만드는 개발자*
 
-홍익대학교 컴퓨터공학과 (2026년 2월 졸업 예정). AI-Native Product Engineer로서 기획·디자인·풀스택·인프라·운영을 1인 사이클로 돌립니다. Florent는 그 사이클 자체를 시연하는 프로젝트입니다.
+홍익대학교 컴퓨터공학과 (2026년 2월 졸업). 
+AI-Native Product Engineer로서 기획·디자인·풀스택·인프라·운영을 1인 사이클로 돌립니다. Florent는 그 사이클 자체를 시연하는 프로젝트입니다.
 
-- 🌐 [florent.co.kr](https://florent.co.kr)
 - ✍️ [Tistory Blog](https://ceojosephine.tistory.com)
 - 💼 [LinkedIn — @ceojosephine](https://linkedin.com/in/ceojosephine)
-- 🐙 GitHub — `@ceojosephine`
 
 ---
 
-## 📜 라이선스
 
-본 저장소는 포트폴리오 공개용입니다. 코드 사용·인용 시 출처를 표기해 주세요.
 
-<div align="center">
-
----
-
-🌸 *Made with care, code, and a lot of Claude.*
-
-</div>
