@@ -160,15 +160,30 @@ feat/{기능명}             ← 기능 개발
 fix/{버그명}               ← 버그 수정
 ```
 
-### 머지 전략 (반드시 준수)
+### 🚨 머지 규칙 (위반 시 충돌 패턴 재발)
 
-| 머지 방향 | GitHub 머지 방식 | 이유 |
-|---|---|---|
-| feat → develop | **Squash and Merge** | 커밋 히스토리 깔끔하게 |
-| develop → main | **Create a merge commit** | Squash 사용 시 SHA 불일치로 무한 충돌 발생 |
+| from | to | 머지 방식 | gh 명령어 |
+|------|----|---------| --------|
+| feat/* | develop | **Squash and Merge** | `gh pr merge --squash` |
+| develop | main | **Create a merge commit** | `gh pr merge --merge` |
+| hotfix/* | main | **Create a merge commit** | `gh pr merge --merge` |
 
 > **develop → main에 Squash 절대 금지.**
 > Squash하면 main과 develop의 커밋 SHA가 달라져서 이후 모든 PR에서 충돌이 반복된다.
+> Rebase merge도 금지 — SHA가 변경되어 동일 문제 발생.
+
+**PR 생성 전 체크**
+- base 브랜치가 정확한가? (feat/* → develop, develop → main)
+- 동일 base/head 조합의 기존 PR이 있는지 `gh pr list`로 확인
+- main에 직접 커밋 금지 (README 등도 develop → main 경로로)
+
+**develop → main 머지 후 반드시**
+```bash
+# develop에서 main의 merge commit을 sync
+git checkout develop
+git merge origin/main --no-ff -m "merge: sync main merge-commit into develop"
+git push origin develop
+```
 
 ### 커밋 메시지
 ```
