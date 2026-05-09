@@ -22,7 +22,7 @@ class ActiveRequestCard extends StatelessWidget {
       if (request.purposeTags.isNotEmpty) request.purposeTags.first,
       if (request.relationTags.isNotEmpty) request.relationTags.first,
     ];
-    return parts.isNotEmpty ? parts.join(' · ') : '꽃다발 요청';
+    return parts.isNotEmpty ? parts.join(' · ') : '꽃 요청';
   }
 
   String get _fulfillmentLabel {

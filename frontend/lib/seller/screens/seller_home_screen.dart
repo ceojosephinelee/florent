@@ -89,6 +89,7 @@ class SellerHomeScreen extends ConsumerWidget {
                       return DateTime.now().difference(createdAt).inHours < 24;
                     }).map((r) {
                       final tag = r.purposeTags.isNotEmpty ? r.purposeTags.first : '';
+                      // '꽃다발' 유지: 예산 tier의 양감 표현 — '작은 꽃'은 어색함
                       final budget = r.budgetTier == 'TIER2' ? '기본형' : r.budgetTier == 'TIER1' ? '작은 꽃다발' : r.budgetTier == 'TIER3' ? '풍성한 꽃다발' : '프리미엄';
                       final type = r.fulfillmentType == 'PICKUP' ? '픽업' : '배송';
                       return GestureDetector(

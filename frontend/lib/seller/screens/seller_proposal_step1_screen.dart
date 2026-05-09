@@ -292,7 +292,7 @@ class _SellerProposalStep1ScreenState
                           ),
                         ),
                         const SizedBox(height: 20),
-                        _label('🌸 꽃다발 이름 *'),
+                        _label('🌸 꽃 이름 *'),
                         const SizedBox(height: 6),
                         _textField(
                           hint: '예) 핑크 작약으로 물든 봄날의 꽃다발',

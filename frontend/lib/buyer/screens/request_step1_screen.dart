@@ -50,7 +50,7 @@ class RequestStep1Screen extends ConsumerWidget {
       body: SafeArea(
         child: Column(
           children: [
-            const AppNavBar(title: '꽃다발 요청하기'),
+            const AppNavBar(title: '꽃 요청하기'),
             const StepProgressBar(totalSteps: 4, currentStep: 1),
             Expanded(
               child: SingleChildScrollView(

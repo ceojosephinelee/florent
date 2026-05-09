@@ -36,7 +36,7 @@ class ReservationDoneScreen extends ConsumerWidget {
                       Text('예약이 확정됐어요!', style: AppTypography.serif(fontSize: 24, fontWeight: FontWeight.w600)),
                       const SizedBox(height: 10),
                       Text(
-                        '플로리스트가 소중한 꽃다발을\n정성껏 준비할 거예요 🌷',
+                        '플로리스트가 소중한 꽃을\n정성껏 준비할 거예요 🌷',
                         textAlign: TextAlign.center,
                         style: AppTypography.body(fontSize: 12, color: ink60, height: 1.7),
                       ),
