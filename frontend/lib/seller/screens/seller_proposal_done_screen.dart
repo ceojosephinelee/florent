@@ -93,7 +93,7 @@ class SellerProposalDoneScreen extends ConsumerWidget {
                             fontSize: 24, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 10),
                     Text(
-                      '구매자가 확인하면 알림을 드릴게요.\n선택되면 예약이 즉시 확정됩니다 🌷',
+                      '구매자가 확인하면 알림을 드릴게요.\n선택되면 예약이 즉시 확정됩니다 🌷\n\n다른 상품을 제안하시려면 새 제안서를 작성해주세요.',
                       textAlign: TextAlign.center,
                       style: AppTypography.body(
                           fontSize: 12, color: ink60, height: 1.7),
