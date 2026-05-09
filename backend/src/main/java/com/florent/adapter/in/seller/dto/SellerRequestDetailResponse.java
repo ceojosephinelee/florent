@@ -18,6 +18,7 @@ public record SellerRequestDetailResponse(
         LocalDate fulfillmentDate,
         List<TimeSlotDto> requestedTimeSlots,
         String placeAddressText,
+        String additionalNotes,
         LocalDateTime expiresAt,
         Long myProposalId,
         String myProposalStatus
@@ -34,6 +35,7 @@ public record SellerRequestDetailResponse(
                 r.fulfillmentDate(),
                 r.requestedTimeSlots().stream().map(TimeSlotDto::from).toList(),
                 r.placeAddressText(),
+                r.additionalNotes(),
                 r.expiresAt(),
                 r.myProposalId(),
                 r.myProposalStatus());

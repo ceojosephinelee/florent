@@ -160,6 +160,7 @@ class BuyerRequestControllerTest {
                 List.of(new TimeSlot(SlotKind.DELIVERY_WINDOW, "14:00-16:00")),
                 "서울시 강남구",
                 new BigDecimal("37.498095"), new BigDecimal("127.027610"),
+                null,
                 LocalDateTime.of(2026, 3, 17, 10, 0),
                 2, 1);
         given(getRequestDetailUseCase.getDetail(eq(1L), eq(1L))).willReturn(detail);

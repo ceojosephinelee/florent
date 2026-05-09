@@ -22,7 +22,8 @@ public record CreateRequestRequest(
     @NotEmpty @Valid List<TimeSlotRequest> requestedTimeSlots,
     @NotBlank String placeAddressText,
     @NotNull BigDecimal placeLat,
-    @NotNull BigDecimal placeLng
+    @NotNull BigDecimal placeLng,
+    String additionalNotes
 ) {
     public CreateRequestCommand toCommand(Long buyerId) {
         return new CreateRequestCommand(
@@ -36,7 +37,8 @@ public record CreateRequestRequest(
             requestedTimeSlots.stream().map(TimeSlotRequest::toDomain).toList(),
             placeAddressText,
             placeLat,
-            placeLng
+            placeLng,
+            additionalNotes
         );
     }
 }

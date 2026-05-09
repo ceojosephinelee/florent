@@ -53,6 +53,7 @@ class _RequestDoneScreenState extends ConsumerState<RequestDoneScreen> {
         'placeAddressText': form.placeAddressText,
         'placeLat': form.placeLat,
         'placeLng': form.placeLng,
+        if (form.additionalNotes != null) 'additionalNotes': form.additionalNotes,
       });
 
       if (!mounted) return;

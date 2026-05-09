@@ -15,6 +15,7 @@ public record SellerRequestDetailResult(
         LocalDate fulfillmentDate,
         List<TimeSlot> requestedTimeSlots,
         String placeAddressText,
+        String additionalNotes,
         LocalDateTime expiresAt,
         Long myProposalId,
         String myProposalStatus
@@ -33,6 +34,7 @@ public record SellerRequestDetailResult(
                 request.getFulfillmentDate(),
                 request.getRequestedTimeSlots(),
                 request.getPlaceAddressText(),
+                request.getAdditionalNotes(),
                 request.getExpiresAt(),
                 myProposalId,
                 myProposalStatus

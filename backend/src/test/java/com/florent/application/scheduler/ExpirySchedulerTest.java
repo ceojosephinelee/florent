@@ -154,7 +154,8 @@ class ExpirySchedulerTest {
                 List.of(new TimeSlot(SlotKind.PICKUP_30M, "14:00")),
                 "서울시 강남구",
                 new BigDecimal("37.123456"),
-                new BigDecimal("127.123456"));
+                new BigDecimal("127.123456"),
+                null);
         return CurationRequest.create(cmd, clock);
     }
 

@@ -21,6 +21,7 @@ public record RequestDetailResponse(
         String placeAddressText,
         BigDecimal placeLat,
         BigDecimal placeLng,
+        String additionalNotes,
         LocalDateTime expiresAt,
         int draftProposalCount,
         int submittedProposalCount
@@ -39,6 +40,7 @@ public record RequestDetailResponse(
                 r.placeAddressText(),
                 r.placeLat(),
                 r.placeLng(),
+                r.additionalNotes(),
                 r.expiresAt(),
                 r.draftProposalCount(),
                 r.submittedProposalCount());

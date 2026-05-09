@@ -78,6 +78,9 @@ public class CurationRequestJpaEntity {
     @Column(nullable = false, precision = 9, scale = 6)
     private BigDecimal placeLng;
 
+    @Column(length = 500)
+    private String additionalNotes;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -115,6 +118,7 @@ public class CurationRequestJpaEntity {
         entity.placeAddressText = domain.getPlaceAddressText();
         entity.placeLat = domain.getPlaceLat();
         entity.placeLng = domain.getPlaceLng();
+        entity.additionalNotes = domain.getAdditionalNotes();
         entity.createdAt = domain.getCreatedAt();
         entity.expiresAt = domain.getExpiresAt();
         return entity;
@@ -127,6 +131,7 @@ public class CurationRequestJpaEntity {
                 budgetTier, fulfillmentType,
                 fulfillmentDate, requestedTimeSlots,
                 placeAddressText, placeLat, placeLng,
+                additionalNotes,
                 createdAt, expiresAt
         );
     }
