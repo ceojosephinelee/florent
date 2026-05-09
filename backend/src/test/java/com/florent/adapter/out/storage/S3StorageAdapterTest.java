@@ -20,7 +20,7 @@ class S3StorageAdapterTest {
 
     private final S3Properties properties = new S3Properties("florent-images", "ap-northeast-2", 600);
     private final S3Presigner presigner = mock(S3Presigner.class);
-    private final S3StorageAdapter adapter = new S3StorageAdapter(properties, presigner);
+    private final S3StorageAdapter adapter = new S3StorageAdapter(presigner, properties);
 
     @Test
     @DisplayName("Presigned URL 결과에 올바른 imageUrl 형식 포함")
