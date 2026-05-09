@@ -21,3 +21,11 @@ kakao:
   local:
     base-url: https://dapi.kakao.com
   rest-key: ${KAKAO_REST_KEY}
+
+review:
+  buyer:
+    email: ${REVIEW_BUYER_EMAIL}
+    password: ${REVIEW_BUYER_PASSWORD}
+  seller:
+    email: ${REVIEW_SELLER_EMAIL}
+    password: ${REVIEW_SELLER_PASSWORD}
