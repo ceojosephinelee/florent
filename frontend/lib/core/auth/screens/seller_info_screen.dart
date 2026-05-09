@@ -20,6 +20,7 @@ class SellerInfoScreen extends ConsumerStatefulWidget {
 
 class _SellerInfoScreenState extends ConsumerState<SellerInfoScreen> {
   final _shopNameController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _businessNumberController = TextEditingController();
   String? _address;
   double _lat = 0;
@@ -31,6 +32,7 @@ class _SellerInfoScreenState extends ConsumerState<SellerInfoScreen> {
   @override
   void dispose() {
     _shopNameController.dispose();
+    _phoneController.dispose();
     _businessNumberController.dispose();
     super.dispose();
   }
@@ -127,6 +129,22 @@ class _SellerInfoScreenState extends ConsumerState<SellerInfoScreen> {
 
                     const SizedBox(height: 20),
 
+                    // 가게 전화번호
+                    _label('📞 가게 전화번호 (선택)'),
+                    const SizedBox(height: 6),
+                    _textField(
+                      controller: _phoneController,
+                      hint: '예) 02-1234-5678',
+                      keyboardType: TextInputType.phone,
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      '구매자가 제안 확인 시 연락처로 표시돼요.',
+                      style: AppTypography.body(fontSize: 10, color: ink30),
+                    ),
+
+                    const SizedBox(height: 20),
+
                     // 사업자등록번호
                     _label('📋 사업자등록번호 (선택)'),
                     const SizedBox(height: 6),
@@ -160,6 +178,9 @@ class _SellerInfoScreenState extends ConsumerState<SellerInfoScreen> {
                               shopAddress: _address ?? '',
                               shopLat: _lat,
                               shopLng: _lng,
+                              phone: _phoneController.text.trim().isEmpty
+                                  ? null
+                                  : _phoneController.text.trim(),
                               businessNumber: _businessNumberController.text.trim().isEmpty
                                   ? null
                                   : _businessNumberController.text.trim(),

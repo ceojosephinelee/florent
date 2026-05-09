@@ -56,6 +56,7 @@ class ApiBuyerRepository {
       status: data['status'] as String,
       shopName: shop['name'] as String? ?? '',
       shopAddress: shop['addressText'] as String? ?? '',
+      shopPhone: shop['phone'] as String?,
       conceptTitle: data['conceptTitle'] as String? ?? '',
       description: data['description'] as String? ?? '',
       price: data['price'] as int? ?? 0,

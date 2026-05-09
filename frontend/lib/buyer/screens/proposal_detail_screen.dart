@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/theme/colors.dart';
 import '../../core/theme/radius.dart';
@@ -89,6 +90,30 @@ class ProposalDetailScreen extends ConsumerWidget {
                               '${detail.shopEmoji ?? '🌸'} ${detail.shopName} · ${detail.shopAddress}',
                               style: AppTypography.body(fontSize: 11, color: ink60),
                             ),
+                            if (detail.shopPhone != null && detail.shopPhone!.isNotEmpty) ...[
+                              const SizedBox(height: 8),
+                              GestureDetector(
+                                onTap: () async {
+                                  final uri = Uri.parse('tel:${detail.shopPhone}');
+                                  if (!await launchUrl(uri)) {
+                                    if (!context.mounted) return;
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('전화 앱을 열 수 없어요')),
+                                    );
+                                  }
+                                },
+                                child: Row(
+                                  children: [
+                                    const Text('📞', style: TextStyle(fontSize: 13)),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      detail.shopPhone!,
+                                      style: AppTypography.body(fontSize: 12, color: roseColor, fontWeight: FontWeight.w600),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                             const SizedBox(height: 12),
                             Text(detail.description, style: AppTypography.body(fontSize: 12, color: ink60, height: 1.6)),
                             const SizedBox(height: 16),
