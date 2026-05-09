@@ -28,7 +28,7 @@ class SellerReservationDoneScreen extends StatelessWidget {
                     const SizedBox(height: 14),
                     Text('예약이 확정됐어요!', style: AppTypography.serif(fontSize: 24, fontWeight: FontWeight.w600, color: _sage)),
                     const SizedBox(height: 10),
-                    Text('구매자가 제안을 선택했어요.\n소중한 꽃다발을 준비해주세요 🌷', textAlign: TextAlign.center, style: AppTypography.body(fontSize: 12, color: ink60, height: 1.7)),
+                    Text('구매자가 제안을 선택했어요.\n소중한 꽃을 준비해주세요 🌷', textAlign: TextAlign.center, style: AppTypography.body(fontSize: 12, color: ink60, height: 1.7)),
                     const SizedBox(height: 24),
                     Container(
                       width: double.infinity,

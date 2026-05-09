@@ -117,6 +117,7 @@ class _RequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tag = r.purposeTags.isNotEmpty ? r.purposeTags.first : '';
+    // '꽃다발' 유지: 예산 tier의 양감 표현 — '작은 꽃'은 어색함
     final budget = switch (r.budgetTier as String) {
       'TIER1' => '작은 꽃다발',
       'TIER2' => '기본형',

@@ -17,6 +17,7 @@ class RequestStep2Screen extends ConsumerWidget {
     _BudgetOption(
       tier: 'TIER1',
       emoji: '🌷',
+      // '꽃다발' 유지: 예산 tier의 양감 표현 — '작은 꽃'은 어색함
       name: '작은 꽃다발',
       price: '3~5만원',
       desc: '손에 가볍게 들리는 크기',
@@ -31,6 +32,7 @@ class RequestStep2Screen extends ConsumerWidget {
     _BudgetOption(
       tier: 'TIER3',
       emoji: '🌸',
+      // '꽃다발' 유지: 예산 tier의 양감 표현 — '작은 꽃'은 어색함
       name: '풍성한 꽃다발',
       price: '9~13만원',
       desc: '가득 안기는 볼륨감',
@@ -54,7 +56,7 @@ class RequestStep2Screen extends ConsumerWidget {
       body: SafeArea(
         child: Column(
           children: [
-            const AppNavBar(title: '꽃다발 요청하기'),
+            const AppNavBar(title: '꽃 요청하기'),
             const StepProgressBar(totalSteps: 4, currentStep: 2),
             Expanded(
               child: SingleChildScrollView(

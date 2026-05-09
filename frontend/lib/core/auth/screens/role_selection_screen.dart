@@ -92,7 +92,7 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
               _RoleCard(
                 emoji: '🌸',
                 title: '구매자로 시작',
-                description: '원하는 꽃다발을 요청하고\n근처 플로리스트의 맞춤 제안을 받아보세요.',
+                description: '원하는 꽃을 요청하고\n근처 플로리스트의 맞춤 제안을 받아보세요.',
                 accentColor: roseColor,
                 bgColor: roseLt,
                 isLoading: auth.isLoading,

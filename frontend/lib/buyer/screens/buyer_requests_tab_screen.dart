@@ -68,7 +68,7 @@ class BuyerRequestsTabScreen extends ConsumerWidget {
                         if (r.purposeTags.isNotEmpty) r.purposeTags.first.replaceAll(RegExp(r'[^\w가-힣]'), '').trim(),
                         if (r.relationTags.isNotEmpty) r.relationTags.first.replaceAll(RegExp(r'[^\w가-힣]'), '').trim(),
                       ];
-                      final title = titleParts.isNotEmpty ? titleParts.join(' · ') : '꽃다발 요청';
+                      final title = titleParts.isNotEmpty ? titleParts.join(' · ') : '꽃 요청';
                       final typeLabel = r.fulfillmentType == 'PICKUP' ? '픽업' : '배송';
                       final budgetLabel = _budgetLabel(r.budgetTier);
 
@@ -150,6 +150,7 @@ class BuyerRequestsTabScreen extends ConsumerWidget {
     }
   }
 
+  // '꽃다발' 유지: 예산 tier의 양감 표현 — '작은 꽃'은 어색함
   String _budgetLabel(String tier) => switch (tier) {
         'TIER1' => '작은 꽃다발',
         'TIER2' => '기본형',
@@ -222,8 +223,8 @@ class _EmptyState extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final (emoji, message, showCta) = switch (filter) {
-      BuyerRequestFilter.all => ('🌷', '아직 요청이 없어요.\n꽃다발을 요청해보세요!', true),
-      BuyerRequestFilter.waiting => ('🌷', '요청 중인 건이 없어요.\n꽃다발을 요청해보세요!', true),
+      BuyerRequestFilter.all => ('🌷', '아직 요청이 없어요.\n꽃을 요청해보세요!', true),
+      BuyerRequestFilter.waiting => ('🌷', '요청 중인 건이 없어요.\n꽃을 요청해보세요!', true),
       BuyerRequestFilter.hasProposal => ('💐', '도착한 제안이 없어요', false),
       BuyerRequestFilter.confirmed => ('📭', '확정된 요청이 없어요', false),
       BuyerRequestFilter.expired => ('📭', '만료된 요청이 없어요', false),

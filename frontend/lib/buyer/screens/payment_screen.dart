@@ -104,7 +104,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                               const SizedBox(height: 14),
                               Divider(color: borderColor, height: 1),
                               const SizedBox(height: 10),
-                              _priceRow('꽃다발 가격', '$priceFormatted원', false),
+                              _priceRow('꽃 가격', '$priceFormatted원', false),
                               const SizedBox(height: 8),
                               _priceRow('최종 결제', '$priceFormatted원', true),
                             ],
