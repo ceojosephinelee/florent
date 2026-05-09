@@ -198,14 +198,10 @@ public class E2EHappyPathSteps {
         assertThat(status).isEqualTo(expectedStatus);
     }
 
-    @And("{string} 에게 RESERVATION_CONFIRMED 알림이 생성된다")
-    public void 에게_RESERVATION_CONFIRMED_알림이_생성된다(String sellerName) {
+    @And("구매자에게 RESERVATION_CONFIRMED 알림이 생성된다")
+    public void 구매자에게_RESERVATION_CONFIRMED_알림이_생성된다() {
         // then
-        Long sellerId = sellerIdsByName.get(sellerName);
-        long count = fakeNotification.getReservationRecords().stream()
-                .filter(r -> r.sellerId().equals(sellerId))
-                .count();
-        assertThat(count).isGreaterThanOrEqualTo(1);
+        assertThat(fakeNotification.getReservationRecords()).isNotEmpty();
     }
 
     @Then("예약 1건이 조회된다")

@@ -292,10 +292,11 @@ class _SellerProposalStep1ScreenState
                           ),
                         ),
                         const SizedBox(height: 20),
-                        _label('🌸 꽃 이름 *'),
+                        _label('🌸 제품 한 줄 설명 *'),
                         const SizedBox(height: 6),
                         _textField(
-                          hint: '예) 핑크 작약으로 물든 봄날의 꽃다발',
+                          hint: '예) 봄날 느낌의 파스텔 부케',
+                          maxLength: 30,
                           controller: _conceptTitleCtrl,
                           onChanged: notifier.setConceptTitle,
                         ),
@@ -342,6 +343,10 @@ class _SellerProposalStep1ScreenState
                         ),
                         const SizedBox(height: 20),
                         _label('📷 사진 첨부 (선택)'),
+                        const SizedBox(height: 4),
+                        Text('📸 한 상품에 대한 사진만 올려주세요',
+                            style: AppTypography.body(
+                                fontSize: 11, color: _sage, fontWeight: FontWeight.w600)),
                         const SizedBox(height: 6),
                         SizedBox(
                           height: 72,
@@ -480,6 +485,7 @@ class _SellerProposalStep1ScreenState
     TextInputType? keyboardType,
     TextEditingController? controller,
     required ValueChanged<String> onChanged,
+    int? maxLength,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -490,6 +496,7 @@ class _SellerProposalStep1ScreenState
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,
+        maxLength: maxLength,
         style: AppTypography.body(fontSize: 13),
         decoration: InputDecoration(
           hintText: hint,
@@ -497,6 +504,7 @@ class _SellerProposalStep1ScreenState
           border: InputBorder.none,
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          counterStyle: AppTypography.body(fontSize: 10, color: ink30),
         ),
         onChanged: onChanged,
       ),

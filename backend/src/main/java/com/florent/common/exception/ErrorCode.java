@@ -29,6 +29,7 @@ public enum ErrorCode {
 
     // Reservation
     RESERVATION_NOT_FOUND(404, "예약을 찾을 수 없습니다."),
+    INVALID_RESERVATION_STATE(422, "예약 상태를 변경할 수 없습니다."),
 
     // Payment
     DUPLICATE_PAYMENT(422, "중복 결제 요청입니다."),

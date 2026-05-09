@@ -35,13 +35,11 @@ Feature: 전체 서비스 흐름 End-to-End (Happy Path)
     When  구매자가 해당 제안의 상세를 조회한다
     Then  개념 제목, 설명, 가격이 모두 포함된다
 
-    # ── Step 4. 제안 선택 및 예약 확정 ──────────────
+    # ── Step 4. 제안 선택 및 예약 생성 ──────────────
     When  구매자가 해당 제안을 선택한다 (idempotencyKey: "e2e-uuid-001")
     Then  응답 상태 코드는 201이다
-    And   예약 상태는 "CONFIRMED" 이다
-    And   결제 상태는 "SUCCEEDED" 이다
+    And   예약 상태는 "PENDING_CONTACT" 이다
     And   요청 상태가 "CONFIRMED" 로 변경된다
-    And   "seller01" 에게 RESERVATION_CONFIRMED 알림이 생성된다
 
     # ── Step 5. 구매자 예약 확인 ──────────────────
     When  구매자가 예약 목록을 조회한다

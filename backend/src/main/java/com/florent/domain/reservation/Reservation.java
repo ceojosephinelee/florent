@@ -1,5 +1,7 @@
 package com.florent.domain.reservation;
 
+import com.florent.common.exception.BusinessException;
+import com.florent.common.exception.ErrorCode;
 import lombok.Getter;
 
 import java.math.BigDecimal;
@@ -34,7 +36,7 @@ public class Reservation {
         Reservation r = new Reservation();
         r.requestId = requestId;
         r.proposalId = proposalId;
-        r.status = ReservationStatus.CONFIRMED;
+        r.status = ReservationStatus.PENDING_CONTACT;
         r.fulfillmentType = fulfillmentType;
         r.fulfillmentDate = fulfillmentDate;
         r.fulfillmentSlotKind = fulfillmentSlotKind;
@@ -42,9 +44,24 @@ public class Reservation {
         r.placeAddressText = placeAddressText;
         r.placeLat = placeLat;
         r.placeLng = placeLng;
-        r.confirmedAt = LocalDateTime.now(clock);
+        r.confirmedAt = null;
         r.createdAt = LocalDateTime.now(clock);
         return r;
+    }
+
+    public void confirm(Clock clock) {
+        if (status != ReservationStatus.PENDING_CONTACT) {
+            throw new BusinessException(ErrorCode.INVALID_RESERVATION_STATE);
+        }
+        this.status = ReservationStatus.CONFIRMED;
+        this.confirmedAt = LocalDateTime.now(clock);
+    }
+
+    public void cancel() {
+        if (status != ReservationStatus.PENDING_CONTACT) {
+            throw new BusinessException(ErrorCode.INVALID_RESERVATION_STATE);
+        }
+        this.status = ReservationStatus.CANCELLED;
     }
 
     public static Reservation reconstitute(

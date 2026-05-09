@@ -10,13 +10,56 @@ import '../providers/seller_providers.dart';
 const _sage = Color(0xFF5A7A68);
 const _sageLt = Color(0xFFE8F0EC);
 
-class SellerReservationDetailScreen extends ConsumerWidget {
+class SellerReservationDetailScreen extends ConsumerStatefulWidget {
   const SellerReservationDetailScreen({super.key, required this.reservationId});
   final int reservationId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final asyncDetail = ref.watch(sellerReservationDetailProvider(reservationId));
+  ConsumerState<SellerReservationDetailScreen> createState() =>
+      _SellerReservationDetailScreenState();
+}
+
+class _SellerReservationDetailScreenState
+    extends ConsumerState<SellerReservationDetailScreen> {
+  bool _isConfirming = false;
+
+  Future<void> _handleConfirm() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('예약 확정'),
+        content: const Text('구매자와 연락이 완료되었나요?\n예약을 확정하시겠습니까?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('취소')),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('확정')),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _isConfirming = true);
+    try {
+      final repo = ref.read(sellerRepositoryProvider);
+      await repo.confirmReservation(widget.reservationId);
+      if (!mounted) return;
+      ref.invalidate(sellerReservationDetailProvider(widget.reservationId));
+      ref.invalidate(sellerReservationHistoryProvider);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('예약이 확정되었어요!')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('확정에 실패했어요. 다시 시도해주세요.')),
+      );
+    } finally {
+      if (mounted) setState(() => _isConfirming = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final asyncDetail = ref.watch(sellerReservationDetailProvider(widget.reservationId));
 
     return Scaffold(
       backgroundColor: creamColor,
@@ -37,8 +80,18 @@ class SellerReservationDetailScreen extends ConsumerWidget {
                       Center(
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                          decoration: BoxDecoration(color: _sageLt, borderRadius: kBorderRadiusSm),
-                          child: Text('✅ 예약 확정', style: AppTypography.body(fontSize: 13, fontWeight: FontWeight.w600, color: _sage)),
+                          decoration: BoxDecoration(
+                            color: d.status == 'PENDING_CONTACT' ? const Color(0xFFFFF3E0) : _sageLt,
+                            borderRadius: kBorderRadiusSm,
+                          ),
+                          child: Text(
+                            d.status == 'PENDING_CONTACT' ? '구매자 연락 대기' : '예약 확정',
+                            style: AppTypography.body(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: d.status == 'PENDING_CONTACT' ? const Color(0xFFE65100) : _sage,
+                            ),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -145,6 +198,27 @@ class SellerReservationDetailScreen extends ConsumerWidget {
                         moodTags: d.moodTags,
                         budgetTier: d.budgetTier,
                       ),
+                      if (d.status == 'PENDING_CONTACT') ...[
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 52,
+                          child: ElevatedButton(
+                            onPressed: _isConfirming ? null : _handleConfirm,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: _sage,
+                              disabledBackgroundColor: ink30,
+                              foregroundColor: whiteColor,
+                              shape: RoundedRectangleBorder(borderRadius: kBorderRadiusMd),
+                              elevation: 0,
+                            ),
+                            child: Text(
+                              _isConfirming ? '처리 중...' : '예약 확정하기',
+                              style: AppTypography.body(fontSize: 15, fontWeight: FontWeight.w600, color: whiteColor),
+                            ),
+                          ),
+                        ),
+                      ],
                       const SizedBox(height: 24),
                     ],
                   ),

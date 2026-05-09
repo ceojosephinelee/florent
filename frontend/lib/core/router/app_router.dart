@@ -12,7 +12,6 @@ import '../../buyer/screens/buyer_notifications_tab_screen.dart';
 import '../../buyer/screens/buyer_requests_tab_screen.dart';
 import '../../buyer/screens/buyer_reservations_tab_screen.dart';
 import '../../buyer/screens/buyer_shell_screen.dart';
-import '../../buyer/screens/payment_screen.dart';
 import '../../buyer/screens/proposal_detail_screen.dart';
 import '../../buyer/screens/request_detail_screen.dart';
 import '../../buyer/screens/request_done_screen.dart';
@@ -92,10 +91,6 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/buyer/proposals/:id',
       builder: (_, state) => ProposalDetailScreen(proposalId: int.parse(state.pathParameters['id']!)),
-    ),
-    GoRoute(
-      path: '/buyer/proposals/:id/pay',
-      builder: (_, state) => PaymentScreen(proposalId: int.parse(state.pathParameters['id']!)),
     ),
     GoRoute(path: '/buyer/notifications', builder: (_, __) => const BuyerNotificationsTabScreen()),
     GoRoute(

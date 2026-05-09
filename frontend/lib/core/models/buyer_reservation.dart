@@ -13,6 +13,7 @@ class BuyerReservationDetail {
   final String fulfillmentSlotValue;
   final String placeAddressText;
   final String? shopEmoji;
+  final String? shopPhone;
   final List<String> imageUrls;
   final List<String> purposeTags;
   final List<String> relationTags;
@@ -35,6 +36,7 @@ class BuyerReservationDetail {
     required this.fulfillmentSlotValue,
     required this.placeAddressText,
     this.shopEmoji,
+    this.shopPhone,
     this.imageUrls = const [],
     this.purposeTags = const [],
     this.relationTags = const [],
@@ -53,6 +55,7 @@ class BuyerReservationDetail {
       status: json['status'] as String,
       shopName: shop['name'] as String? ?? '',
       shopAddress: shop['addressText'] as String? ?? '',
+      shopPhone: shop['phone'] as String?,
       conceptTitle: proposal['conceptTitle'] as String? ?? '',
       description: proposal['description'] as String? ?? '',
       price: proposal['price'] as int? ?? 0,

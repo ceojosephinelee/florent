@@ -60,6 +60,7 @@ class MockAuthRepository implements AuthRepository {
     required String shopAddress,
     required double shopLat,
     required double shopLng,
+    String? phone,
     String? businessNumber,
   }) async {
     await Future.delayed(const Duration(milliseconds: 500));

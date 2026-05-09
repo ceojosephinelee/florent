@@ -85,7 +85,7 @@ class SellerStatsServiceTest {
         // then
         assertThat(result.monthlyReceivedRequestCount()).isEqualTo(1);
         assertThat(result.monthlySubmittedProposalCount()).isEqualTo(1);
-        assertThat(result.monthlyConfirmedReservationCount()).isEqualTo(1);
+        assertThat(result.monthlyConfirmedReservationCount()).isZero();
         assertThat(result.recentReservations()).hasSize(1);
         assertThat(result.recentReservations().get(0).conceptTitle()).isEqualTo("제안");
     }

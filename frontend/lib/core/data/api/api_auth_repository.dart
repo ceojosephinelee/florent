@@ -94,6 +94,7 @@ class ApiAuthRepository implements AuthRepository {
     required String shopAddress,
     required double shopLat,
     required double shopLng,
+    String? phone,
     String? businessNumber,
   }) async {
     final response = await _dio.post('/auth/seller-info', data: {
@@ -101,6 +102,7 @@ class ApiAuthRepository implements AuthRepository {
       'shopAddress': shopAddress,
       'shopLat': shopLat,
       'shopLng': shopLng,
+      if (phone != null) 'phone': phone,
       if (businessNumber != null) 'businessNumber': businessNumber,
     });
     return SellerInfoResult.fromJson(

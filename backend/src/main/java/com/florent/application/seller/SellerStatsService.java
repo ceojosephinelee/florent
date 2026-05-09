@@ -86,6 +86,7 @@ public class SellerStatsService implements GetSellerStatsUseCase {
 
     private int countMonthlyConfirmed(List<Reservation> reservations, LocalDateTime monthStart) {
         return (int) reservations.stream()
+                .filter(r -> r.getConfirmedAt() != null)
                 .filter(r -> r.getConfirmedAt().isAfter(monthStart)
                         || r.getConfirmedAt().isEqual(monthStart))
                 .count();
@@ -99,7 +100,8 @@ public class SellerStatsService implements GetSellerStatsUseCase {
                 .collect(Collectors.toMap(Proposal::getId, Function.identity()));
 
         return reservations.stream()
-                .sorted(Comparator.comparing(Reservation::getConfirmedAt).reversed())
+                .sorted(Comparator.comparing(
+                        Reservation::getCreatedAt, Comparator.reverseOrder()))
                 .limit(RECENT_RESERVATION_LIMIT)
                 .map(r -> {
                     Proposal p = proposalMap.get(r.getProposalId());
@@ -108,7 +110,7 @@ public class SellerStatsService implements GetSellerStatsUseCase {
                             p != null ? p.getConceptTitle() : null,
                             p != null ? p.getPrice() : null,
                             r.getFulfillmentType(),
-                            r.getConfirmedAt()
+                            r.getCreatedAt()
                     );
                 })
                 .toList();

@@ -443,4 +443,34 @@
 
 ---
 
+### [DEBT-039] 전화번호 노출 범위 비즈니스 결정 필요
+
+- **유형**: 기술 부채 (비즈니스 규칙)
+- **위치**: `ProposalDetailResponse.ShopInfo.phone`, `proposal_detail_screen.dart`
+- **내용**: 현재 모든 상태(SUBMITTED, EXPIRED 포함)의 제안서 상세에서 판매자 전화번호가 노출됨. 구매자 소유권 검증은 되어 있으나, SELECTED 후에만 노출할지 비즈니스 정책 결정 필요. 결정 후 백엔드에서 상태별 phone 필드 조건부 반환 구현.
+- **심각도**: Medium
+- **상태**: OPEN
+
+---
+
+### [DEBT-040] 전화번호 포맷 검증 미구현
+
+- **유형**: 기술 부채 (입력 검증)
+- **위치**: `frontend/lib/core/auth/screens/seller_info_screen.dart`
+- **내용**: 판매자 가게 전화번호 입력 시 포맷 검증 없음. 임의 문자열 입력 가능. 한국 번호 정규식 검증(`/^[0-9\-+\s]*$/`) + 자동 하이픈 삽입 구현 검토.
+- **심각도**: Low
+- **상태**: OPEN
+
+---
+
+### [DEBT-041] Flutter pre-existing analyze 에러 4건
+
+- **유형**: 기술 부채 (코드 정리)
+- **위치**: `buyer_my_tab_screen.dart:114`, `login_screen.dart:159`, `seller_my_tab_screen.dart:189`, `mock_auth_repository.dart:4`
+- **내용**: decoration named parameter 에러 3건 (AppTypography API 변경으로 인한 미수정), MockAuthRepository에 emailLogin/emailSignup/withdraw 미구현 1건. PR #60 작업 중 발견.
+- **심각도**: Low
+- **상태**: OPEN
+
+---
+
 > 이슈 해결 시 상태를 RESOLVED로 변경하고 해결 방법을 기록한다.

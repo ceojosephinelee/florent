@@ -130,10 +130,10 @@ public class ReservationConfirmationSteps {
         assertThat(paymentStatus).isEqualTo(expectedStatus);
     }
 
-    @And("판매자에게 RESERVATION_CONFIRMED 알림이 생성된다")
-    public void 판매자에게_RESERVATION_CONFIRMED_알림이_생성된다() {
+    @And("구매자에게 RESERVATION_CONFIRMED 알림이 생성된다")
+    public void 구매자에게_RESERVATION_CONFIRMED_알림이_생성된다() {
         assertThat(fakeNotification.getReservationRecords()).hasSize(1);
-        assertThat(fakeNotification.getReservationRecords().get(0).sellerId()).isNotNull();
+        assertThat(fakeNotification.getReservationRecords().get(0).buyerId()).isNotNull();
     }
 
     @And("예약 목록에 {int}건이 포함된다")

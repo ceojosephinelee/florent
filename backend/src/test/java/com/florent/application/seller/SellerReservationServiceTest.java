@@ -11,6 +11,7 @@ import com.florent.domain.request.FulfillmentType;
 import com.florent.domain.request.SlotKind;
 import com.florent.domain.request.TimeSlot;
 import com.florent.domain.reservation.ConfirmReservationCommand;
+import com.florent.domain.reservation.ConfirmReservationResult;
 import com.florent.domain.reservation.SellerReservationDetailResult;
 import com.florent.domain.reservation.SellerReservationSummaryResult;
 import com.florent.domain.shop.FlowerShop;
@@ -18,7 +19,6 @@ import com.florent.application.buyer.BuyerReservationService;
 import com.florent.fake.FakeBuyerRepository;
 import com.florent.fake.FakeCurationRequestRepository;
 import com.florent.fake.FakeFlowerShopRepository;
-import com.florent.fake.FakePaymentRepository;
 import com.florent.fake.FakeProposalRepository;
 import com.florent.fake.FakeReservationRepository;
 import com.florent.fake.FakeSaveNotificationUseCase;
@@ -38,12 +38,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class SellerReservationServiceTest {
 
     private FakeReservationRepository reservationRepository;
-    private FakePaymentRepository paymentRepository;
     private FakeProposalRepository proposalRepository;
     private FakeCurationRequestRepository requestRepository;
     private FakeFlowerShopRepository shopRepository;
     private FakeBuyerRepository buyerRepository;
-    private FakeSaveNotificationUseCase notificationPort;
+    private FakeSaveNotificationUseCase notificationUseCase;
     private BuyerReservationService buyerReservationService;
     private SellerReservationService sut;
 
@@ -57,21 +56,20 @@ class SellerReservationServiceTest {
         requestRepository = new FakeCurationRequestRepository();
         proposalRepository = new FakeProposalRepository();
         shopRepository = new FakeFlowerShopRepository();
-        paymentRepository = new FakePaymentRepository();
         buyerRepository = new FakeBuyerRepository();
         reservationRepository = new FakeReservationRepository(
                 requestRepository, proposalRepository, shopRepository);
-        notificationPort = new FakeSaveNotificationUseCase();
+
+        notificationUseCase = new FakeSaveNotificationUseCase();
 
         buyerReservationService = new BuyerReservationService(
-                reservationRepository, paymentRepository,
-                new com.florent.fake.FakePaymentPort(),
-                proposalRepository, requestRepository,
-                shopRepository, notificationPort, fixedClock);
+                reservationRepository, proposalRepository,
+                requestRepository, shopRepository, fixedClock);
 
         sut = new SellerReservationService(
                 reservationRepository, proposalRepository,
-                requestRepository, buyerRepository, shopRepository);
+                requestRepository, buyerRepository, shopRepository,
+                notificationUseCase, fixedClock);
     }
 
     private CurationRequest createOpenRequest(Long buyerId) {
@@ -110,6 +108,86 @@ class SellerReservationServiceTest {
                 .reservationId();
     }
 
+    // ─── confirmBySeller ───
+
+    @Test
+    @DisplayName("confirmBySeller() — PENDING_CONTACT → CONFIRMED 전이")
+    void confirmBySeller_정상_확정() {
+        // given
+        setupShopAndBuyer();
+        Long reservationId = createReservation();
+
+        // when
+        ConfirmReservationResult result = sut.confirmBySeller(reservationId, SELLER_ID);
+
+        // then
+        assertThat(result.reservationId()).isEqualTo(reservationId);
+        assertThat(result.status()).isEqualTo("CONFIRMED");
+    }
+
+    @Test
+    @DisplayName("confirmBySeller() — 구매자에게 RESERVATION_CONFIRMED 알림이 생성된다")
+    void confirmBySeller_알림_생성() {
+        // given
+        setupShopAndBuyer();
+        Long reservationId = createReservation();
+
+        // when
+        sut.confirmBySeller(reservationId, SELLER_ID);
+
+        // then
+        assertThat(notificationUseCase.getReservationRecords()).hasSize(1);
+        assertThat(notificationUseCase.getReservationRecords().get(0).buyerId())
+                .isEqualTo(BUYER_ID);
+    }
+
+    @Test
+    @DisplayName("confirmBySeller() — 이미 CONFIRMED 상태면 INVALID_RESERVATION_STATE")
+    void confirmBySeller_이미_확정_INVALID_STATE() {
+        // given
+        setupShopAndBuyer();
+        Long reservationId = createReservation();
+        sut.confirmBySeller(reservationId, SELLER_ID);
+
+        // when & then
+        assertThatThrownBy(() -> sut.confirmBySeller(reservationId, SELLER_ID))
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.INVALID_RESERVATION_STATE);
+    }
+
+    @Test
+    @DisplayName("confirmBySeller() — 존재하지 않는 예약 RESERVATION_NOT_FOUND")
+    void confirmBySeller_존재하지_않는_예약() {
+        // given
+        setupShopAndBuyer();
+
+        // when & then
+        assertThatThrownBy(() -> sut.confirmBySeller(999L, SELLER_ID))
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.RESERVATION_NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("confirmBySeller() — 다른 판매자 접근 시 FORBIDDEN")
+    void confirmBySeller_타인_예약_FORBIDDEN() {
+        // given
+        setupShopAndBuyer();
+        Long reservationId = createReservation();
+
+        Long otherSellerId = 20L;
+        shopRepository.save(FlowerShop.reconstitute(
+                200L, otherSellerId, "다른꽃집", null, null, "서울시 마포구",
+                new BigDecimal("37.55"), new BigDecimal("126.92")));
+
+        // when & then
+        assertThatThrownBy(() -> sut.confirmBySeller(reservationId, otherSellerId))
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.FORBIDDEN);
+    }
+
     // ─── getList ───
 
     @Test
@@ -127,7 +205,7 @@ class SellerReservationServiceTest {
         assertThat(results.get(0).conceptTitle()).isEqualTo("봄의 향기");
         assertThat(results.get(0).price()).isEqualByComparingTo(new BigDecimal("35000"));
         assertThat(results.get(0).buyerNickName()).isEqualTo("구매자닉네임");
-        assertThat(results.get(0).status()).isEqualTo("CONFIRMED");
+        assertThat(results.get(0).status()).isEqualTo("PENDING_CONTACT");
     }
 
     @Test
@@ -157,7 +235,7 @@ class SellerReservationServiceTest {
 
         // then
         assertThat(result.reservationId()).isEqualTo(reservationId);
-        assertThat(result.status()).isEqualTo("CONFIRMED");
+        assertThat(result.status()).isEqualTo("PENDING_CONTACT");
         assertThat(result.buyerNickName()).isEqualTo("구매자닉네임");
         assertThat(result.proposal().conceptTitle()).isEqualTo("봄의 향기");
         assertThat(result.request().budgetTier()).isEqualTo("TIER2");

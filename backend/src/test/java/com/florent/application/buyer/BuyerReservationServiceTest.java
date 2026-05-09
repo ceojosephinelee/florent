@@ -17,11 +17,8 @@ import com.florent.domain.reservation.ConfirmReservationResult;
 import com.florent.domain.shop.FlowerShop;
 import com.florent.fake.FakeCurationRequestRepository;
 import com.florent.fake.FakeFlowerShopRepository;
-import com.florent.fake.FakePaymentPort;
-import com.florent.fake.FakePaymentRepository;
 import com.florent.fake.FakeProposalRepository;
 import com.florent.fake.FakeReservationRepository;
-import com.florent.fake.FakeSaveNotificationUseCase;
 import com.florent.support.TestFixtures;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -38,11 +35,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class BuyerReservationServiceTest {
 
     private FakeReservationRepository reservationRepository;
-    private FakePaymentRepository paymentRepository;
     private FakeProposalRepository proposalRepository;
     private FakeCurationRequestRepository requestRepository;
     private FakeFlowerShopRepository shopRepository;
-    private FakeSaveNotificationUseCase notificationPort;
     private BuyerReservationService sut;
 
     private static final Long BUYER_ID = 1L;
@@ -55,14 +50,11 @@ class BuyerReservationServiceTest {
         requestRepository = new FakeCurationRequestRepository();
         proposalRepository = new FakeProposalRepository();
         shopRepository = new FakeFlowerShopRepository();
-        paymentRepository = new FakePaymentRepository();
         reservationRepository = new FakeReservationRepository(
                 requestRepository, proposalRepository, shopRepository);
-        notificationPort = new FakeSaveNotificationUseCase();
         sut = new BuyerReservationService(
-                reservationRepository, paymentRepository, new FakePaymentPort(),
-                proposalRepository, requestRepository,
-                shopRepository, notificationPort, fixedClock);
+                reservationRepository, proposalRepository,
+                requestRepository, shopRepository, fixedClock);
     }
 
     private CurationRequest createOpenRequest(Long buyerId) {
@@ -92,11 +84,11 @@ class BuyerReservationServiceTest {
                 "서울시 강남구", new BigDecimal("37.498095"), new BigDecimal("127.027610")));
     }
 
-    // ─── confirm ───
+    // ─── confirm (selectProposal) ───
 
     @Test
-    @DisplayName("confirm() — 정상적으로 예약이 확정되고 결제가 생성된다")
-    void confirm_정상_예약_확정() {
+    @DisplayName("confirm() — 제안 선택 시 예약이 PENDING_CONTACT 상태로 생성된다")
+    void confirm_정상_예약_PENDING_CONTACT() {
         // given
         setupShop();
         CurationRequest request = createOpenRequest(BUYER_ID);
@@ -108,9 +100,7 @@ class BuyerReservationServiceTest {
 
         // then
         assertThat(result.reservationId()).isNotNull();
-        assertThat(result.status()).isEqualTo("CONFIRMED");
-        assertThat(result.paymentStatus()).isEqualTo("SUCCEEDED");
-        assertThat(result.amount()).isEqualByComparingTo(new BigDecimal("35000"));
+        assertThat(result.status()).isEqualTo("PENDING_CONTACT");
     }
 
     @Test
@@ -151,43 +141,6 @@ class BuyerReservationServiceTest {
         Proposal notSelected = proposalRepository.findById(otherProposal.getId()).orElseThrow();
         assertThat(selected.getStatus()).isEqualTo(ProposalStatus.SELECTED);
         assertThat(notSelected.getStatus()).isEqualTo(ProposalStatus.NOT_SELECTED);
-    }
-
-    @Test
-    @DisplayName("confirm() — 선택된 판매자에게 알림이 발송된다")
-    void confirm_알림_발송() {
-        // given
-        setupShop();
-        CurationRequest request = createOpenRequest(BUYER_ID);
-        Proposal proposal = createSubmittedProposal(request.getId(), SHOP_ID);
-
-        // when
-        sut.confirm(new ConfirmReservationCommand(BUYER_ID, proposal.getId(), "idem-key-1"));
-
-        // then
-        assertThat(notificationPort.getReservationRecords()).hasSize(1);
-        assertThat(notificationPort.getReservationRecords().get(0).sellerId()).isEqualTo(SELLER_ID);
-    }
-
-    @Test
-    @DisplayName("confirm() — 중복 idempotencyKey로 DUPLICATE_PAYMENT 예외")
-    void confirm_중복_결제_DUPLICATE_PAYMENT() {
-        // given
-        setupShop();
-        CurationRequest request = createOpenRequest(BUYER_ID);
-        Proposal proposal = createSubmittedProposal(request.getId(), SHOP_ID);
-        sut.confirm(new ConfirmReservationCommand(BUYER_ID, proposal.getId(), "idem-key-1"));
-
-        // 새 요청/제안으로 같은 idempotencyKey 사용
-        CurationRequest request2 = createOpenRequest(BUYER_ID);
-        Proposal proposal2 = createSubmittedProposal(request2.getId(), SHOP_ID);
-
-        // when & then
-        assertThatThrownBy(() -> sut.confirm(
-                new ConfirmReservationCommand(BUYER_ID, proposal2.getId(), "idem-key-1")))
-                .isInstanceOf(BusinessException.class)
-                .extracting(e -> ((BusinessException) e).getErrorCode())
-                .isEqualTo(ErrorCode.DUPLICATE_PAYMENT);
     }
 
     @Test
@@ -260,7 +213,7 @@ class BuyerReservationServiceTest {
         assertThat(results.get(0).shopName()).isEqualTo("테스트꽃집");
         assertThat(results.get(0).conceptTitle()).isEqualTo("봄의 향기");
         assertThat(results.get(0).price()).isEqualByComparingTo(new BigDecimal("35000"));
-        assertThat(results.get(0).status()).isEqualTo("CONFIRMED");
+        assertThat(results.get(0).status()).isEqualTo("PENDING_CONTACT");
     }
 
     @Test
@@ -291,7 +244,7 @@ class BuyerReservationServiceTest {
 
         // then
         assertThat(result.reservationId()).isEqualTo(confirmResult.reservationId());
-        assertThat(result.status()).isEqualTo("CONFIRMED");
+        assertThat(result.status()).isEqualTo("PENDING_CONTACT");
         assertThat(result.proposal().conceptTitle()).isEqualTo("봄의 향기");
         assertThat(result.shop().name()).isEqualTo("테스트꽃집");
         assertThat(result.request().requestId()).isEqualTo(request.getId());

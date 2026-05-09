@@ -2,21 +2,58 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../core/theme/colors.dart';
 import '../../core/theme/radius.dart';
 import '../../core/theme/typography.dart';
+import '../providers/buyer_request_provider.dart';
 import '../providers/proposal_provider.dart';
 import '../widgets/common/app_nav_bar.dart';
 import '../widgets/common/bottom_cta_button.dart';
 
-class ProposalDetailScreen extends ConsumerWidget {
+class ProposalDetailScreen extends ConsumerStatefulWidget {
   const ProposalDetailScreen({super.key, required this.proposalId});
 
   final int proposalId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProposalDetailScreen> createState() => _ProposalDetailScreenState();
+}
+
+class _ProposalDetailScreenState extends ConsumerState<ProposalDetailScreen> {
+  bool _isSubmitting = false;
+
+  Future<void> _handleSelect() async {
+    if (_isSubmitting) return;
+    setState(() => _isSubmitting = true);
+
+    try {
+      final repo = ref.read(buyerRepositoryProvider);
+      final idempotencyKey = const Uuid().v4();
+      final result = await repo.selectProposal(widget.proposalId, idempotencyKey);
+      final reservationId = result['reservationId'] as int;
+
+      if (!mounted) return;
+      ref.invalidate(buyerReservationsListProvider);
+      context.go('/buyer/reservations/$reservationId/done');
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isSubmitting = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('제안 선택에 실패했어요. 다시 시도해주세요.'),
+          backgroundColor: roseColor,
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ref = this.ref;
+    final proposalId = widget.proposalId;
     final asyncDetail = ref.watch(proposalDetailProvider(proposalId));
 
     return Scaffold(
@@ -89,6 +126,30 @@ class ProposalDetailScreen extends ConsumerWidget {
                               '${detail.shopEmoji ?? '🌸'} ${detail.shopName} · ${detail.shopAddress}',
                               style: AppTypography.body(fontSize: 11, color: ink60),
                             ),
+                            if (detail.shopPhone != null && detail.shopPhone!.isNotEmpty) ...[
+                              const SizedBox(height: 8),
+                              GestureDetector(
+                                onTap: () async {
+                                  final uri = Uri.parse('tel:${detail.shopPhone}');
+                                  if (!await launchUrl(uri)) {
+                                    if (!context.mounted) return;
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('전화 앱을 열 수 없어요')),
+                                    );
+                                  }
+                                },
+                                child: Row(
+                                  children: [
+                                    const Text('📞', style: TextStyle(fontSize: 13)),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      detail.shopPhone!,
+                                      style: AppTypography.body(fontSize: 12, color: roseColor, fontWeight: FontWeight.w600),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                             const SizedBox(height: 12),
                             Text(detail.description, style: AppTypography.body(fontSize: 12, color: ink60, height: 1.6)),
                             const SizedBox(height: 16),
@@ -134,8 +195,9 @@ class ProposalDetailScreen extends ConsumerWidget {
                 ),
               ),
               BottomCtaButton(
-                label: '이 제안 선택하기 →',
-                onPressed: () => context.push('/buyer/proposals/$proposalId/pay'),
+                label: _isSubmitting ? '처리 중...' : '이 제안 선택하기 →',
+                onPressed: _handleSelect,
+                enabled: !_isSubmitting,
               ),
             ],
           ),

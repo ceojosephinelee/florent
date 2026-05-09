@@ -3,6 +3,8 @@ package com.florent.adapter.in.seller;
 import com.florent.common.exception.BusinessException;
 import com.florent.common.exception.ErrorCode;
 import com.florent.common.security.JwtProvider;
+import com.florent.domain.reservation.ConfirmReservationResult;
+import com.florent.domain.reservation.ConfirmSellerReservationUseCase;
 import com.florent.domain.reservation.GetSellerReservationDetailUseCase;
 import com.florent.domain.reservation.GetSellerReservationListUseCase;
 import com.florent.domain.reservation.SellerReservationDetailResult;
@@ -24,6 +26,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -41,7 +44,58 @@ class SellerReservationControllerTest {
     private GetSellerReservationDetailUseCase getSellerReservationDetailUseCase;
 
     @MockBean
+    private ConfirmSellerReservationUseCase confirmSellerReservationUseCase;
+
+    @MockBean
     private JwtProvider jwtProvider;
+
+    // ─── confirmBySeller ───
+
+    @Test
+    @DisplayName("판매자 예약 확정 성공 200")
+    @WithMockSeller
+    void 판매자_예약_확정_성공_200() throws Exception {
+        // given
+        given(confirmSellerReservationUseCase.confirmBySeller(eq(1L), eq(10L)))
+                .willReturn(new ConfirmReservationResult(1L, "CONFIRMED"));
+
+        // when & then
+        mockMvc.perform(post("/api/v1/seller/reservations/1/confirm"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.reservationId").value(1))
+                .andExpect(jsonPath("$.data.status").value("CONFIRMED"));
+    }
+
+    @Test
+    @DisplayName("잘못된 상태에서 확정 시 422")
+    @WithMockSeller
+    void 판매자_예약_확정_잘못된_상태_422() throws Exception {
+        // given
+        given(confirmSellerReservationUseCase.confirmBySeller(eq(1L), eq(10L)))
+                .willThrow(new BusinessException(ErrorCode.INVALID_RESERVATION_STATE));
+
+        // when & then
+        mockMvc.perform(post("/api/v1/seller/reservations/1/confirm"))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("INVALID_RESERVATION_STATE"));
+    }
+
+    @Test
+    @DisplayName("다른 판매자 예약 확정 시 403")
+    @WithMockSeller
+    void 판매자_예약_확정_타인_403() throws Exception {
+        // given
+        given(confirmSellerReservationUseCase.confirmBySeller(eq(1L), eq(10L)))
+                .willThrow(new BusinessException(ErrorCode.FORBIDDEN));
+
+        // when & then
+        mockMvc.perform(post("/api/v1/seller/reservations/1/confirm"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("FORBIDDEN"));
+    }
 
     // ─── getList ───
 

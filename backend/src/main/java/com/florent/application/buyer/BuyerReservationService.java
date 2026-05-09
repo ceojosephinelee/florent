@@ -2,10 +2,6 @@ package com.florent.application.buyer;
 
 import com.florent.common.exception.BusinessException;
 import com.florent.common.exception.ErrorCode;
-import com.florent.domain.notification.SaveNotificationUseCase;
-import com.florent.domain.payment.Payment;
-import com.florent.domain.payment.PaymentPort;
-import com.florent.domain.payment.PaymentRepository;
 import com.florent.domain.proposal.Proposal;
 import com.florent.domain.proposal.ProposalRepository;
 import com.florent.domain.request.CurationRequest;
@@ -37,21 +33,14 @@ public class BuyerReservationService implements ConfirmReservationUseCase,
         GetBuyerReservationListUseCase, GetBuyerReservationDetailUseCase {
 
     private final ReservationRepository reservationRepository;
-    private final PaymentRepository paymentRepository;
-    private final PaymentPort paymentPort;
     private final ProposalRepository proposalRepository;
     private final CurationRequestRepository requestRepository;
     private final FlowerShopRepository shopRepository;
-    private final SaveNotificationUseCase saveNotificationPort;
     private final Clock clock;
 
     @Transactional
     @Override
     public ConfirmReservationResult confirm(ConfirmReservationCommand command) {
-        if (paymentRepository.existsByIdempotencyKey(command.idempotencyKey())) {
-            throw new BusinessException(ErrorCode.DUPLICATE_PAYMENT);
-        }
-
         Proposal proposal = proposalRepository.findById(command.proposalId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.PROPOSAL_NOT_FOUND));
 
@@ -66,7 +55,6 @@ public class BuyerReservationService implements ConfirmReservationUseCase,
             throw new BusinessException(ErrorCode.REQUEST_ALREADY_CONFIRMED);
         }
 
-        // 6-step transaction
         request.confirm();
         requestRepository.save(request);
 
@@ -86,17 +74,7 @@ public class BuyerReservationService implements ConfirmReservationUseCase,
                 clock);
         Reservation savedReservation = reservationRepository.save(reservation);
 
-        Payment payment = paymentPort.pay(
-                savedReservation.getId(), proposal.getPrice(),
-                command.idempotencyKey(), clock);
-        Payment savedPayment = paymentRepository.save(payment);
-
-        FlowerShop shop = shopRepository.findById(proposal.getFlowerShopId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.SHOP_NOT_FOUND));
-        saveNotificationPort.saveReservationConfirmed(
-                shop.getSellerId(), savedReservation.getId());
-
-        return ConfirmReservationResult.from(savedReservation, savedPayment);
+        return ConfirmReservationResult.from(savedReservation);
     }
 
     @Transactional(readOnly = true)
