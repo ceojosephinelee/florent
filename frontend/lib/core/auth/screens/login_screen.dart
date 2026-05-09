@@ -156,7 +156,7 @@ class LoginScreen extends ConsumerWidget {
                 onTap: () => launchUrl(Uri.parse('https://florent.co.kr/privacy'), mode: LaunchMode.externalApplication),
                 child: Text(
                   '개인정보처리방침',
-                  style: AppTypography.body(fontSize: 11, color: ink30, decoration: TextDecoration.underline),
+                  style: AppTypography.body(fontSize: 11, color: ink30).copyWith(decoration: TextDecoration.underline),
                 ),
               ),
               if (const bool.fromEnvironment('DEV_MODE', defaultValue: false)) ...[
