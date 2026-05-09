@@ -34,7 +34,7 @@
 - **유형**: 기능 제한 (MVP 의도적 제외)
 - **위치**: `adapter/out/payment/MockPaymentAdapter.java`
 - **내용**: PaymentPort 인터페이스로 추상화되어 있어 토스/카카오 PG 어댑터 추가 시 Service 코드 변경 불필요. PR #16에서 PaymentPort outbound port + MockPaymentAdapter 분리 완료.
-- **현재 결정**: MVP에서 Mock으로 즉시 성공 처리.
+- **현재 결정**: PR #63에서 결제 플로우 전체 제거. 판매자 연락 확정 플로우로 전환. 향후 PG 재도입 시 PaymentPort/Repository 활성화 및 PENDING_PAYMENT 상태 추가 필요.
 - **심각도**: — (계획된 제한)
 - **상태**: MVP_SCOPE_OUT
 
@@ -469,6 +469,36 @@
 - **위치**: `buyer_my_tab_screen.dart:114`, `login_screen.dart:159`, `seller_my_tab_screen.dart:189`, `mock_auth_repository.dart:4`
 - **내용**: decoration named parameter 에러 3건 (AppTypography API 변경으로 인한 미수정), MockAuthRepository에 emailLogin/emailSignup/withdraw 미구현 1건. PR #60 작업 중 발견.
 - **심각도**: Low
+- **상태**: OPEN
+
+---
+
+### [DEBT-042] 알림 body에 가게명 포함 필요 (정적 템플릿)
+
+- **유형**: 기술 부채 (UX)
+- **위치**: `domain/notification/NotificationMessages.java`, `SaveNotificationUseCase.saveReservationConfirmedToBuyer()`
+- **내용**: 현재 RESERVATION_CONFIRMED 알림이 "주문하신 꽃 예약이 확정되었습니다. 확인해보세요!" 정적 문자열 사용. "{가게명}에서 주문하신 꽃 예약이 확정되었습니다."로 변경하려면 `saveReservationConfirmedToBuyer()`에 shopName 파라미터 추가 필요.
+- **심각도**: Low
+- **상태**: OPEN
+
+---
+
+### [DEBT-043] 판매자 연락 후 통화 연결 추적 메트릭 미구현
+
+- **유형**: 기술 부채 (분석)
+- **위치**: `frontend/lib/buyer/screens/reservation_done_screen.dart`, `frontend/lib/buyer/screens/proposal_detail_screen.dart`
+- **내용**: 구매자가 `tel:` URI 탭하여 꽃집에 전화하는 이벤트를 추적하지 않음. 전화 연결률, 전환률 분석을 위해 이벤트 로깅(Firebase Analytics 등) 도입 검토.
+- **심각도**: Low
+- **상태**: OPEN
+
+---
+
+### [DEBT-044] Toss Payments 재도입 검토
+
+- **유형**: 기술 부채 (기능 확장)
+- **위치**: `domain/payment/`, `adapter/out/payment/`
+- **내용**: PR #63에서 결제 플로우를 제거하고 판매자 직접 연락 확정으로 전환. 향후 Toss Payments 등 PG 연동 재도입 시: (1) PENDING_PAYMENT 상태 추가, (2) PaymentPort 실 구현체 작성, (3) 프론트 payment_screen 재생성, (4) PENDING_CONTACT → PENDING_PAYMENT → CONFIRMED 3단계 전이 설계 필요.
+- **심각도**: Low (사업 의사결정 후 진행)
 - **상태**: OPEN
 
 ---
