@@ -54,8 +54,8 @@ public class NotificationService implements SaveNotificationUseCase,
     }
 
     @Override
-    public void saveReservationConfirmed(Long sellerId, Long reservationId) {
-        Long userId = userResolverPort.findUserIdBySellerId(sellerId);
+    public void saveReservationConfirmedToBuyer(Long buyerId, Long reservationId) {
+        Long userId = userResolverPort.findUserIdByBuyerId(buyerId);
         saveNotificationWithOutbox(
                 userId, NotificationType.RESERVATION_CONFIRMED,
                 ReferenceType.RESERVATION, reservationId);

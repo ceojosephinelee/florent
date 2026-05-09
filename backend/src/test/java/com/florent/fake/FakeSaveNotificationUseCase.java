@@ -22,8 +22,8 @@ public class FakeSaveNotificationUseCase implements SaveNotificationUseCase {
     }
 
     @Override
-    public void saveReservationConfirmed(Long sellerId, Long reservationId) {
-        reservationRecords.add(new ReservationNotificationRecord(sellerId, reservationId));
+    public void saveReservationConfirmedToBuyer(Long buyerId, Long reservationId) {
+        reservationRecords.add(new ReservationNotificationRecord(buyerId, reservationId));
     }
 
     public List<NotificationRecord> getRecords() {
@@ -46,5 +46,5 @@ public class FakeSaveNotificationUseCase implements SaveNotificationUseCase {
 
     public record NotificationRecord(Long sellerId, Long requestId) {}
     public record ProposalNotificationRecord(Long buyerId, Long proposalId) {}
-    public record ReservationNotificationRecord(Long sellerId, Long reservationId) {}
+    public record ReservationNotificationRecord(Long buyerId, Long reservationId) {}
 }

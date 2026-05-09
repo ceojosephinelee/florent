@@ -107,6 +107,11 @@ class ApiSellerRepository {
     );
   }
 
+  Future<Map<String, dynamic>> confirmReservation(int reservationId) async {
+    final response = await _dio.post('/seller/reservations/$reservationId/confirm');
+    return response.data['data'] as Map<String, dynamic>;
+  }
+
   // ── 이미지 업로드 ──
 
   /// 1) 서버에서 presigned URL 발급 → 2) S3에 직접 업로드 → 3) imageUrl 반환

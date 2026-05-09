@@ -1,9 +1,12 @@
 package com.florent.adapter.in.seller;
 
+import com.florent.adapter.in.buyer.dto.ConfirmReservationResponse;
 import com.florent.adapter.in.seller.dto.SellerReservationDetailResponse;
 import com.florent.adapter.in.seller.dto.SellerReservationSummaryResponse;
 import com.florent.common.response.ApiResponse;
 import com.florent.common.security.UserPrincipal;
+import com.florent.domain.reservation.ConfirmReservationResult;
+import com.florent.domain.reservation.ConfirmSellerReservationUseCase;
 import com.florent.domain.reservation.GetSellerReservationDetailUseCase;
 import com.florent.domain.reservation.GetSellerReservationListUseCase;
 import com.florent.domain.reservation.SellerReservationDetailResult;
@@ -13,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,6 +29,19 @@ public class SellerReservationController {
 
     private final GetSellerReservationListUseCase getSellerReservationListUseCase;
     private final GetSellerReservationDetailUseCase getSellerReservationDetailUseCase;
+    private final ConfirmSellerReservationUseCase confirmSellerReservationUseCase;
+
+    @PostMapping("/reservations/{reservationId}/confirm")
+    public ResponseEntity<ApiResponse<ConfirmReservationResponse>> confirmReservation(
+            @PathVariable Long reservationId,
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        ConfirmReservationResult result =
+                confirmSellerReservationUseCase.confirmBySeller(
+                        reservationId, principal.getSellerId());
+        return ResponseEntity.ok(ApiResponse.success(
+                ConfirmReservationResponse.from(result)));
+    }
 
     @GetMapping("/reservations")
     public ResponseEntity<ApiResponse<List<SellerReservationSummaryResponse>>> getReservationList(

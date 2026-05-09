@@ -79,13 +79,13 @@ class NotificationServiceTest {
     }
 
     @Test
-    @DisplayName("saveReservationConfirmed — RESERVATION_CONFIRMED 알림이 저장된다")
-    void saveReservationConfirmed_정상_저장() {
+    @DisplayName("saveReservationConfirmedToBuyer — RESERVATION_CONFIRMED 알림이 구매자에게 저장된다")
+    void saveReservationConfirmedToBuyer_정상_저장() {
         // given
-        userResolverPort.addSellerMapping(10L, 100L);
+        userResolverPort.addBuyerMapping(10L, 100L);
 
         // when
-        sut.saveReservationConfirmed(10L, 300L);
+        sut.saveReservationConfirmedToBuyer(10L, 300L);
 
         // then
         List<Notification> notifications = notificationRepository.findByUserId(100L, 0, 10);

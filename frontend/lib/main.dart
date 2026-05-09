@@ -68,6 +68,7 @@ class _FlorentAppState extends ConsumerState<FlorentApp> {
 
     // 구매자
     ref.invalidate(buyerNotificationsProvider);
+    ref.invalidate(buyerReservationsListProvider);
     ref.invalidate(allBuyerRequestsProvider);
     ref.invalidate(activeRequestsProvider);
     ref.invalidate(buyerProfileProvider);
@@ -87,7 +88,7 @@ class _FlorentAppState extends ConsumerState<FlorentApp> {
         case 'PROPOSAL_ARRIVED':
           appRouter.push('/buyer/proposals/$referenceId');
         case 'RESERVATION_CONFIRMED':
-          appRouter.push('/seller/reservations/$referenceId');
+          appRouter.push('/buyer/reservations/$referenceId');
       }
     });
   }

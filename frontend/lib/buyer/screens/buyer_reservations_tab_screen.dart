@@ -37,7 +37,7 @@ class BuyerReservationsTabScreen extends ConsumerWidget {
                           const Text('📅', style: TextStyle(fontSize: 36)),
                           const SizedBox(height: 12),
                           Text(
-                            '아직 확정된 예약이 없어요',
+                            '아직 예약이 없어요',
                             style: AppTypography.body(fontSize: 14, color: ink60),
                           ),
                         ],
@@ -80,6 +80,8 @@ class BuyerReservationsTabScreen extends ConsumerWidget {
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
+                                        _StatusBadge(status: r.status),
+                                        const SizedBox(width: 6),
                                         _FulfillmentBadge(label: typeLabel),
                                       ],
                                     ),
@@ -139,6 +141,31 @@ class BuyerReservationsTabScreen extends ConsumerWidget {
       buffer.write(str[i]);
     }
     return '${buffer}원';
+  }
+}
+
+class _StatusBadge extends StatelessWidget {
+  const _StatusBadge({required this.status});
+  final String status;
+
+  @override
+  Widget build(BuildContext context) {
+    final isPending = status == 'PENDING_CONTACT';
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: isPending ? const Color(0xFFFFF3E0) : const Color(0xFFE8F0EC),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        isPending ? '연락 대기' : '확정',
+        style: AppTypography.mono(
+          fontSize: 10,
+          fontWeight: FontWeight.w500,
+          color: isPending ? const Color(0xFFE65100) : sageColor,
+        ),
+      ),
+    );
   }
 }
 
