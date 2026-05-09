@@ -12,6 +12,7 @@ abstract class AuthRepository {
     required String shopAddress,
     required double shopLat,
     required double shopLng,
+    String? phone,
     String? businessNumber,
   });
   Future<KakaoLoginResult> emailSignup(String email, String password, String nickname);

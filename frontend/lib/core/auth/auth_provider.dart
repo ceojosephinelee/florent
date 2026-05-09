@@ -333,6 +333,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required String shopAddress,
     required double shopLat,
     required double shopLng,
+    String? phone,
     String? businessNumber,
   }) async {
     state = state.copyWith(isLoading: true, error: null);
@@ -342,6 +343,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         shopAddress: shopAddress,
         shopLat: shopLat,
         shopLng: shopLng,
+        phone: phone,
         businessNumber: businessNumber,
       );
       await _tokenStorage.saveHasFlowerShop(true);

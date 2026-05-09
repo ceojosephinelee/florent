@@ -30,6 +30,7 @@ class ProposalDetail with _$ProposalDetail {
     required String status,
     required String shopName,
     required String shopAddress,
+    String? shopPhone,
     required String conceptTitle,
     required String description,
     required int price,

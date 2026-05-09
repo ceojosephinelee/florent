@@ -393,6 +393,7 @@ mixin _$ProposalDetail {
   String get status => throw _privateConstructorUsedError;
   String get shopName => throw _privateConstructorUsedError;
   String get shopAddress => throw _privateConstructorUsedError;
+  String? get shopPhone => throw _privateConstructorUsedError;
   String get conceptTitle => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
   int get price => throw _privateConstructorUsedError;
@@ -426,6 +427,7 @@ abstract class $ProposalDetailCopyWith<$Res> {
     String status,
     String shopName,
     String shopAddress,
+    String? shopPhone,
     String conceptTitle,
     String description,
     int price,
@@ -458,6 +460,7 @@ class _$ProposalDetailCopyWithImpl<$Res, $Val extends ProposalDetail>
     Object? status = null,
     Object? shopName = null,
     Object? shopAddress = null,
+    Object? shopPhone = freezed,
     Object? conceptTitle = null,
     Object? description = null,
     Object? price = null,
@@ -490,6 +493,10 @@ class _$ProposalDetailCopyWithImpl<$Res, $Val extends ProposalDetail>
                 ? _value.shopAddress
                 : shopAddress // ignore: cast_nullable_to_non_nullable
                       as String,
+            shopPhone: freezed == shopPhone
+                ? _value.shopPhone
+                : shopPhone // ignore: cast_nullable_to_non_nullable
+                      as String?,
             conceptTitle: null == conceptTitle
                 ? _value.conceptTitle
                 : conceptTitle // ignore: cast_nullable_to_non_nullable
@@ -547,6 +554,7 @@ abstract class _$$ProposalDetailImplCopyWith<$Res>
     String status,
     String shopName,
     String shopAddress,
+    String? shopPhone,
     String conceptTitle,
     String description,
     int price,
@@ -578,6 +586,7 @@ class __$$ProposalDetailImplCopyWithImpl<$Res>
     Object? status = null,
     Object? shopName = null,
     Object? shopAddress = null,
+    Object? shopPhone = freezed,
     Object? conceptTitle = null,
     Object? description = null,
     Object? price = null,
@@ -610,6 +619,10 @@ class __$$ProposalDetailImplCopyWithImpl<$Res>
             ? _value.shopAddress
             : shopAddress // ignore: cast_nullable_to_non_nullable
                   as String,
+        shopPhone: freezed == shopPhone
+            ? _value.shopPhone
+            : shopPhone // ignore: cast_nullable_to_non_nullable
+                  as String?,
         conceptTitle: null == conceptTitle
             ? _value.conceptTitle
             : conceptTitle // ignore: cast_nullable_to_non_nullable
@@ -660,6 +673,7 @@ class _$ProposalDetailImpl implements _ProposalDetail {
     required this.status,
     required this.shopName,
     required this.shopAddress,
+    this.shopPhone,
     required this.conceptTitle,
     required this.description,
     required this.price,
@@ -685,6 +699,8 @@ class _$ProposalDetailImpl implements _ProposalDetail {
   final String shopName;
   @override
   final String shopAddress;
+  @override
+  final String? shopPhone;
   @override
   final String conceptTitle;
   @override
@@ -719,7 +735,7 @@ class _$ProposalDetailImpl implements _ProposalDetail {
 
   @override
   String toString() {
-    return 'ProposalDetail(proposalId: $proposalId, requestId: $requestId, status: $status, shopName: $shopName, shopAddress: $shopAddress, conceptTitle: $conceptTitle, description: $description, price: $price, expiresAt: $expiresAt, shopDistance: $shopDistance, slotLabel: $slotLabel, shopEmoji: $shopEmoji, mainFlowers: $mainFlowers, imageUrls: $imageUrls)';
+    return 'ProposalDetail(proposalId: $proposalId, requestId: $requestId, status: $status, shopName: $shopName, shopAddress: $shopAddress, shopPhone: $shopPhone, conceptTitle: $conceptTitle, description: $description, price: $price, expiresAt: $expiresAt, shopDistance: $shopDistance, slotLabel: $slotLabel, shopEmoji: $shopEmoji, mainFlowers: $mainFlowers, imageUrls: $imageUrls)';
   }
 
   @override
@@ -736,6 +752,8 @@ class _$ProposalDetailImpl implements _ProposalDetail {
                 other.shopName == shopName) &&
             (identical(other.shopAddress, shopAddress) ||
                 other.shopAddress == shopAddress) &&
+            (identical(other.shopPhone, shopPhone) ||
+                other.shopPhone == shopPhone) &&
             (identical(other.conceptTitle, conceptTitle) ||
                 other.conceptTitle == conceptTitle) &&
             (identical(other.description, description) ||
@@ -768,6 +786,7 @@ class _$ProposalDetailImpl implements _ProposalDetail {
     status,
     shopName,
     shopAddress,
+    shopPhone,
     conceptTitle,
     description,
     price,
@@ -803,6 +822,7 @@ abstract class _ProposalDetail implements ProposalDetail {
     required final String status,
     required final String shopName,
     required final String shopAddress,
+    final String? shopPhone,
     required final String conceptTitle,
     required final String description,
     required final int price,
@@ -827,6 +847,8 @@ abstract class _ProposalDetail implements ProposalDetail {
   String get shopName;
   @override
   String get shopAddress;
+  @override
+  String? get shopPhone;
   @override
   String get conceptTitle;
   @override
