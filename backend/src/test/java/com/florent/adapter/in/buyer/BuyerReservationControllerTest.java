@@ -63,7 +63,7 @@ class BuyerReservationControllerTest {
     void 예약_확정_성공_201() throws Exception {
         // given
         ConfirmReservationResult result = new ConfirmReservationResult(
-                1L, "CONFIRMED", "SUCCEEDED", new BigDecimal("35000"));
+                1L, "PENDING_CONTACT");
         given(confirmReservationUseCase.confirm(any(ConfirmReservationCommand.class)))
                 .willReturn(result);
 
@@ -77,9 +77,7 @@ class BuyerReservationControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.reservationId").value(1))
-                .andExpect(jsonPath("$.data.status").value("CONFIRMED"))
-                .andExpect(jsonPath("$.data.paymentStatus").value("SUCCEEDED"))
-                .andExpect(jsonPath("$.data.amount").value(35000));
+                .andExpect(jsonPath("$.data.status").value("PENDING_CONTACT"));
     }
 
     @Test
@@ -117,29 +115,9 @@ class BuyerReservationControllerTest {
     }
 
     @Test
-    @DisplayName("중복 결제 시 422")
+    @DisplayName("이미 예약된 요청 재선택 시 422")
     @WithMockBuyer
-    void 예약_확정_중복_결제_422() throws Exception {
-        // given
-        given(confirmReservationUseCase.confirm(any(ConfirmReservationCommand.class)))
-                .willThrow(new BusinessException(ErrorCode.DUPLICATE_PAYMENT));
-
-        String body = MAPPER.writeValueAsString(
-                java.util.Map.of("idempotencyKey", "uuid-key-123"));
-
-        // when & then
-        mockMvc.perform(post("/api/v1/buyer/proposals/10/select")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
-                .andExpect(status().isUnprocessableEntity())
-                .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.error.code").value("DUPLICATE_PAYMENT"));
-    }
-
-    @Test
-    @DisplayName("이미 확정된 요청의 제안 선택 시 422")
-    @WithMockBuyer
-    void 예약_확정_이미_확정된_요청_422() throws Exception {
+    void 예약_확정_이미_예약된_요청_422() throws Exception {
         // given
         given(confirmReservationUseCase.confirm(any(ConfirmReservationCommand.class)))
                 .willThrow(new BusinessException(ErrorCode.REQUEST_ALREADY_CONFIRMED));

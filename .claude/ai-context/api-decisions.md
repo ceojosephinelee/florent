@@ -347,4 +347,17 @@
 
 ---
 
+## [AD-038] Mock 결제 제거 → 판매자 연락 확정 플로우 전환
+
+- **결정일**: 2026-05-09
+- **결정 내용**: Mock Payment 전체 제거. 예약 플로우를 구매자 제안 선택 → PENDING_CONTACT → 판매자 전화 연락 → CONFIRMED로 변경. `POST /seller/reservations/{id}/confirm` 신규 API 추가.
+- **이유**: MVP에서 결제 연동 없이 꽃집 직접 연락/결제가 현실적. PENDING_CONTACT 상태를 도입하여 판매자가 구매자에게 연락 후 확정하는 B2B 마켓플레이스 표준 플로우 채택.
+- **변경 사항**:
+  - Backend: ReservationStatus에 PENDING_CONTACT 추가, BuyerReservationService.confirm() → PENDING_CONTACT로 전이, SellerReservationService.confirmBySeller() 신규 (PENDING_CONTACT → CONFIRMED), RESERVATION_CONFIRMED 알림 방향 seller→buyer로 반전
+  - Frontend: payment_screen.dart 삭제, proposal_detail에서 selectProposal 직접 호출, reservation_done_screen을 seller contact 화면으로 전환, seller_reservation_detail에 확정 버튼 추가, FCM RESERVATION_CONFIRMED → buyer 경로로 변경
+- **트레이드오프**: Toss Payments 등 PG 재도입 시 PENDING_PAYMENT 상태 추가 필요. 현재는 결제 없이 직접 연락.
+- **영향 파일**: Backend 14개 (Domain/Service/Controller/Test), Frontend 10개 (Screen/Router/Provider/Model)
+
+---
+
 > 새 결정이 발생하면 [AD-{N}] 형식으로 추가한다.

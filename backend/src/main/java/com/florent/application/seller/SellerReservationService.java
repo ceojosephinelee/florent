@@ -8,6 +8,9 @@ import com.florent.domain.proposal.Proposal;
 import com.florent.domain.proposal.ProposalRepository;
 import com.florent.domain.request.CurationRequest;
 import com.florent.domain.request.CurationRequestRepository;
+import com.florent.domain.notification.SaveNotificationUseCase;
+import com.florent.domain.reservation.ConfirmReservationResult;
+import com.florent.domain.reservation.ConfirmSellerReservationUseCase;
 import com.florent.domain.reservation.GetSellerReservationDetailUseCase;
 import com.florent.domain.reservation.GetSellerReservationListUseCase;
 import com.florent.domain.reservation.Reservation;
@@ -20,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -29,13 +33,42 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class SellerReservationService implements GetSellerReservationListUseCase,
-        GetSellerReservationDetailUseCase {
+        GetSellerReservationDetailUseCase, ConfirmSellerReservationUseCase {
 
     private final ReservationRepository reservationRepository;
     private final ProposalRepository proposalRepository;
     private final CurationRequestRepository requestRepository;
     private final BuyerRepository buyerRepository;
     private final FlowerShopRepository shopRepository;
+    private final SaveNotificationUseCase saveNotificationUseCase;
+    private final Clock clock;
+
+    @Transactional
+    @Override
+    public ConfirmReservationResult confirmBySeller(Long reservationId, Long sellerId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+
+        Proposal proposal = proposalRepository.findById(reservation.getProposalId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.PROPOSAL_NOT_FOUND));
+
+        FlowerShop shop = shopRepository.findBySellerId(sellerId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.SHOP_NOT_FOUND));
+
+        if (!proposal.getFlowerShopId().equals(shop.getId())) {
+            throw new BusinessException(ErrorCode.FORBIDDEN);
+        }
+
+        reservation.confirm(clock);
+        reservationRepository.save(reservation);
+
+        CurationRequest request = requestRepository.findById(reservation.getRequestId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.REQUEST_NOT_FOUND));
+        saveNotificationUseCase.saveReservationConfirmedToBuyer(
+                request.getBuyerId(), reservationId);
+
+        return ConfirmReservationResult.from(reservation);
+    }
 
     @Override
     public List<SellerReservationSummaryResult> getList(Long sellerId) {

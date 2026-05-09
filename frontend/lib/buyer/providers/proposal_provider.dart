@@ -80,5 +80,5 @@ final buyerReservationsListProvider =
     FutureProvider.autoDispose<List<BuyerReservationDetail>>((ref) async {
   final repo = ref.watch(buyerRepositoryProvider);
   final all = await repo.getReservations();
-  return all.where((r) => r.status == 'CONFIRMED').toList();
+  return all.where((r) => r.status == 'CONFIRMED' || r.status == 'PENDING_CONTACT').toList();
 });
