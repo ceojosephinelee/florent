@@ -52,11 +52,11 @@ class BuyerReservationDetailScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 12),
 
-                      // 꽃다발 정보
+                      // 꽃 정보
                       _SectionCard(
-                        title: '꽃다발 정보',
+                        title: '꽃 정보',
                         children: [
-                          _InfoRow(label: '꽃다발 이름', value: d.conceptTitle),
+                          _InfoRow(label: '꽃 이름', value: d.conceptTitle),
                           const SizedBox(height: 8),
                           Text('큐레이션 설명', style: AppTypography.body(fontSize: 11, fontWeight: FontWeight.w600, color: ink60)),
                           const SizedBox(height: 4),

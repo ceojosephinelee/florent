@@ -43,7 +43,7 @@ class GreetingSection extends ConsumerWidget {
                 elevation: 0,
               ),
               child: Text(
-                '꽃다발 요청하기',
+                '꽃 요청하기',
                 style: AppTypography.body(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,

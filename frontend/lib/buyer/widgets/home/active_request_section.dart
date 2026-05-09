@@ -43,7 +43,7 @@ class ActiveRequestSection extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(vertical: 32),
                   child: Center(
                     child: Text(
-                      '아직 진행 중인 요청이 없어요.\n꽃다발 요청을 시작해 보세요!',
+                      '아직 진행 중인 요청이 없어요.\n꽃 요청을 시작해 보세요!',
                       textAlign: TextAlign.center,
                       style: AppTypography.body(
                         fontSize: 14,

@@ -43,7 +43,7 @@ class RequestStep4PickupScreen extends ConsumerWidget {
       body: SafeArea(
         child: Column(
           children: [
-            const AppNavBar(title: '꽃다발 요청하기'),
+            const AppNavBar(title: '꽃 요청하기'),
             const StepProgressBar(totalSteps: 4, currentStep: 4),
             Expanded(
               child: SingleChildScrollView(
