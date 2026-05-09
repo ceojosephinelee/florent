@@ -37,6 +37,7 @@ public class FakeCurationRequestRepository implements CurationRequestRepository 
                 request.getPlaceAddressText(),
                 request.getPlaceLat(),
                 request.getPlaceLng(),
+                request.getAdditionalNotes(),
                 request.getCreatedAt(),
                 request.getExpiresAt()
         );

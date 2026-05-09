@@ -32,7 +32,8 @@ class CurationRequestTest {
                 List.of(new TimeSlot(SlotKind.DELIVERY_WINDOW, "14:00-16:00")),
                 "서울시 강남구",
                 new BigDecimal("37.498095"),
-                new BigDecimal("127.027610")
+                new BigDecimal("127.027610"),
+                null
         );
     }
 
@@ -115,6 +116,7 @@ class CurationRequestTest {
                 List.of(new TimeSlot(SlotKind.DELIVERY_WINDOW, "14:00-16:00")),
                 "서울시 강남구",
                 new BigDecimal("37.498095"), new BigDecimal("127.027610"),
+                null,
                 LocalDateTime.now(fixedClock).minusHours(49),
                 LocalDateTime.now(fixedClock).minusHours(1)
         );

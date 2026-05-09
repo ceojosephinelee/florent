@@ -6,6 +6,7 @@ import '../../theme/colors.dart';
 import '../../theme/radius.dart';
 import '../../theme/typography.dart';
 import '../auth_provider.dart';
+import '../../../buyer/widgets/common/app_nav_bar.dart';
 import '../../../buyer/widgets/request/address_search_field.dart';
 
 const _sage = Color(0xFF5A7A68);
@@ -57,16 +58,18 @@ class _SellerInfoScreenState extends ConsumerState<SellerInfoScreen> {
       body: SafeArea(
         child: Column(
           children: [
+            AppNavBar(
+              title: '가게 정보 입력',
+              onBack: () {
+                if (context.canPop()) context.pop();
+              },
+            ),
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      '가게 정보 입력',
-                      style: AppTypography.serif(fontSize: 24, fontWeight: FontWeight.w600),
-                    ),
                     const SizedBox(height: 8),
                     Text(
                       '판매를 시작하기 위한 기본 정보를 입력해주세요.',

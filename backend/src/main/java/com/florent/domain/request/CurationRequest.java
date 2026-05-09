@@ -25,6 +25,7 @@ public class CurationRequest {
     private String placeAddressText;
     private BigDecimal placeLat;
     private BigDecimal placeLng;
+    private String additionalNotes;
     private LocalDateTime createdAt;
     private LocalDateTime expiresAt;
 
@@ -44,6 +45,7 @@ public class CurationRequest {
         r.placeAddressText = cmd.placeAddressText();
         r.placeLat = cmd.placeLat();
         r.placeLng = cmd.placeLng();
+        r.additionalNotes = cmd.additionalNotes();
         r.createdAt = LocalDateTime.now(clock);
         r.expiresAt = r.createdAt.plusHours(48);
         return r;
@@ -55,6 +57,7 @@ public class CurationRequest {
             BudgetTier budgetTier, FulfillmentType fulfillmentType,
             LocalDate fulfillmentDate, List<TimeSlot> requestedTimeSlots,
             String placeAddressText, BigDecimal placeLat, BigDecimal placeLng,
+            String additionalNotes,
             LocalDateTime createdAt, LocalDateTime expiresAt) {
         CurationRequest r = new CurationRequest();
         r.id = id;
@@ -70,6 +73,7 @@ public class CurationRequest {
         r.placeAddressText = placeAddressText;
         r.placeLat = placeLat;
         r.placeLng = placeLng;
+        r.additionalNotes = additionalNotes;
         r.createdAt = createdAt;
         r.expiresAt = expiresAt;
         return r;

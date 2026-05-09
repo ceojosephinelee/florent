@@ -59,7 +59,8 @@ class SellerHomeServiceTest {
                         BudgetTier.TIER2, FulfillmentType.PICKUP,
                         LocalDate.now().plusDays(3),
                         List.of(new TimeSlot(SlotKind.PICKUP_30M, "14:00")),
-                        "서울 강남", new BigDecimal("37.5001"), new BigDecimal("127.0001")),
+                        "서울 강남", new BigDecimal("37.5001"), new BigDecimal("127.0001"),
+                        null),
                 clock));
 
         Proposal draft = proposalRepository.save(Proposal.create(request.getId(), shop.getId(), clock));
@@ -98,7 +99,8 @@ class SellerHomeServiceTest {
                         BudgetTier.TIER2, FulfillmentType.PICKUP,
                         LocalDate.now().plusDays(3),
                         List.of(new TimeSlot(SlotKind.PICKUP_30M, "14:00")),
-                        "부산", new BigDecimal("35.0000"), new BigDecimal("129.0000")),
+                        "부산", new BigDecimal("35.0000"), new BigDecimal("129.0000"),
+                        null),
                 clock));
 
         // when

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/colors.dart';
+import '../../core/theme/radius.dart';
 import '../../core/theme/typography.dart';
 import '../providers/request_form_provider.dart';
 import '../widgets/common/app_nav_bar.dart';
@@ -99,6 +100,34 @@ class RequestStep1Screen extends ConsumerWidget {
                     CustomTagInput(
                       placeholder: '원하는 분위기 직접 입력',
                       onSubmit: notifier.toggleMoodTag,
+                    ),
+                    const SizedBox(height: 24),
+                    _SectionLabel(emoji: '📝', label: '추가 요청사항'),
+                    const SizedBox(height: 6),
+                    Text(
+                      '선택 사항이에요. 플로리스트에게 전달할 내용을 자유롭게 적어주세요.',
+                      style: AppTypography.body(fontSize: 10, color: ink30),
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: whiteColor,
+                        borderRadius: kBorderRadiusSm,
+                        border: Border.all(color: borderColor, width: 1.5),
+                      ),
+                      child: TextField(
+                        maxLines: 4,
+                        maxLength: 500,
+                        style: AppTypography.body(fontSize: 13),
+                        decoration: InputDecoration(
+                          hintText: '예: 알러지가 있어요 / 특정 색상 제외 / 포장 방식 요청',
+                          hintStyle: AppTypography.body(fontSize: 13, color: ink30),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                          counterStyle: AppTypography.body(fontSize: 10, color: ink30),
+                        ),
+                        onChanged: notifier.setAdditionalNotes,
+                      ),
                     ),
                   ],
                 ),

@@ -111,6 +111,7 @@ class SellerRequestControllerTest {
                 LocalDate.of(2026, 3, 20),
                 List.of(new TimeSlot(SlotKind.PICKUP_30M, "14:00")),
                 "서울시 강남구",
+                null,
                 LocalDateTime.of(2026, 3, 17, 19, 0),
                 5L, "DRAFT");
 
@@ -155,6 +156,7 @@ class SellerRequestControllerTest {
                 LocalDate.of(2026, 3, 20),
                 List.of(new TimeSlot(SlotKind.PICKUP_30M, "14:00")),
                 "서울시 강남구",
+                null,
                 LocalDateTime.of(2026, 3, 17, 19, 0),
                 null, null);
 
