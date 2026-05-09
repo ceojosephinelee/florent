@@ -337,4 +337,14 @@
 
 ---
 
+## [AD-037] additionalNotes — 구매자 요청에 추가 요청사항 필드
+
+- **결정일**: 2026-05-09
+- **결정 내용**: `curation_request` 테이블에 `additional_notes VARCHAR(500) NULL` 추가. Domain/DTO/API 전 레이어 반영. 프론트엔드 Step1 화면에 TextField 추가.
+- **이유**: 구매자가 알러지, 색상 제외, 포장 방식 등 정형 태그로 표현할 수 없는 요청사항을 자유 텍스트로 전달할 필요. 선택 입력이므로 NULL 허용.
+- **트레이드오프**: 빈 문자열 vs null — 프론트에서 빈 문자열을 null로 변환 후 전송. null일 때 API 응답에서 필드 자체를 생략하지 않고 null로 내려줌 (Jackson 기본 동작).
+- **영향 파일**: V12 마이그레이션, CurationRequest, CreateRequestCommand, JpaEntity, RequestDetailResult, SellerRequestDetailResult, 요청/응답 DTO 4개, 프론트 request_form_state/provider/step1_screen/done_screen
+
+---
+
 > 새 결정이 발생하면 [AD-{N}] 형식으로 추가한다.

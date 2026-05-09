@@ -59,7 +59,8 @@ class SellerStatsServiceTest {
                         BudgetTier.TIER2, FulfillmentType.PICKUP,
                         LocalDate.now().plusDays(3),
                         List.of(new TimeSlot(SlotKind.PICKUP_30M, "14:00")),
-                        "서울 강남", new BigDecimal("37.5001"), new BigDecimal("127.0001")),
+                        "서울 강남", new BigDecimal("37.5001"), new BigDecimal("127.0001"),
+                        null),
                 clock));
 
         Proposal proposal = proposalRepository.save(Proposal.create(request.getId(), shop.getId(), clock));

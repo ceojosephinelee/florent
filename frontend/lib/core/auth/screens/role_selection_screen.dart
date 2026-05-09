@@ -8,6 +8,7 @@ import '../../theme/colors.dart';
 import '../../theme/radius.dart';
 import '../../theme/typography.dart';
 import '../auth_provider.dart';
+import '../../../buyer/widgets/common/app_nav_bar.dart';
 
 class RoleSelectionScreen extends ConsumerStatefulWidget {
   const RoleSelectionScreen({super.key});
@@ -55,12 +56,22 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
     return Scaffold(
       backgroundColor: creamColor,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 48),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AppNavBar(
+              title: '역할 선택',
+              onBack: () {
+                if (context.canPop()) context.pop();
+              },
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+              const SizedBox(height: 16),
               Text(
                 '반가워요!',
                 style: AppTypography.serif(fontSize: 28, fontWeight: FontWeight.w600),
@@ -108,8 +119,11 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
                 isLoading: auth.isLoading,
                 onTap: () => ref.read(authProvider.notifier).setRole('SELLER'),
               ),
-            ],
-          ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

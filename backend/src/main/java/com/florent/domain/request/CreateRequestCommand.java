@@ -15,5 +15,6 @@ public record CreateRequestCommand(
     List<TimeSlot> requestedTimeSlots,
     String placeAddressText,
     BigDecimal placeLat,
-    BigDecimal placeLng
+    BigDecimal placeLng,
+    String additionalNotes
 ) {}

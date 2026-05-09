@@ -13,6 +13,7 @@ class RequestFormState with _$RequestFormState {
     @Default([]) List<String> purposeTags,
     @Default([]) List<String> relationTags,
     @Default([]) List<String> moodTags,
+    String? additionalNotes,
     // Step 2
     String? budgetTier,
     // Step 3

@@ -32,6 +32,11 @@ public class S3StorageAdapter implements StoragePort {
                 .build();
     }
 
+    S3StorageAdapter(S3Properties properties, S3Presigner presigner) {
+        this.properties = properties;
+        this.presigner = presigner;
+    }
+
     @Override
     public PresignedUrlResult generatePresignedUrl(String fileName, String contentType, ImageTarget target) {
         String key = target.name().toLowerCase() + "/" + UUID.randomUUID() + "/" + fileName;

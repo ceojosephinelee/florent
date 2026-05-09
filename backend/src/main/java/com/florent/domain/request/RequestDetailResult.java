@@ -18,6 +18,7 @@ public record RequestDetailResult(
         String placeAddressText,
         BigDecimal placeLat,
         BigDecimal placeLng,
+        String additionalNotes,
         LocalDateTime expiresAt,
         int draftProposalCount,
         int submittedProposalCount
@@ -37,6 +38,7 @@ public record RequestDetailResult(
                 request.getPlaceAddressText(),
                 request.getPlaceLat(),
                 request.getPlaceLng(),
+                request.getAdditionalNotes(),
                 request.getExpiresAt(),
                 draftCount,
                 submittedCount

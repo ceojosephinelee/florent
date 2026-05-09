@@ -128,7 +128,8 @@ class WithdrawServiceTest {
                 BudgetTier.TIER1, FulfillmentType.PICKUP,
                 LocalDate.now().plusDays(3),
                 List.of(new TimeSlot(SlotKind.PICKUP_30M, "10:00")),
-                "서울시 강남구", BigDecimal.valueOf(37.5), BigDecimal.valueOf(127.0));
+                "서울시 강남구", BigDecimal.valueOf(37.5), BigDecimal.valueOf(127.0),
+                null);
         CurationRequest request = requestRepository.save(
                 CurationRequest.create(cmd, java.time.Clock.systemDefaultZone()));
 

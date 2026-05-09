@@ -67,7 +67,8 @@ class SellerProposalServiceTest {
                 BudgetTier.TIER2, FulfillmentType.PICKUP,
                 LocalDate.now().plusDays(3),
                 List.of(new TimeSlot(SlotKind.PICKUP_30M, "14:00")),
-                "서울시 강남구", new BigDecimal("37.498095"), new BigDecimal("127.027610")
+                "서울시 강남구", new BigDecimal("37.498095"), new BigDecimal("127.027610"),
+                null
         );
         return requestRepository.save(CurationRequest.create(cmd, fixedClock));
     }

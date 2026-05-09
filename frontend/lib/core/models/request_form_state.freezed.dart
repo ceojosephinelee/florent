@@ -20,7 +20,8 @@ mixin _$RequestFormState {
   // Step 1
   List<String> get purposeTags => throw _privateConstructorUsedError;
   List<String> get relationTags => throw _privateConstructorUsedError;
-  List<String> get moodTags => throw _privateConstructorUsedError; // Step 2
+  List<String> get moodTags => throw _privateConstructorUsedError;
+  String? get additionalNotes => throw _privateConstructorUsedError; // Step 2
   String? get budgetTier => throw _privateConstructorUsedError; // Step 3
   String? get fulfillmentType => throw _privateConstructorUsedError;
   String? get placeAddressText => throw _privateConstructorUsedError;
@@ -47,6 +48,7 @@ abstract class $RequestFormStateCopyWith<$Res> {
     List<String> purposeTags,
     List<String> relationTags,
     List<String> moodTags,
+    String? additionalNotes,
     String? budgetTier,
     String? fulfillmentType,
     String? placeAddressText,
@@ -75,6 +77,7 @@ class _$RequestFormStateCopyWithImpl<$Res, $Val extends RequestFormState>
     Object? purposeTags = null,
     Object? relationTags = null,
     Object? moodTags = null,
+    Object? additionalNotes = freezed,
     Object? budgetTier = freezed,
     Object? fulfillmentType = freezed,
     Object? placeAddressText = freezed,
@@ -97,6 +100,10 @@ class _$RequestFormStateCopyWithImpl<$Res, $Val extends RequestFormState>
                 ? _value.moodTags
                 : moodTags // ignore: cast_nullable_to_non_nullable
                       as List<String>,
+            additionalNotes: freezed == additionalNotes
+                ? _value.additionalNotes
+                : additionalNotes // ignore: cast_nullable_to_non_nullable
+                      as String?,
             budgetTier: freezed == budgetTier
                 ? _value.budgetTier
                 : budgetTier // ignore: cast_nullable_to_non_nullable
@@ -144,6 +151,7 @@ abstract class _$$RequestFormStateImplCopyWith<$Res>
     List<String> purposeTags,
     List<String> relationTags,
     List<String> moodTags,
+    String? additionalNotes,
     String? budgetTier,
     String? fulfillmentType,
     String? placeAddressText,
@@ -171,6 +179,7 @@ class __$$RequestFormStateImplCopyWithImpl<$Res>
     Object? purposeTags = null,
     Object? relationTags = null,
     Object? moodTags = null,
+    Object? additionalNotes = freezed,
     Object? budgetTier = freezed,
     Object? fulfillmentType = freezed,
     Object? placeAddressText = freezed,
@@ -193,6 +202,10 @@ class __$$RequestFormStateImplCopyWithImpl<$Res>
             ? _value._moodTags
             : moodTags // ignore: cast_nullable_to_non_nullable
                   as List<String>,
+        additionalNotes: freezed == additionalNotes
+            ? _value.additionalNotes
+            : additionalNotes // ignore: cast_nullable_to_non_nullable
+                  as String?,
         budgetTier: freezed == budgetTier
             ? _value.budgetTier
             : budgetTier // ignore: cast_nullable_to_non_nullable
@@ -233,6 +246,7 @@ class _$RequestFormStateImpl extends _RequestFormState {
     final List<String> purposeTags = const [],
     final List<String> relationTags = const [],
     final List<String> moodTags = const [],
+    this.additionalNotes,
     this.budgetTier,
     this.fulfillmentType,
     this.placeAddressText,
@@ -275,6 +289,8 @@ class _$RequestFormStateImpl extends _RequestFormState {
     return EqualUnmodifiableListView(_moodTags);
   }
 
+  @override
+  final String? additionalNotes;
   // Step 2
   @override
   final String? budgetTier;
@@ -303,7 +319,7 @@ class _$RequestFormStateImpl extends _RequestFormState {
 
   @override
   String toString() {
-    return 'RequestFormState(purposeTags: $purposeTags, relationTags: $relationTags, moodTags: $moodTags, budgetTier: $budgetTier, fulfillmentType: $fulfillmentType, placeAddressText: $placeAddressText, placeLat: $placeLat, placeLng: $placeLng, fulfillmentDate: $fulfillmentDate, requestedTimeSlots: $requestedTimeSlots)';
+    return 'RequestFormState(purposeTags: $purposeTags, relationTags: $relationTags, moodTags: $moodTags, additionalNotes: $additionalNotes, budgetTier: $budgetTier, fulfillmentType: $fulfillmentType, placeAddressText: $placeAddressText, placeLat: $placeLat, placeLng: $placeLng, fulfillmentDate: $fulfillmentDate, requestedTimeSlots: $requestedTimeSlots)';
   }
 
   @override
@@ -320,6 +336,8 @@ class _$RequestFormStateImpl extends _RequestFormState {
               _relationTags,
             ) &&
             const DeepCollectionEquality().equals(other._moodTags, _moodTags) &&
+            (identical(other.additionalNotes, additionalNotes) ||
+                other.additionalNotes == additionalNotes) &&
             (identical(other.budgetTier, budgetTier) ||
                 other.budgetTier == budgetTier) &&
             (identical(other.fulfillmentType, fulfillmentType) ||
@@ -344,6 +362,7 @@ class _$RequestFormStateImpl extends _RequestFormState {
     const DeepCollectionEquality().hash(_purposeTags),
     const DeepCollectionEquality().hash(_relationTags),
     const DeepCollectionEquality().hash(_moodTags),
+    additionalNotes,
     budgetTier,
     fulfillmentType,
     placeAddressText,
@@ -370,6 +389,7 @@ abstract class _RequestFormState extends RequestFormState {
     final List<String> purposeTags,
     final List<String> relationTags,
     final List<String> moodTags,
+    final String? additionalNotes,
     final String? budgetTier,
     final String? fulfillmentType,
     final String? placeAddressText,
@@ -386,7 +406,9 @@ abstract class _RequestFormState extends RequestFormState {
   @override
   List<String> get relationTags;
   @override
-  List<String> get moodTags; // Step 2
+  List<String> get moodTags;
+  @override
+  String? get additionalNotes; // Step 2
   @override
   String? get budgetTier; // Step 3
   @override

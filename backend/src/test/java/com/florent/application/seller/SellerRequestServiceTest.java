@@ -77,7 +77,8 @@ class SellerRequestServiceTest {
                 LocalDate.of(2026, 3, 20),
                 List.of(new TimeSlot(SlotKind.PICKUP_30M, "14:00")),
                 "서울시 강남구",
-                lat, lng);
+                lat, lng,
+                null);
         CurationRequest request = CurationRequest.create(cmd, FIXED_CLOCK);
         return requestRepository.save(request);
     }

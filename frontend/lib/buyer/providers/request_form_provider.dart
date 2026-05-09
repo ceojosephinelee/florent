@@ -25,6 +25,11 @@ class RequestFormNotifier extends StateNotifier<RequestFormState> {
     state = state.copyWith(moodTags: tags);
   }
 
+  void setAdditionalNotes(String? notes) {
+    final trimmed = notes?.trim();
+    state = state.copyWith(additionalNotes: (trimmed != null && trimmed.isEmpty) ? null : trimmed);
+  }
+
   // Step 2
   void setBudgetTier(String tier) {
     state = state.copyWith(budgetTier: tier);
