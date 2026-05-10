@@ -62,7 +62,11 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
             AppNavBar(
               title: '역할 선택',
               onBack: () {
-                if (context.canPop()) context.pop();
+                if (context.canPop()) {
+                  context.pop();
+                } else {
+                  context.go('/login');
+                }
               },
             ),
             Expanded(

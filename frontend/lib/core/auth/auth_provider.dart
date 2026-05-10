@@ -203,16 +203,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
       print('[AUTH] 5) 토큰 저장 완료 — 재읽기: ${savedToken != null ? "${savedToken.substring(0, 20)}... (len=${savedToken.length})" : "null ← 저장 실패!"}');
       print('[AUTH] 5) hasFlowerShop=${result.hasFlowerShop}');
 
-      if (result.isNewUser || result.role == null) {
-        print('[AUTH] 6) → needsRole');
+      if (result.isNewUser || result.role == null || (result.role == 'SELLER' && !result.hasFlowerShop)) {
+        print('[AUTH] 6) → needsRole (신규/역할미설정/가게미등록)');
         state = state.copyWith(status: AuthStatus.needsRole, isLoading: false);
       } else if (result.role == 'BUYER') {
         print('[AUTH] 6) → buyerAuthenticated');
         state = state.copyWith(status: AuthStatus.buyerAuthenticated, isLoading: false);
         _registerFcmToken();
-      } else if (result.role == 'SELLER' && !result.hasFlowerShop) {
-        print('[AUTH] 6) → needsSellerInfo (가게 미등록)');
-        state = state.copyWith(status: AuthStatus.needsSellerInfo, isLoading: false);
       } else {
         print('[AUTH] 6) → sellerAuthenticated');
         state = state.copyWith(status: AuthStatus.sellerAuthenticated, isLoading: false);
