@@ -11,7 +11,6 @@
 [![Cloud](https://img.shields.io/badge/Cloud-AWS-FF9900?style=flat-square&logo=amazonaws&logoColor=white)](#인프라)
 [![Architecture](https://img.shields.io/badge/Architecture-Hexagonal-8B5CF6?style=flat-square)](#아키텍처)
 
-[데모 보기](#-데모) · [아키텍처](#-아키텍처) · [기술적 의사결정](#-기술적-의사결정) · [개발 프로세스](#-ai-orchestration-개발-프로세스)
 
 </div>
 
@@ -115,29 +114,6 @@ Florent는 **Hexagonal Architecture (Ports & Adapters)** 기반으로 설계되�
 | **Proposal** | 판매자의 제안서 (24시간 유효, 가격·시간 제시) |
 | **Reservation** | 제안 선택 + Mock 결제 후 확정되는 예약 |
 | **Notification** | 인앱 알림함 (요청 도착·제안 도착·예약 확정) |
-
----
-
-## 🧠 기술적 의사결정
-
-### 1. 왜 Hexagonal Architecture인가?
-
-처음에는 MVP 속도를 위해 Layered Architecture를 권장받았지만, 비즈니스 컨텍스트를 다시 보면 다음 시나리오가 모두 로드맵에 있었습니다.
-
-- 결제: Mock → Toss Payments → 농협/카드사 직연동
-- 인증: Kakao → 네이버, 자체 회원 추가
-- 알림: FCM → APN, 카카오 알림톡, SMS 추가
-
-**"어댑터 교체"가 가설이 아니라 로드맵에 있는 상황** 이었기 때문에, 초기 비용이 더 들더라도 Hexagonal을 선택했습니다. 도메인 레이어가 프레임워크 어노테이션 없이 순수 Java로 유지되어, `@SpringBootTest` 없이도 도메인 테스트가 빠르게 돌아갑니다.
-
-### 2. 왜 위치 검색에 BoundingBox + Haversine 2단계 필터인가?
-
-요청서를 반경 2km 내 꽃집에 전달해야 하는데, 단순 Haversine 공식으로 전체 가게 테이블을 스캔하면 비용이 큽니다.
-
-→ **1차: BoundingBox로 경위도 사각 영역 필터** (인덱스 활용 가능)
-→ **2차: Haversine 공식으로 정확한 반경 계산**
-
-설계 단계에서 `EXPLAIN ANALYZE` 기반 검증을 거쳤고, 가게 수가 늘어날수록 차이가 커지는 구조입니다.
 
 ---
 
