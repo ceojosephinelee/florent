@@ -27,7 +27,9 @@ class _SellerInfoScreenState extends ConsumerState<SellerInfoScreen> {
   double _lng = 0;
 
   bool get _isValid =>
-      _shopNameController.text.trim().isNotEmpty && _address != null;
+      _shopNameController.text.trim().isNotEmpty &&
+      _address != null &&
+      _phoneController.text.trim().isNotEmpty;
 
   @override
   void dispose() {
@@ -63,7 +65,11 @@ class _SellerInfoScreenState extends ConsumerState<SellerInfoScreen> {
             AppNavBar(
               title: '가게 정보 입력',
               onBack: () {
-                if (context.canPop()) context.pop();
+                if (context.canPop()) {
+                  context.pop();
+                } else {
+                  context.go('/auth/role');
+                }
               },
             ),
             Expanded(
@@ -130,12 +136,13 @@ class _SellerInfoScreenState extends ConsumerState<SellerInfoScreen> {
                     const SizedBox(height: 20),
 
                     // 가게 전화번호
-                    _label('📞 가게 전화번호 (선택)'),
+                    _label('📞 가게 전화번호 *'),
                     const SizedBox(height: 6),
                     _textField(
                       controller: _phoneController,
                       hint: '예) 02-1234-5678',
                       keyboardType: TextInputType.phone,
+                      onChanged: (_) => setState(() {}),
                     ),
                     const SizedBox(height: 6),
                     Text(
