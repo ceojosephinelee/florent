@@ -1,7 +1,7 @@
 name: florent
 description: "나만의 플로리스트 큐레이션 마켓플레이스"
 publish_to: 'none'
-version: 1.0.0+2
+version: 1.0.0+3
 
 environment:
   sdk: ^3.11.1
