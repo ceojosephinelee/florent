@@ -63,10 +63,22 @@ public class ReviewSeedRunner implements ApplicationRunner {
     @Value("${review.seller.password}")
     private String sellerPassword;
 
+    private static final String SUB_SELLER_EMAIL = "florent-sub-seller@internal.test";
+
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
-        if (userRepository.findByEmail(buyerEmail).isPresent()) {
+        try {
+            seedIfNeeded();
+        } catch (Exception e) {
+            log.error("[SEED] 시드 데이터 생성 실패 — 서버는 정상 기동합니다.", e);
+        }
+    }
+
+    private void seedIfNeeded() {
+        if (userRepository.findByEmail(buyerEmail).isPresent()
+                && userRepository.findByEmail(sellerEmail).isPresent()
+                && userRepository.findByEmail(SUB_SELLER_EMAIL).isPresent()) {
             log.info("[SEED] 리뷰 계정이 이미 존재합니다. 시드 스킵.");
             return;
         }
@@ -74,45 +86,38 @@ public class ReviewSeedRunner implements ApplicationRunner {
         log.info("[SEED] 앱스토어 심사용 테스트 데이터 생성 시작...");
 
         // 1. 판매자 계정 + 가게
-        User sellerUser = userRepository.save(
-                User.createFromEmail(sellerEmail, passwordEncoder.encode(sellerPassword), "플로렌트판매자"));
-        sellerUser.assignRole(UserRole.SELLER);
-        userRepository.save(sellerUser);
+        User sellerUser = findOrCreateUser(sellerEmail, sellerPassword, "플로렌트판매자", UserRole.SELLER);
+        Seller seller = sellerRepository.findByUserId(sellerUser.getId())
+                .orElseGet(() -> sellerRepository.save(Seller.create(sellerUser.getId())));
 
-        Seller seller = sellerRepository.save(Seller.create(sellerUser.getId()));
-
-        FlowerShop shop = shopRepository.save(FlowerShop.create(
-                seller.getId(),
-                "플로렌트 테스트 가게",
-                "앱스토어 심사용 테스트 꽃집입니다",
-                "010-0000-0000",
-                "서울 강남구 테헤란로 152",
-                new BigDecimal("37.498500"),
-                new BigDecimal("127.028700")));
+        FlowerShop shop = shopRepository.findBySellerId(seller.getId())
+                .orElseGet(() -> shopRepository.save(FlowerShop.create(
+                        seller.getId(),
+                        "플로렌트 테스트 가게",
+                        "앱스토어 심사용 테스트 꽃집입니다",
+                        "010-0000-0000",
+                        "서울 강남구 테헤란로 152",
+                        new BigDecimal("37.498500"),
+                        new BigDecimal("127.028700"))));
 
         log.info("[SEED] 판매자 계정 생성 완료: sellerId={}, shopId={}", seller.getId(), shop.getId());
 
         // 2. 구매자 계정
-        User buyerUser = userRepository.save(
-                User.createFromEmail(buyerEmail, passwordEncoder.encode(buyerPassword), "플로렌트구매자"));
-        buyerUser.assignRole(UserRole.BUYER);
-        userRepository.save(buyerUser);
-
-        Buyer buyer = buyerRepository.save(Buyer.create(buyerUser.getId(), "플로렌트구매자"));
+        User buyerUser = findOrCreateUser(buyerEmail, buyerPassword, "플로렌트구매자", UserRole.BUYER);
+        Buyer buyer = buyerRepository.findByUserId(buyerUser.getId())
+                .orElseGet(() -> buyerRepository.save(Buyer.create(buyerUser.getId(), "플로렌트구매자")));
 
         log.info("[SEED] 구매자 계정 생성 완료: buyerId={}", buyer.getId());
 
         // 2-b. 보조 판매자 (제안 2건을 같은 요청에 넣기 위해 — 리뷰어에게 노출 안 됨)
-        User subSellerUser = userRepository.save(
-                User.createFromEmail("florent-sub-seller@internal.test",
-                        passwordEncoder.encode("internal"), "보조판매자"));
-        subSellerUser.assignRole(UserRole.SELLER);
-        userRepository.save(subSellerUser);
-        Seller subSeller = sellerRepository.save(Seller.create(subSellerUser.getId()));
-        FlowerShop subShop = shopRepository.save(FlowerShop.create(
-                subSeller.getId(), "로즈앤블룸", null, "010-1111-2222",
-                "서울 강남구 역삼로 123",
-                new BigDecimal("37.499000"), new BigDecimal("127.029000")));
+        User subSellerUser = findOrCreateUser(SUB_SELLER_EMAIL, "internal", "보조판매자", UserRole.SELLER);
+        Seller subSeller = sellerRepository.findByUserId(subSellerUser.getId())
+                .orElseGet(() -> sellerRepository.save(Seller.create(subSellerUser.getId())));
+        FlowerShop subShop = shopRepository.findBySellerId(subSeller.getId())
+                .orElseGet(() -> shopRepository.save(FlowerShop.create(
+                        subSeller.getId(), "로즈앤블룸", null, "010-1111-2222",
+                        "서울 강남구 역삼로 123",
+                        new BigDecimal("37.499000"), new BigDecimal("127.029000"))));
 
         // 3. 요청 3건 (OPEN 1 + CONFIRMED 2)
         CurationRequest openRequest = createRequest(buyer.getId(), "OPEN");
@@ -220,5 +225,13 @@ public class ReviewSeedRunner implements ApplicationRunner {
         proposal.submit(clock);
         proposal.select();
         return proposalRepository.save(proposal);
+    }
+
+    private User findOrCreateUser(String email, String password, String nickname, UserRole role) {
+        return userRepository.findByEmail(email).orElseGet(() -> {
+            User user = userRepository.save(User.createFromEmail(email, passwordEncoder.encode(password), nickname));
+            user.assignRole(role);
+            return userRepository.save(user);
+        });
     }
 }
