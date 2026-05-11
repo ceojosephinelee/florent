@@ -32,6 +32,19 @@ class MockTokenStorage implements TokenStorage {
   }
 
   @override
+  Future<String?> getSelectedRole() async => _store['selectedRole'];
+
+  @override
+  Future<void> saveSelectedRole(String role) async {
+    _store['selectedRole'] = role;
+  }
+
+  @override
+  Future<void> clearSelectedRole() async {
+    _store.remove('selectedRole');
+  }
+
+  @override
   Future<void> clearAll() async {
     _store.clear();
   }

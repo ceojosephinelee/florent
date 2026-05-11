@@ -1,5 +1,3 @@
-import 'dart:developer' as dev;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -8,126 +6,60 @@ import '../../theme/colors.dart';
 import '../../theme/radius.dart';
 import '../../theme/typography.dart';
 import '../auth_provider.dart';
-import '../../../buyer/widgets/common/app_nav_bar.dart';
 
-class RoleSelectionScreen extends ConsumerStatefulWidget {
+class RoleSelectionScreen extends ConsumerWidget {
   const RoleSelectionScreen({super.key});
 
   @override
-  ConsumerState<RoleSelectionScreen> createState() => _RoleSelectionScreenState();
-}
-
-class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
-  @override
-  void initState() {
-    super.initState();
-    _debugTokenState();
-  }
-
-  Future<void> _debugTokenState() async {
-    final tokenStorage = ref.read(tokenStorageProvider);
-    final accessToken = await tokenStorage.getAccessToken();
-    final refreshToken = await tokenStorage.getRefreshToken();
-    final role = await tokenStorage.getRole();
-    dev.log('[ROLE_SCREEN] 화면 진입 시 토큰 상태:');
-    dev.log('[ROLE_SCREEN]   accessToken: ${accessToken != null ? "${accessToken.substring(0, 10)}... (len=${accessToken.length})" : "null"}');
-    dev.log('[ROLE_SCREEN]   refreshToken: ${refreshToken != null ? "있음 (len=${refreshToken.length})" : "null"}');
-    dev.log('[ROLE_SCREEN]   role: $role');
-    dev.log('[ROLE_SCREEN]   auth.status: ${ref.read(authProvider).status}');
-    dev.log('[ROLE_SCREEN]   auth.error: ${ref.read(authProvider).error}');
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final auth = ref.watch(authProvider);
-
-    ref.listen<AuthState>(authProvider, (prev, next) {
-      if (next.isLoading) return;
-      switch (next.status) {
-        case AuthStatus.buyerAuthenticated:
-          context.go('/buyer/home');
-        case AuthStatus.needsSellerInfo:
-          context.go('/auth/seller-info');
-        default:
-          break;
-      }
-    });
-
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: creamColor,
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AppNavBar(
-              title: '역할 선택',
-              onBack: () {
-                if (context.canPop()) {
-                  context.pop();
-                } else {
-                  context.go('/login');
-                }
-              },
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-              const SizedBox(height: 16),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 60),
               Text(
-                '반가워요!',
-                style: AppTypography.serif(fontSize: 28, fontWeight: FontWeight.w600),
+                'Florent',
+                style: AppTypography.serif(
+                  fontSize: 36,
+                  fontWeight: FontWeight.w600,
+                  color: roseColor,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 '어떤 서비스를 이용하시겠어요?',
                 style: AppTypography.body(fontSize: 14, color: ink60),
               ),
-              if (auth.error != null) ...[
-                const SizedBox(height: 16),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFDEDED),
-                    borderRadius: kBorderRadiusSm,
-                    border: Border.all(color: const Color(0xFFF5C6C6)),
-                  ),
-                  child: Text(
-                    auth.error!,
-                    style: AppTypography.body(fontSize: 12, color: const Color(0xFFC62828)),
-                    maxLines: 5,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-              const SizedBox(height: 32),
+              const SizedBox(height: 40),
               _RoleCard(
                 emoji: '🌸',
-                title: '구매자로 시작',
+                title: '꽃을 주문하고 싶어요',
                 description: '원하는 꽃을 요청하고\n근처 플로리스트의 맞춤 제안을 받아보세요.',
                 accentColor: roseColor,
                 bgColor: roseLt,
-                isLoading: auth.isLoading,
-                onTap: () => ref.read(authProvider.notifier).setRole('BUYER'),
+                onTap: () async {
+                  await ref.read(authProvider.notifier).selectRole('BUYER');
+                  if (context.mounted) context.go('/login');
+                },
               ),
               const SizedBox(height: 16),
               _RoleCard(
                 emoji: '🌿',
-                title: '판매자로 시작',
+                title: '꽃집을 운영하고 있어요',
                 description: '주변 고객의 요청을 받고\n나만의 큐레이션 제안서를 보내보세요.',
                 accentColor: sageColor,
                 bgColor: sageLt,
-                isLoading: auth.isLoading,
-                onTap: () => ref.read(authProvider.notifier).setRole('SELLER'),
+                onTap: () async {
+                  await ref.read(authProvider.notifier).selectRole('SELLER');
+                  if (context.mounted) context.go('/login');
+                },
               ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -141,7 +73,6 @@ class _RoleCard extends StatelessWidget {
     required this.description,
     required this.accentColor,
     required this.bgColor,
-    required this.isLoading,
     required this.onTap,
   });
 
@@ -150,14 +81,13 @@ class _RoleCard extends StatelessWidget {
   final String description;
   final Color accentColor;
   final Color bgColor;
-  final bool isLoading;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: isLoading ? null : onTap,
+      onTap: onTap,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(20),

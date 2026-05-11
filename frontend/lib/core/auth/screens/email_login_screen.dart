@@ -32,8 +32,6 @@ class _EmailLoginScreenState extends ConsumerState<EmailLoginScreen> {
     ref.listen<AuthState>(authProvider, (prev, next) {
       if (next.isLoading) return;
       switch (next.status) {
-        case AuthStatus.needsRole:
-          context.go('/auth/role');
         case AuthStatus.buyerAuthenticated:
           context.go('/buyer/home');
         case AuthStatus.needsSellerInfo:

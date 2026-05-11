@@ -40,7 +40,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       if (next.isLoading) return;
       switch (next.status) {
         case AuthStatus.unauthenticated:
-          context.go('/login');
+          context.go('/auth/role');
         case AuthStatus.needsRole:
           context.go('/auth/role');
         case AuthStatus.needsSellerInfo:
