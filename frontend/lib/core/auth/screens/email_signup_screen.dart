@@ -36,8 +36,15 @@ class _EmailSignupScreenState extends ConsumerState<EmailSignupScreen> {
 
     ref.listen<AuthState>(authProvider, (prev, next) {
       if (next.isLoading) return;
-      if (next.status == AuthStatus.needsRole) {
-        context.go('/auth/role');
+      switch (next.status) {
+        case AuthStatus.buyerAuthenticated:
+          context.go('/buyer/home');
+        case AuthStatus.needsSellerInfo:
+          context.go('/auth/seller-info');
+        case AuthStatus.sellerAuthenticated:
+          context.go('/seller/home');
+        default:
+          break;
       }
     });
 

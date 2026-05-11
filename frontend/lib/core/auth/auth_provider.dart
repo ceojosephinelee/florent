@@ -178,6 +178,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  /// 역할 선택 화면에서 호출. 로컬에만 저장하고 로그인 화면으로 이동.
+  Future<void> selectRole(String role) async {
+    await _tokenStorage.saveSelectedRole(role);
+    print('[AUTH] selectedRole 저장: $role');
+  }
+
   /// 카카오 SDK 로그인 → 카카오 Access Token 획득 → 서버 전달.
   Future<void> kakaoLogin() async {
     state = state.copyWith(isLoading: true, error: null);
@@ -198,23 +204,16 @@ class AuthNotifier extends StateNotifier<AuthState> {
         await _tokenStorage.saveRole(result.role!);
       }
       await _tokenStorage.saveHasFlowerShop(result.hasFlowerShop);
-      // 저장 직후 재읽기 검증
-      final savedToken = await _tokenStorage.getAccessToken();
-      print('[AUTH] 5) 토큰 저장 완료 — 재읽기: ${savedToken != null ? "${savedToken.substring(0, 20)}... (len=${savedToken.length})" : "null ← 저장 실패!"}');
-      print('[AUTH] 5) hasFlowerShop=${result.hasFlowerShop}');
 
-      if (result.isNewUser || result.role == null || (result.role == 'SELLER' && !result.hasFlowerShop)) {
-        print('[AUTH] 6) → needsRole (신규/역할미설정/가게미등록)');
-        state = state.copyWith(status: AuthStatus.needsRole, isLoading: false);
-      } else if (result.role == 'BUYER') {
-        print('[AUTH] 6) → buyerAuthenticated');
-        state = state.copyWith(status: AuthStatus.buyerAuthenticated, isLoading: false);
-        _registerFcmToken();
-      } else {
-        print('[AUTH] 6) → sellerAuthenticated');
-        state = state.copyWith(status: AuthStatus.sellerAuthenticated, isLoading: false);
-        _registerFcmToken();
+      // 기존 유저 (role 이미 설정됨) → selectedRole 무시, 기존 role 사용
+      if (result.role != null && !result.isNewUser) {
+        await _tokenStorage.clearSelectedRole();
+        await _resolveAuthenticatedState(result.role!, result.hasFlowerShop);
+        return;
       }
+
+      // 신규 유저 또는 role 미설정 → selectedRole로 자동 역할 설정
+      await _autoSetRole();
     } catch (e, st) {
       print('[AUTH] kakaoLogin ERROR: $e\n$st');
       state = state.copyWith(isLoading: false, error: e.toString());
@@ -258,7 +257,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
         refreshToken: result.refreshToken,
       );
 
-      state = state.copyWith(status: AuthStatus.needsRole, isLoading: false);
+      // 가입 후 selectedRole로 자동 역할 설정
+      await _autoSetRole();
     } catch (e, st) {
       print('[AUTH] emailSignup ERROR: $e\n$st');
       state = state.copyWith(isLoading: false, error: e.toString());
@@ -279,20 +279,49 @@ class AuthNotifier extends StateNotifier<AuthState> {
       }
       await _tokenStorage.saveHasFlowerShop(result.hasFlowerShop);
 
-      if (result.isNewUser || result.role == null) {
-        state = state.copyWith(status: AuthStatus.needsRole, isLoading: false);
-      } else if (result.role == 'BUYER') {
-        state = state.copyWith(status: AuthStatus.buyerAuthenticated, isLoading: false);
-        _registerFcmToken();
-      } else if (result.role == 'SELLER' && !result.hasFlowerShop) {
-        state = state.copyWith(status: AuthStatus.needsSellerInfo, isLoading: false);
-      } else {
-        state = state.copyWith(status: AuthStatus.sellerAuthenticated, isLoading: false);
-        _registerFcmToken();
+      // 기존 유저 (role 이미 설정됨) → selectedRole 무시
+      if (result.role != null && !result.isNewUser) {
+        await _tokenStorage.clearSelectedRole();
+        await _resolveAuthenticatedState(result.role!, result.hasFlowerShop);
+        return;
       }
+
+      // 신규 유저 또는 role 미설정 → selectedRole로 자동 역할 설정
+      await _autoSetRole();
     } catch (e, st) {
       print('[AUTH] emailLogin ERROR: $e\n$st');
       state = state.copyWith(isLoading: false, error: e.toString());
+    }
+  }
+
+  /// 로그인/가입 후 selectedRole을 읽어 자동 역할 설정.
+  Future<void> _autoSetRole() async {
+    final selectedRole = await _tokenStorage.getSelectedRole();
+    print('[AUTH] _autoSetRole — selectedRole=$selectedRole');
+
+    if (selectedRole == null) {
+      // selectedRole 없으면 역할 선택 화면으로
+      state = state.copyWith(status: AuthStatus.unauthenticated, isLoading: false);
+      return;
+    }
+
+    await _tokenStorage.clearSelectedRole();
+    await setRole(selectedRole);
+  }
+
+  /// role + hasFlowerShop 기반 최종 상태 결정.
+  Future<void> _resolveAuthenticatedState(String role, bool hasFlowerShop) async {
+    if (role == 'BUYER') {
+      print('[AUTH] → buyerAuthenticated');
+      state = state.copyWith(status: AuthStatus.buyerAuthenticated, isLoading: false);
+      _registerFcmToken();
+    } else if (role == 'SELLER' && !hasFlowerShop) {
+      print('[AUTH] → needsSellerInfo');
+      state = state.copyWith(status: AuthStatus.needsSellerInfo, isLoading: false);
+    } else {
+      print('[AUTH] → sellerAuthenticated');
+      state = state.copyWith(status: AuthStatus.sellerAuthenticated, isLoading: false);
+      _registerFcmToken();
     }
   }
 

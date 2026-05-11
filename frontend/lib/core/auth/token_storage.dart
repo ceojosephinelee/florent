@@ -9,5 +9,8 @@ abstract class TokenStorage {
   Future<void> saveTokens({required String accessToken, required String refreshToken});
   Future<void> saveRole(String role);
   Future<void> saveHasFlowerShop(bool value);
+  Future<String?> getSelectedRole();
+  Future<void> saveSelectedRole(String role);
+  Future<void> clearSelectedRole();
   Future<void> clearAll();
 }

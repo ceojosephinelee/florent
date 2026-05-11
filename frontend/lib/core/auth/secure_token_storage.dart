@@ -8,6 +8,7 @@ class SecureTokenStorage implements TokenStorage {
   static const _refreshTokenKey = 'refresh_token';
   static const _roleKey = 'role';
   static const _hasFlowerShopKey = 'has_flower_shop';
+  static const _selectedRoleKey = 'selected_role';
 
   @override
   Future<String?> getAccessToken() async {
@@ -56,6 +57,18 @@ class SecureTokenStorage implements TokenStorage {
   @override
   Future<void> saveHasFlowerShop(bool value) =>
       _storage.write(key: _hasFlowerShopKey, value: value.toString());
+
+  @override
+  Future<String?> getSelectedRole() =>
+      _storage.read(key: _selectedRoleKey);
+
+  @override
+  Future<void> saveSelectedRole(String role) =>
+      _storage.write(key: _selectedRoleKey, value: role);
+
+  @override
+  Future<void> clearSelectedRole() =>
+      _storage.delete(key: _selectedRoleKey);
 
   @override
   Future<void> clearAll() {
