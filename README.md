@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌸 Florent
+# 🌸 꽃 큐레이션 플랫폼 Florent
 
 **나만의 플로리스트**
 
